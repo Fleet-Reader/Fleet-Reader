@@ -107,6 +107,8 @@ timeline_date = { DATETIME($when, dateStyle: "medium", timeStyle: "none") }
 article_date = { DATETIME($when, dateStyle: "long", timeStyle: "short") }
 
 settings_browser_label = Open web links in
+settings_browser_embedded = Embedded Browser
+settings_browser_embedded_note = A site you sign in to in the embedded browser stays signed in for Load Full Article. Other links use their system application.
 settings_browser_system = System Default
 settings_browser_default = System Default ({ $name })
 settings_browser_note = This choice applies to Day News. Other links use their system application.
@@ -142,6 +144,9 @@ reader_view_too_large = This page is too large for Load Full Content. Open the o
 reader_view_no_content = No readable article was found. The page may require JavaScript, sign-in, or a subscription. Open the original website to read it.
 reader_view_timeout = Loading the full article took too long. Try Load Full Content again.
 reader_view_unavailable = Load Full Content is unavailable. Open the original website to read the full article.
+reader_browse = Open Page
+reader_browse_failed = The full article didn’t load. Open the page to sign in or read it there.
+reader_browse_short = This may be only part of the article. Open the page to sign in or read it there.
 show_unread_feeds_only = Show Only Unread Feeds
 show_all_feeds = Show All Feeds
 
@@ -296,11 +301,11 @@ incognito_mode = Incognito Mode
 site_browser_back = Back
 site_browser_forward = Forward
 site_browser_close = Close
-site_browser_address = Website address
+site_browser_done = Done
+site_browser_open_external = Open in Browser
 site_data_cleared = Site information forgotten.
 site_data_failed = Could not clear site information. Please try again.
 site_private_unsupported = Private browsing is unavailable on this platform. Site browsing is disabled in Incognito Mode.
-site_browser_go = Go
 
 subscribe_verify = Verify
 subscribe_preview_note = Verify a feed or website address to preview its articles before subscribing.
@@ -396,3 +401,49 @@ settings_word_cloud_2d = Across and up
 settings_word_cloud_1d = Across only
 settings_word_cloud_font = Word cloud font
 settings_word_cloud_system_font = System
+
+# Experimental WebDAV enrollment. Private credentials are never shown in these controls.
+dav_title = WebDAV account
+accounts_webdav = WebDAV
+accounts_provider = Synchronization provider
+dav_description = WebDAV keeps your subscriptions, collections, feed order, read/unread choices, and stars in a folder on your server. Each device downloads article content separately. Tags stay on each device, and Feedbin accounts sync separately.
+    Use a server you trust: sync files are not encrypted on the server. To connect another device, copy the library ID from Advanced and enter it there before connecting. Changing the server requires disconnecting first.
+dav_endpoint = Server URL
+dav_password = Password
+dav_reqwest = Alternative HTTP client
+dav_create = Create sync space
+dav_join = Join existing space
+dav_disabled = Enter your server and account details to connect.
+dav_restart = Saved. Restart Day-News to connect.
+dav_failed = Could not sync. Check your password and connection. Your changes are saved on this device.
+dav_attention = Sync needs attention. Check your account and server, then try Sync now.
+
+
+dav_username = Username
+
+dav_update_credentials = Save password
+
+
+# Experimental recovery keeps the library visible without silently bypassing journaling.
+dav_read_only = Sync could not start. Check your account details and restart.
+dav_pause = Pause synchronization
+dav_resume = Resume synchronization
+dav_paused = Sync is paused. Changes are saved on this device.
+dav_disconnect = Disconnect account
+dav_disconnect_confirm = Back up and disconnect
+dav_disconnect_message = After restart, Day-News will back up this library, including unsent records, then remove its configuration and any saved sync credentials it can identify. Local feeds and articles stay. Unsent changes will not reach other devices. This does not revoke the device on the server.
+dav_disconnect_restart = Restart Day-News to finish backing up and disconnecting WebDAV. Your local library will be preserved.
+dav_space_id = Library ID
+dav_current_space = Current space
+dav_copy_space = Copy library ID
+
+dav_information = About WebDAV sync
+dav_connect = Connect
+dav_advanced = Advanced
+dav_advanced_help = To join an existing library, enter its ID before connecting. Leave it empty to create a new library. Save your password to apply a networking change.
+
+accounts_sync_unavailable = Account synchronization is not available in this build.
+
+refresh_preparing = Preparing refresh…
+status_feeds_sync_pending = Refreshed { $done } of { $total } feeds — { $failed } failed; library sync pending
+library_sync_pending = Library sync pending

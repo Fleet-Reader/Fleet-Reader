@@ -1,0 +1,7 @@
+[app]
+id = "dev.daybrite.news.webdav"
+scheme = "daynews-webdav"
+title = "Day News WebDAV Lab"
+targets = ["macos-appkit", "ios-uikit", "android-material"]
+[cargo]
+features = ["experimental-webdav"]

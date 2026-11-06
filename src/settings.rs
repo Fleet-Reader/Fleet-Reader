@@ -87,8 +87,12 @@ pub static READER_AUTO: Pref<bool> = Pref::new("news.reader.auto", || false);
 // Browser
 // ---------------------------------------------------------------------------------------------
 
-/// The application id web links open in; empty for the system default.
+/// Where web links open: empty for the embedded browser (the default, which shares each site's
+/// sign-in with the reader's Load Full Article), [`SYSTEM_BROWSER`] for the system default, or
+/// an application id. Without an embedded browser, empty means the system default.
 pub static BROWSER: Pref<String> = Pref::new("news.browser", String::new);
+/// The [`BROWSER`] value for the system's default browser.
+pub const SYSTEM_BROWSER: &str = "system";
 /// Private browser storage for site previews and full-content loads.
 pub static INCOGNITO: Pref<bool> = Pref::new("news.browser.incognito", || false);
 
@@ -361,34 +365,52 @@ fn color_row(
 }
 
 fn browser_group() -> Group {
-    // Discovery runs once per launch; macOS answers, the other platforms leave links to the
-    // system browser and say so.
-    let links = match day::application_handlers(&day::HandlerQuery::Scheme("https".into())) {
+    // The embedded browser comes first where there is one. Discovery runs once per launch;
+    // macOS lists the other browsers, the other platforms offer only the system's.
+    let embedded = day_piece_webview::support() == Support::Native;
+    let mut options = Vec::new();
+    if embedded {
+        options.push((
+            String::new(),
+            res::str::settings_browser_embedded().format(),
+        ));
+    }
+    let system = if embedded { SYSTEM_BROWSER } else { "" }.to_owned();
+    let found = day::application_handlers(&day::HandlerQuery::Scheme("https".into()));
+    match &found {
         Ok(handlers) => {
-            let system = match &handlers.default {
+            let label = match &handlers.default {
                 Some(app) => res::str::settings_browser_default(app.name.as_str()).format(),
                 None => res::str::settings_browser_system().format(),
             };
-            let mut options = vec![(String::new(), system)];
+            options.push((system, label));
             options.extend(
                 handlers
                     .applications
                     .iter()
                     .map(|app| (app.id.clone(), app.name.clone())),
             );
-            Section::new()
-                .row(
-                    rows::choice(&BROWSER, res::str::settings_browser_label(), options)
-                        .id(day::id!(browser_picker)),
-                )
-                .footer(res::str::settings_browser_note())
         }
-        Err(_) => Section::new()
+        Err(_) => options.push((system, res::str::settings_browser_system().format())),
+    }
+    let links = if options.len() > 1 {
+        Section::new()
+            .row(
+                rows::choice(&BROWSER, res::str::settings_browser_label(), options)
+                    .id(day::id!(browser_picker)),
+            )
+            .footer(if embedded {
+                res::str::settings_browser_embedded_note()
+            } else {
+                res::str::settings_browser_note()
+            })
+    } else {
+        Section::new()
             .row(rows::info(
                 res::str::settings_browser_label(),
                 res::str::settings_browser_system(),
             ))
-            .footer(res::str::settings_browser_unavailable()),
+            .footer(res::str::settings_browser_unavailable())
     };
     let mut privacy = Section::new().row(
         rows::toggle(&INCOGNITO, res::str::incognito_mode()).id(day::id!(incognito_mode_picker)),
@@ -482,7 +504,7 @@ pub fn open_link(url: &str) {
         scheme.eq_ignore_ascii_case("http") || scheme.eq_ignore_ascii_case("https")
     });
     let chosen = BROWSER.get_untracked();
-    if web_link && !chosen.is_empty() {
+    if web_link && !chosen.is_empty() && chosen != SYSTEM_BROWSER {
         let url = url.to_owned();
         day::task(async move {
             if day::open_url_with_application(&url, &chosen).await.is_err() {

@@ -4,7 +4,15 @@ version.workspace = true
 edition = "2024"
 license = "Apache-2.0"
 
+[features]
+# Optional legacy provider; existing account data remains intact when disabled.
+feedbin = []
+experimental-webdav = ["daynews-db/experimental-webdav", "dep:serde", "dep:serde_json", "dep:zeroize"]
+
 [dependencies]
+zeroize = { version = "1.9", features = ["serde"], optional = true }
+serde = { version = "1", features = ["derive"], optional = true }
+serde_json = { version = "1", optional = true }
 daynews-sync = { path = "../daynews-sync" }
 daynews-credentials = { path = "../daynews-credentials" }
 day-async = "0.6"
@@ -26,3 +34,6 @@ day-persistence = "0.1"
 day-localization = "0.6"
 # `storage::{data_dir, cache_dir}`: where the library and the feed icons live (`store_dir`).
 day-spec = "0.6"
+
+[dev-dependencies]
+tempfile = "3"

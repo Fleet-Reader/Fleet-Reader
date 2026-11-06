@@ -5,9 +5,11 @@ flow:
   - wait_for: { id: nav }
   - navigate: { route: all }
   - assert_route: { route: all }
-  - toolbar: { item: feed_overview }
-  - wait_for: { id: dashboard_title }
-  - assert_text: { id: dashboard_title, key: nav_all_articles }
+  # Compact smart-feed lists expose Settings in this slot, not a dashboard button.
+  - toolbar: { item: feed_overview, skip_on: [ios-uikit, android-material, harmony-arkui] }
+  - wait_for: { id: dashboard_title, skip_on: [ios-uikit, android-material, harmony-arkui] }
+  - assert_text: { id: dashboard_title, key: nav_all_articles, skip_on: [ios-uikit, android-material, harmony-arkui] }
+  - wait_for: { id: timeline, only_on: [ios-uikit, android-material, harmony-arkui] }
   - screenshot: smoke
   - navigate: { route: settings/general, skip_on: [ios-uikit, android-material, harmony-arkui, web-dom] }
   - navigate: { route: settings, only_on: [web-dom] }

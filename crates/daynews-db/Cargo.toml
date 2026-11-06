@@ -4,7 +4,12 @@ version.workspace = true
 edition = "2024"
 license = "Apache-2.0"
 
+[features]
+experimental-webdav = ["dep:day-sync", "dep:day-sync-webdav", "dep:sha2", "dep:serde"]
+
 [dependencies]
+sha2 = { version = "0.11", optional = true }
+serde = { version = "1", features = ["derive"], optional = true }
 daynews-sync = { path = "../daynews-sync" }
 serde_json = "1"
 # The local article store rides day-persistence's lazy engine: models declared with
@@ -21,5 +26,13 @@ day-reactive = "0.6"
 # engine's trace hook logs each executed SQL at `trace!` in debug builds (Day-Sketch's shape).
 log = "0.4"
 
+# WebDAV sync runs beside the native database worker; the web build has neither.
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+day-sync = { git = "https://github.com/daybrite/day-sync.git", optional = true }
+day-sync-webdav = { git = "https://github.com/daybrite/day-sync.git", optional = true, features = ["reqwest"] }
+
 [dev-dependencies]
 futures-util = "0.3"
+futures-lite = "2"
+tempfile = "3"
+rusqlite = { version = "0.40", features = ["bundled"] }

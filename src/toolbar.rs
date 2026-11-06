@@ -247,8 +247,11 @@ pub fn status_bar() -> impl Piece {
                     }),
                     when(idle, move || {
                         label(move || {
-                            last_updated()
-                                .map(|at| crate::format::updated_status(at, clock().get()))
+                            pending_sync_text()
+                                .or_else(|| {
+                                    last_updated()
+                                        .map(|at| crate::format::updated_status(at, clock().get()))
+                                })
                                 .unwrap_or_default()
                         })
                         .font(Font::Caption)
@@ -319,11 +322,22 @@ fn sync_busy() -> bool {
     false
 }
 
+fn pending_sync_text() -> Option<String> {
+    #[cfg(not(target_arch = "wasm32"))]
+    if daynews_core::refresh_sync_pending() {
+        return Some(res::str::library_sync_pending().format());
+    }
+    None
+}
+
 fn refresh_text() -> Option<String> {
     daynews_core::state()
         .refresh_progress
         .get()
         .map(|(done, total)| {
+            if total == 0 {
+                return res::str::refresh_preparing().format();
+            }
             res::str::refresh_progress(res::str::RefreshProgress {
                 done: done as f64,
                 total: total as f64,
@@ -399,6 +413,7 @@ fn status(list_showing: bool, now: i64) -> String {
     let unread = res::str::unread_count(unread as f64).format();
     let first = sync_activity()
         .or_else(refresh_text)
+        .or_else(pending_sync_text)
         .or_else(|| last_updated().map(|at| crate::format::updated_status(at, now)));
     match first {
         Some(first) => format!("{first}\n{unread}"),

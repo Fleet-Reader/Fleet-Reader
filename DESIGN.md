@@ -115,9 +115,41 @@ refresh/read edits, per-search subscriptions, sticky unread rows, sidebar counts
 of the currently displayed article. Framework tests cover transaction/cancellation/close races.
 The synchronous database API is still used by the headless store tests and the web tier.
 
+## Coordinating publisher refresh with WebDAV
+
+Native Refresh first joins or starts one day-sync pass, waits at most ten seconds, then
+selects active subscriptions from the database worker and fetches publishers (at most four
+concurrently). The selection happens after the wait: newly received subscriptions enter the
+same refresh, and removed subscriptions are excluded. Each queued fetch rechecks that its
+subscription still exists and is active before contacting the publisher.
+
+The wait is an ordering preference, not a connectivity requirement. A failed, paused, or
+slow sync leaves publisher refresh available; the refresh result says library sync is pending.
+A timed-out sync continues independently. Retained read/star choices apply transactionally
+when matching articles arrive, including when sync completes after a publisher fetch. Article
+content remains local, so completing a publisher refresh does not require a second sync pass.
+
+Any sync pass can discover new or reactivated subscriptions. These receive an initial fetch,
+even with automatic polling disabled; subsequent fetches follow the Refresh Feeds setting.
+During an existing refresh, new subscriptions join a following batch without duplicating
+feeds already selected. Otherwise, a targeted refresh starts without another sync pass.
+
+Automatic polling and foreground activation respect per-feed due times, the selected refresh
+interval, and sync retry backoff. Manual Refresh may explicitly retry sync, but preserves an
+account's paused state. With no due publishers, the minute scheduler does not initiate a sync
+pass. Independent lightweight state sync still publishes reading/subscription edits and checks
+for remote changes. Edits made during a pass retain their follow-up request; a successful pass
+with deferred work schedules another attempt, while failed attempts retain server backoff.
+
+Regression coverage lives in `native/refresh/tests.rs` and `native/webdav.rs`: real SQLite
+replicas exercise subscription changes and retained article choices; controlled futures cover
+joining a pass, timeout, late completion, failure, and preserving follow-up requests.
+
 ## Account synchronization
 
-The first native account provider is Feedbin. Settings → Accounts validates the login, previews
+Feedbin is an optional legacy provider, enabled only by the `feedbin` Cargo feature. Normal builds do not load its session, access its credentials, or offer its account controls. Existing account records, article identities, and queued intentions are preserved. Disabling the feature does not migrate them to WebDAV.
+
+With that feature enabled, Settings → Accounts validates the login, previews
 subscription counts, and asks whether to upload eligible local subscriptions (off by default).
 The initial import adopts matching feed URLs and uses Feedbin's read/unread state for matched
 articles. Unmatched local history remains local. Subscribing, renaming, unsubscribing, reading,
@@ -801,8 +833,26 @@ When the default is on, hiding only collapses this article. Auto preference chan
 preview document, and the bar exposes aria-expanded and aria-controls.
 
 
-Site previews use an unrouted interactive WebView sheet with Back, Forward and an editable
-address. The dashboard button, feed context menu and Feed menu share the same guarded action;
+Links open in the in-app browser (src/site_browser.rs), modeled on NetNewsWire's: an
+unrouted WebView in a large sheet (Day's `large_sheet`; Escape closes it on a desktop) with
+Done, the page's title and site, and Open in Browser across the top, and Back and Forward
+(enabled from the engine's navigation state, polled while the sheet is up) along the bottom. It is not a full browser: no address to type, only the
+page a link opened and where its own links lead. Every in-app link goes through
+`site_browser::open_link(url, feed)`: the reader's links (its masthead site name included),
+Open in Browser on an article, the timeline row's Open in Browser and an overview's site link.
+The page loads under its feed's site profile, the one the reader's Load Full Article reads
+cookies from, so a sign-in there unlocks the next load. Settings ▸ Browser ▸ Open web links in
+defaults to Embedded Browser; choosing System Default or one of the browsers macOS lists
+(`settings::BROWSER` holds `system` or the application id) sends links out instead, and
+Incognito Mode and engines without a native WebView always do. When Load Full Article fails, or extracts text that
+looks like a teaser (under 600 characters, or not 200 more than the feed's own preview), the
+reader shows a note with Open Page, which opens the article in the in-app browser whatever that
+setting says. Closing the browser bumps a session counter: every reader of the window drops a
+failed or short result, and the visible one loads again. `dayscript/paywall-sign-in.yaml`
+walks the flow against tests/site-session-server.py, whose session value is new each run.
+
+The dashboard's Preview or Log In opens the same browser on the feed's site. The dashboard
+button, feed context menu and Feed menu share the same guarded action;
 the context menu targets its row, while the app menu follows the focused window's selected
 feed and is disabled on smart feeds. Incognito mode and unsupported WebViews disable preview.
 Sidebar menu handlers and row/button browser actions retain their owning window scope;
@@ -932,3 +982,59 @@ NetNewsWire: an outlined circle means read, and a filled center inside a ring me
 It has no selected background. The stored article drives both its icon and localized action
 label; taps toggle the database value on the persistence queue, avoiding stale UI snapshots.
 Desktop and other backends retain their existing toolbar toggle behavior.
+
+
+## WebDAV account configuration
+
+Native builds use day-sync v5. Each device has its own writer identity; a shared
+library ID identifies the remote sync space. Preserve recovery backups when migrating
+older stores. Account configuration and credentials remain local to each installation.
+
+Public WebDAV account details remain visible when a secure-store password is
+missing. Updating credentials validates the replacement against the server and
+does not require the old password to exist. Activation still requires a restart.
+The settings host owns the Accounts page's scrolling, including long WebDAV forms;
+there is no nested fixed-height viewport.
+
+WebDAV setup uses shared `form`/`section`/`labeled` controls for aligned account
+fields. Connect creates a library or joins the ID entered under Advanced; an
+already configured account offers Save password and Sync now. Existing server
+and library identifiers are read-only. Advanced holds the library identifier,
+alternative transport, pause/resume, and disconnect actions. A native information
+dialog explains scope and storage limitations. All presentation strings use
+generated localization accessors; account status remains visible during recovery.
+
+
+### WebDAV collection records (application revision 2)
+
+The existing `day-news:feed-state:1` space profile now supports record revision 2.
+Subscriptions and reading choices still require revision 1; collection records require
+revision 2. An old build holds newer records without projecting or discarding them.
+Upgrading releases those records before importing any local layout. No new server space,
+identity, password, or reset is needed.
+
+Stable collection IDs survive rename. Existence/name, sidebar position, sort mode,
+feed membership, manual order, and global priority use separate registers, so a rename
+and a reorder merge independently. Concurrent deletion wins over rename; other
+concurrent choices use the engine's deterministic revision ordering. Deleted IDs are
+not recycled. Collection deletion releases feeds before deleting the folder, including
+Feedbin-owned feeds, to prevent schema cascades from deleting subscriptions or articles.
+Feedbin membership and ordering edits do not publish into the WebDAV profile.
+
+The durable layout archive is independent of article and subscription arrivals. A
+membership received before its collection or feed is retained and projected once both
+exist. Concurrent equal names receive deterministic ID suffixes; two-phase renaming
+preserves the database's unique-name constraint, including name swaps. These labels
+contain the user's name and identity, with no translated application text in storage.
+
+At first upgrade, existing named collections and local feed organization are captured
+once, transactionally. Empty joining libraries publish no default organization that
+could overwrite the creator's layout. Remote held records take precedence over this
+bootstrap. Subsequent edits are captured by guarded SQL triggers in the journal
+transaction; projection cannot echo itself into local edits. The default ungrouped
+section's name, placement and sort remain device preferences.
+
+Integration tests in `crates/daynews-db/tests/webdav.rs` cover concurrent moves,
+rename/order independence, deletion safety, unique-name conflicts, dependency arrival
+order, one-time bootstrap, restart, late join, mixed-version operation, snapshot
+compaction and rollback after an injected journal failure.

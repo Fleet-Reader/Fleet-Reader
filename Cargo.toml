@@ -11,17 +11,20 @@ build = "build.rs"
 # The default `mock` backend lets a bare `cargo build` / rust-analyzer compile out of the box;
 # `day build` always passes `--no-default-features --features <backend>`, stripping it.
 default = ["mock"]
-appkit = ["day/appkit", "day-piece-webview/appkit"]
-gtk = ["day/gtk", "day-piece-webview/gtk"]
-qt = ["day/qt", "day-piece-webview/qt"]
-uikit = ["day/uikit", "day-piece-webview/uikit"]
-material = ["day/material", "day-piece-webview/material"]
-xaml = ["day/xaml", "day-piece-webview/xaml"]
-winui = ["day/winui", "day-piece-webview/winui"]
-arkui = ["day/arkui", "day-piece-webview/arkui"]
-dom = ["day/dom", "day-piece-webview/dom"]
+# Native backends enable WebDAV by default.
+appkit = ["day/appkit", "day-piece-webview/appkit", "experimental-webdav"]
+gtk = ["day/gtk", "day-piece-webview/gtk", "experimental-webdav"]
+qt = ["day/qt", "day-piece-webview/qt", "experimental-webdav"]
+uikit = ["day/uikit", "day-piece-webview/uikit", "experimental-webdav"]
+material = ["day/material", "day-piece-webview/material", "experimental-webdav"]
+xaml = ["day/xaml", "day-piece-webview/xaml", "experimental-webdav"]
+winui = ["day/winui", "day-piece-webview/winui", "experimental-webdav"]
+arkui = ["day/arkui", "day-piece-webview/arkui", "experimental-webdav"]
+dom = ["day/dom", "day-piece-webview/dom", "experimental-webdav"]
 # day-piece-webview ships no mock renderer, so the headless default omits it.
 mock = ["day/mock"]
+feedbin = ["daynews-core/feedbin"]
+experimental-webdav = ["daynews-core/experimental-webdav", "daynews-db/experimental-webdav"]
 
 # rlib for the desktop bin; the mobile pipeline requests the iOS staticlib / Android cdylib
 # explicitly via `cargo rustc --crate-type`.

@@ -233,6 +233,12 @@ architecture.
 
 Day News is open source under the Apache-2.0 license.
 
+In native WebDAV builds, Refresh first waits up to ten seconds for library sync, then fetches
+content using the updated subscriptions. If sync is slow or unavailable, feeds still refresh
+and the status reports that library sync is pending. New subscriptions received from another
+device get an initial fetch; later updates follow the Refresh Feeds setting. Reading choices
+sync independently, and article content remains local to each device.
+
 Feed refreshes run up to four requests concurrently, including newly added subscriptions.
 ETag and Last-Modified validators survive relaunch; unchanged feeds return 304 without
 reparsing or rewriting articles. On AppKit/UIKit, active feeds show a subtle spinner over
@@ -349,3 +355,77 @@ project with `day open -t <target>`; edits to generated files are disposable. Ap
 sources, plists and `.xcconfig` files, and any Android resource overlays, remain app-owned
 under `platform/`. For additional native configuration, use
 `day project add-target <target> --persist-native-project` to create a persistent override.
+
+
+## Experimental WebDAV feed-state sync
+
+The `experimental-webdav` Cargo feature adds WebDAV sync. Feedbin is disabled in normal builds; the optional `feedbin` feature retains the legacy integration for development. Existing Feedbin data is preserved and is not automatically converted. Every backend
+feature turns it on, so all native builds include it. The web build has no sync engine and
+leaves it out. `Day-webdav.toml` builds a Lab app with its own app
+ID and library, separate from the regular Day News:
+
+```sh
+../day/target/debug/day launch --flavor webdav -t macos-appkit
+```
+
+The sync crates come from the `day-sync` repository as Git dependencies.
+
+Accounts opens the WebDAV configuration panel. Builds with the optional `feedbin` feature also show the legacy provider picker. WebDAV uses an aligned account form; Advanced holds library and
+network controls, and the information button explains what is synchronized.
+Protocol v5 stores **plaintext** feed state on the server. HTTPS and the WebDAV app password
+protect transport/access; trust the server and every account with write access. There are no
+sync keys, signatures, fingerprints, approval grants or recovery-key ceremonies.
+
+Configure a dedicated HTTPS DAV folder and app password, then choose Connect and restart.
+After the first sync, use Advanced to copy the library ID. On another device, enter that ID
+under Advanced, supply the same server and account details, choose Connect, and restart. Public space/device identity is saved in `experimental-webdav.json`; only
+the server password uses native credential storage. Login/provider changes require restart.
+
+`Day-webdav-plain-demo.toml` uses the isolated `dev.daybrite.news.webdav.plain.demo` app ID
+for current Mac/iPad/Android checks. The earlier `webdav-demo` flavor belongs to the old encrypted
+pilot. Its existing databases are not automatically converted; old configurations open for reading
+with edits blocked until explicitly disconnected or replaced using an isolated new library.
+Never reuse a stale backed-up writer identity. Neither demo uses the normal installed library.
+
+Local HTTP(S) subscriptions, named collections, collection membership and order, per-collection
+sort modes, manual feed order, global feed priority, read/unread choices and stars synchronize.
+Feedbin feeds keep their existing provider. Tags, article bodies, feed-title edits, and the
+default ungrouped section’s display preferences remain local. Feedbin cache IDs are not publisher GUIDs: do not treat copying a Feedbin database as a
+supported conversion. Use an isolated library and local subscriptions imported from OPML for a pilot.
+
+Concurrent conflicts prefer unread, starred and unsubscribed; a subsequent action after synchronization
+can override that result. Cached articles may be pruned/refetched without losing retained choices.
+A single bulk local command may become several independently applied remote transactions.
+
+Keep recovery backups. The v5 engine verifies snapshots before reclaiming old history and
+automatically performs bounded compaction during synchronization. State and device-count
+limits still apply; missing history and invalid credentials require attention. See the
+[protocol reference](https://github.com/daybrite/day-sync/blob/main/docs/protocol-reference.md).
+Existing v4 history is incompatible: migrate into a new v5 space and preserve the old library
+and remote directory. Joining devices need distinct identities.
+
+Run `cargo test --workspace --features experimental-webdav`. Live tests are ignored by default.
+`scripts/webdav-shakeout.py --help` describes the private-backup Apache/Nextcloud experiments;
+never point that script at the live installed database. The script creates isolated copies and
+fresh plaintext spaces, uses fixture credentials and removes successful test spaces. Failed spaces
+are cleaned up by destroying the disposable fixture server. Private logs stay outside the repository.
+
+The October 27–28 encrypted experiment reports are historical; the current v5 protocol does not use their crypto design.
+
+Accounts also supports pausing network synchronization while continuing transactional journaling.
+A sync startup failure opens an existing library in read-only recovery mode; it does not silently
+allow edits without journaling. Restore access and restart, or explicitly disconnect. Disconnect
+requires confirmation and restart: startup writes a consistent `webdav-disconnect-*.db` backup,
+removes the known credential, then transactionally removes sync triggers/state and deletes the
+configuration. Unsent records remain in the backup but are not delivered to other devices.
+Disconnect does not revoke remote membership. Restoring an archive as an active writer is unsafe.
+
+In a configured WebDAV library, unsubscribe hides a feed instead of deleting its local articles,
+bodies, or tag memberships. Re-subscribing restores visibility. These local archives are not
+transferred to other devices by the sync profile. Local-only content and annotations must be preserved separately when replacing a library.
+
+The October 28 review follow-up also permits disconnect when the public configuration is
+missing or corrupt. It preserves a database backup, removes only identifiable credentials,
+and never guesses another keychain account. Unknown leftover credentials require separate
+cleanup. The read-only recovery guard is an application transaction guard, not a filesystem
+read-only open. The sync-only article identity index is removed with the protocol state.

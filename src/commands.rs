@@ -19,9 +19,6 @@ pub(crate) fn refreshing() -> bool {
 }
 
 pub(crate) fn refresh_now() {
-    // Explicit gestures/commands resume cancelled sync; automatic timers keep it paused.
-    #[cfg(not(target_arch = "wasm32"))]
-    daynews_core::sync_now();
     daynews_core::refresh_all();
 }
 
@@ -29,10 +26,7 @@ pub(crate) fn refresh() -> Command {
     Command::new(day::id!(refresh), res::str::refresh_action(), refresh_now)
         .icon(Symbol::Refresh)
         .shortcut(Shortcut::primary("r"))
-        .enabled(|| {
-            let st = daynews_core::state();
-            !refreshing() && st.feeds.with(|feeds| !feeds.is_empty())
-        })
+        .enabled(|| !refreshing())
 }
 
 pub(crate) fn mark_all_read() -> Command {
@@ -78,7 +72,7 @@ pub(crate) fn open_in_browser() -> Command {
         res::str::menu_open_in_browser(),
         || {
             if let Some(url) = displayed_link() {
-                crate::settings::open_link(&url);
+                crate::site_browser::open_link(&url, displayed_feed());
             }
         },
     )
@@ -156,6 +150,13 @@ pub(crate) fn copy_article_link() -> Command {
     .icon(Symbol::Copy)
     .shortcut(Shortcut::primary("c").shift())
     .enabled(|| displayed_link().is_some())
+}
+
+/// The open article's feed, whose site profile its page opens in.
+fn displayed_feed() -> Option<u64> {
+    daynews_core::try_scene()?
+        .article
+        .with_untracked(|a| a.as_ref().map(|a| a.feed_id))
 }
 
 fn displayed_link() -> Option<String> {

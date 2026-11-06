@@ -548,7 +548,11 @@ pub fn dashboard() -> impl Piece {
                     .color(move || accent(scope.get()))
                     .on_tap(move || {
                         if let Some(url) = feed_page_url(data) {
-                            crate::settings::open_link(&url);
+                            let feed = match scope.get_untracked() {
+                                Scope::Feed(feed) => Some(feed),
+                                _ => None,
+                            };
+                            crate::site_browser::open_link(&url, feed);
                         }
                     })
                     .a11y(|b| b.role(Role::Button))

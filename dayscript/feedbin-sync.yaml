@@ -1,3 +1,4 @@
+# Requires the feedbin flavor (or the feedbin Cargo feature).
 # Run with DAY_NEWS_SYNC_TEST=1 and a fresh DAY_DATA_DIR.
 # The synthetic server intercepts the production day-part-http client.
 name: feedbin-sync

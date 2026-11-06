@@ -1,3 +1,4 @@
+# Requires the feedbin flavor (or the feedbin Cargo feature).
 # Isolated store; DAY_NEWS_SYNC_TEST=1 DAY_NEWS_SYNC_TEST_LATENCY_MS=1500.
 # Real day-part-http simulation latency keeps the in-flight cancellation observable.
 name: feedbin-progress

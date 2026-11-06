@@ -16,6 +16,8 @@
 pub mod dashboard;
 mod polling;
 pub mod sync;
+#[cfg(all(feature = "experimental-webdav", not(target_arch = "wasm32")))]
+pub mod webdav;
 
 use day_model::{ModelId, Op};
 use day_persistence::{
@@ -414,20 +416,20 @@ impl Db {
     }
 
     fn from_driver(driver: Sqlite) -> Result<Db, DbError> {
-        let container = ModelContainer::open(
-            traced(driver),
-            schema![
-                Folder,
-                Feed,
-                Article,
-                ArticleBody,
-                Tag,
-                sync::Account,
-                sync::SubscriptionLink,
-                sync::EntryLink,
-                sync::Intent
-            ],
-        )?;
+        let models = schema![
+            Folder,
+            Feed,
+            Article,
+            ArticleBody,
+            Tag,
+            sync::Account,
+            sync::SubscriptionLink,
+            sync::EntryLink,
+            sync::Intent
+        ];
+        #[cfg(all(feature = "experimental-webdav", not(target_arch = "wasm32")))]
+        let models = models.with::<day_sync::Bookmark>();
+        let container = ModelContainer::open(traced(driver), models)?;
         let db = Db { container };
         db.backfill_word_counts()?;
         // The search index's vocabulary, for the dashboard's word cloud (`Db::word_cloud`): a
@@ -473,7 +475,13 @@ impl Db {
     /// subscribing twice cannot duplicate (and OPML re-imports are naturally idempotent).
     pub fn add_feed(&self, feed_url: &str, title: &str, folder: Option<u64>) -> u64 {
         let id = feed_id(feed_url);
-        if self.container.get::<Feed>(id).is_some() {
+        if let Some(feed) = self.container.get::<Feed>(id) {
+            #[cfg(all(feature = "experimental-webdav", not(target_arch = "wasm32")))]
+            if feed.sync_account().peek().is_none() && webdav::is_installed(&self.container) {
+                feed.unsubscribed().write(false);
+            }
+            #[cfg(not(all(feature = "experimental-webdav", not(target_arch = "wasm32"))))]
+            let _ = feed;
             return id;
         }
         let position = self.next_position::<Feed>(Feed::position());
@@ -496,7 +504,14 @@ impl Db {
         }
         let mut id = folder_id(name);
         let mut salt = 0u32;
-        while self.container.get::<Folder>(id).is_some() {
+        let used = |id| {
+            #[cfg(all(feature = "experimental-webdav", not(target_arch = "wasm32")))]
+            if webdav::collection_id_used(&self.container, id) {
+                return true;
+            }
+            self.container.get::<Folder>(id).is_some()
+        };
+        while used(id) {
             salt += 1;
             id = ident(&["folder", name, &salt.to_string()]);
         }
@@ -956,6 +971,14 @@ impl Db {
     /// Unsubscribe. Articles, bodies and tag memberships go with the feed (the cascade),
     /// and with an undo stack installed the whole subtree comes back as one unit.
     pub fn delete_feed(&self, id: u64) -> Result<(), DbError> {
+        #[cfg(all(feature = "experimental-webdav", not(target_arch = "wasm32")))]
+        if webdav::is_installed(&self.container)
+            && let Some(feed) = self.container.get::<Feed>(id)
+            && feed.sync_account().peek().is_none()
+        {
+            feed.unsubscribed().write(true);
+            return Ok(());
+        }
         if !self.sync_unsubscribe(id)? {
             self.container.delete::<Feed>(id)?;
         }
@@ -1049,6 +1072,21 @@ impl Db {
             self.sync_queue_read(article, read)?;
         }
         Ok(())
+    }
+
+    /// Mark cached articles published strictly before `cutoff` read. Use inside a worker
+    /// write so reading choices and provider/sync intents commit atomically.
+    pub fn set_read_before(&self, cutoff: i64) -> Result<usize, DbError> {
+        let ids = self
+            .container
+            .query::<Article>()
+            .filter(Article::published_at().lt(cutoff) & Article::is_read().eq(false))
+            .live()
+            .try_ids()?;
+        for id in &ids {
+            self.set_read(id.handle(), true)?;
+        }
+        Ok(ids.len())
     }
 
     pub fn set_starred(&self, article: u64, starred: bool) {

@@ -89,7 +89,7 @@ pub fn start() {
                     if minutes == AUTOMATIC {
                         daynews_core::refresh_due();
                     } else {
-                        daynews_core::refresh_all();
+                        scheduled();
                     }
                 }
             },
@@ -109,4 +109,29 @@ pub fn schedule() -> (u64, Option<i64>) {
 }
 pub fn automatic(value: u64) -> bool {
     value == AUTOMATIC
+}
+
+fn scheduled() {
+    #[cfg(not(target_arch = "wasm32"))]
+    daynews_core::refresh_scheduled();
+    #[cfg(target_arch = "wasm32")]
+    daynews_core::refresh_all();
+}
+
+/// Resume lightweight state sync on activation; feed refresh follows the user's cadence.
+#[cfg(not(target_arch = "wasm32"))]
+pub fn activated() {
+    daynews_core::sync_auto_now();
+    match REFRESH.get_untracked() {
+        Refresh::Manual => {}
+        Refresh::Automatic => daynews_core::refresh_due(),
+        _ if next()
+            .get_untracked()
+            .is_some_and(|at| at <= daynews_time::now_unix()) =>
+        {
+            scheduled();
+            start();
+        }
+        _ => {}
+    }
 }

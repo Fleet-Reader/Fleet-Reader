@@ -33,3 +33,6 @@ website/*/gallery-manifest.json
 # else this machine needs) without committing it. Absent on a fresh clone and in CI, which is
 # why the include is optional.
 platform/*/DayApp.local.xcconfig
+
+# Local Python experiment bytecode
+__pycache__/

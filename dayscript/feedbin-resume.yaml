@@ -1,3 +1,4 @@
+# Requires the feedbin flavor (or the feedbin Cargo feature).
 # Run against the same store after feedbin-sync.yaml, in a NEW process.
 # Add DAY_NEWS_SYNC_TEST_SECURE_STORE=1 to both launches to exercise the native vault.
 name: feedbin-resume

@@ -2,7 +2,64 @@
 use crate::res;
 use day::prelude::*;
 
+#[cfg(not(feature = "feedbin"))]
 pub fn page() -> impl Piece {
+    #[cfg(all(feature = "experimental-webdav", not(target_arch = "wasm32")))]
+    {
+        crate::webdav_accounts::page().any()
+    }
+    #[cfg(not(all(feature = "experimental-webdav", not(target_arch = "wasm32"))))]
+    {
+        label(res::str::accounts_sync_unavailable()).any()
+    }
+}
+
+#[cfg(feature = "feedbin")]
+pub fn page() -> impl Piece {
+    #[cfg(all(feature = "experimental-webdav", not(target_arch = "wasm32")))]
+    {
+        let provider = Signal::new(usize::from(
+            !daynews_core::webdav::status()
+                .get_untracked()
+                .endpoint
+                .is_empty(),
+        ));
+        column((
+            picker(
+                provider,
+                [
+                    (0, res::str::sync_feedbin()),
+                    (1, res::str::accounts_webdav()),
+                ],
+            )
+            .segmented()
+            .id(day::id!(accounts_provider))
+            .a11y(|a| a.label(res::str::accounts_provider()))
+            .grow_w(),
+            // The settings host owns scrolling on every target. An inner bounded
+            // scroll clips this long form and competes with the phone's page scroll.
+            keyed(
+                move || Some(provider.get()),
+                |selected| {
+                    if *selected == 0 {
+                        feedbin_page().any()
+                    } else {
+                        crate::webdav_accounts::page().any()
+                    }
+                },
+            )
+            .grow_w(),
+        ))
+        .spacing(Space::M)
+        .grow_w()
+        .any()
+    }
+    #[cfg(not(all(feature = "experimental-webdav", not(target_arch = "wasm32"))))]
+    feedbin_page().any()
+}
+
+#[cfg(feature = "feedbin")]
+fn feedbin_page() -> impl Piece {
     let status = daynews_core::sync_status();
     let username = Signal::new(status.get_untracked().username);
     let password = Signal::new(String::new());

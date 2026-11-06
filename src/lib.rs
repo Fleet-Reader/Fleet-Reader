@@ -35,6 +35,8 @@ mod test_prefs;
 mod theme;
 mod timeline;
 mod toolbar;
+#[cfg(all(feature = "experimental-webdav", not(target_arch = "wasm32")))]
+mod webdav_accounts;
 
 use daynews_db::Scope;
 
@@ -123,6 +125,14 @@ pub fn root() -> impl Piece {
                     })
                     .format()
                 }
+                StatusMessage::RefreshedFeedsPendingSync(total, failed) => {
+                    res::str::status_feeds_sync_pending(res::str::StatusFeedsSyncPending {
+                        done: (total - failed) as i64,
+                        failed: failed as i64,
+                        total: total as i64,
+                    })
+                    .format()
+                }
                 StatusMessage::Imported(added, existing) => {
                     res::str::status_imported(res::str::StatusImported {
                         added: added as i64,
@@ -154,7 +164,7 @@ pub fn root() -> impl Piece {
     #[cfg(not(target_arch = "wasm32"))]
     {
         daynews_core::sync_install();
-        day::on_lifecycle(Lifecycle::DidBecomeActive, daynews_core::sync_auto_now);
+        day::on_lifecycle(Lifecycle::DidBecomeActive, refresh_schedule::activated);
     }
     // The undo history rides the container's change log; the platform bridge gives it ⌘Z,
     // the Edit menu, and the mobile gestures.

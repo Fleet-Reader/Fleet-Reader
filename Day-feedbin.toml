@@ -1,0 +1,7 @@
+# Opt-in legacy provider validation; isolated from the normal library.
+[app]
+id = "dev.daybrite.news.feedbin.lab"
+scheme = "daynews-feedbin-lab"
+title = "Day News Feedbin Lab"
+[cargo]
+features = ["feedbin"]

@@ -148,6 +148,7 @@ fn row_for(
         // change must not redirect a menu action to a different article.
         let article = slot.get();
         let (id, read, starred) = (article.id, article.is_read, article.is_starred);
+        let feed = article.feed_id;
         let url = article.url.filter(|url| !url.trim().is_empty());
         let browser_url = url.clone();
         vec![
@@ -174,7 +175,7 @@ fn row_for(
                 .enabled(url.is_some())
                 .action(move || {
                     if let Some(url) = &browser_url {
-                        crate::settings::open_link(url);
+                        crate::site_browser::open_link(url, Some(feed));
                     }
                 }),
             menu_item(crate::res::str::menu_copy_article_link())

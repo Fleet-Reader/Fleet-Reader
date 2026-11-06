@@ -21,6 +21,9 @@ pub struct ReaderView {
     pub loading: Signal<bool>,
     pub error: Signal<Option<ExtractionError>>,
     pub extracted: Signal<Option<(u64, ExtractedArticle)>>,
+    /// The extracted article looks like a teaser (`looks_short`): the reader offers the page in
+    /// the in-app browser, where a sign-in can unlock it.
+    pub short: Signal<bool>,
     task: Signal<Rc<Cell<Option<day::TaskHandle>>>>,
     auto_article: Signal<Option<u64>>,
     pub article_load: Signal<ArticleLoad>,
@@ -40,6 +43,7 @@ impl Ambient for ReaderView {
             loading: Signal::new(false),
             error: Signal::new(None),
             extracted: Signal::new(None),
+            short: Signal::new(false),
             task: Signal::new(pending.clone()),
             auto_article: Signal::new(None),
             article_load: Signal::new(article_load.clone()),
@@ -80,6 +84,7 @@ impl Ambient for ReaderView {
                 state.active.set(false);
                 state.error.set(None);
                 state.extracted.set(None);
+                state.short.set(false);
                 state.ready.set(false);
             },
         );
@@ -133,14 +138,23 @@ impl Ambient for ReaderView {
         watch(crate::site_browser::incognito, move |_, _| {
             state.cancel();
             state.extracted.set(None);
+            state.short.set(false);
             state.active.set(false);
             state.auto_article.set(None);
             state.ready.set(false);
+        });
+        // A sign-in in the in-app browser: this reader drops a failed or short load, and loads
+        // again at once if it is the one being read; a pager's other pages load when shown.
+        watch(crate::site_browser::sessions, move |_, previous| {
+            if previous.is_some() {
+                state.retry_after_browsing(scene);
+            }
         });
         watch(crate::reader_scripts::revision, move |_, previous| {
             if previous.is_some() {
                 state.cancel();
                 state.extracted.set(None);
+                state.short.set(false);
                 state.active.set(false);
                 state.error.set(None);
                 // An explicit next load must use the new script. Do not automatically
@@ -290,6 +304,13 @@ impl ReaderView {
                 self.loading.set(false);
                 match result {
                     Ok(content) => {
+                        self.short.set(looks_short(
+                            &content.content,
+                            article
+                                .content_html
+                                .as_deref()
+                                .or(article.summary.as_deref()),
+                        ));
                         self.extracted.set(Some((article.id, content)));
                         self.active.set(true);
                     }
@@ -298,6 +319,32 @@ impl ReaderView {
             });
         });
         self.task.get_untracked().set(Some(task));
+    }
+
+    /// The in-app browser closed: a sign-in may have happened there, in the profile this
+    /// reader reads cookies from. A full load that failed or came back short is dropped, and
+    /// loads again here if this reader is the visible one; anything else is left as it is.
+    fn retry_after_browsing(self, scene: daynews_core::NewsScene) {
+        let Some(article) = scene.article.get_untracked() else {
+            return;
+        };
+        let failed = self.error.get_untracked().is_some()
+            || (self.short.get_untracked()
+                && self
+                    .extracted
+                    .with_untracked(|e| e.as_ref().is_some_and(|(id, _)| *id == article.id)));
+        if !failed || self.loading.get_untracked() {
+            return;
+        }
+        day::reactive::batch(|| {
+            self.extracted.set(None);
+            self.short.set(false);
+            self.error.set(None);
+            self.active.set(false);
+        });
+        if self.visible.get_untracked() {
+            self.toggle_with_trigger(scene, "after_browser");
+        }
     }
 
     pub fn article(
@@ -426,9 +473,53 @@ impl ReaderView {
     }
 }
 
+/// Whether extracted content reads like a teaser rather than the article: little text, or
+/// hardly more than the feed already showed. A paywall or sign-in page usually extracts as one.
+fn looks_short(content_html: &str, preview: Option<&str>) -> bool {
+    let full = text_length(content_html);
+    full < 600 || full < preview.map_or(0, text_length) + 200
+}
+
+/// The visible text's length in characters: tags dropped, runs of whitespace counted once.
+fn text_length(html: &str) -> usize {
+    let (mut length, mut in_tag, mut space) = (0, false, true);
+    for c in html.chars() {
+        match c {
+            '<' => in_tag = true,
+            '>' if in_tag => in_tag = false,
+            _ if in_tag => {}
+            c if c.is_whitespace() => {
+                if !space {
+                    length += 1;
+                    space = true;
+                }
+            }
+            _ => {
+                length += 1;
+                space = false;
+            }
+        }
+    }
+    length
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn teasers_read_as_short_and_articles_do_not() {
+        let summary = Some("A one-line synthetic summary.");
+        assert!(looks_short("<p>Subscribe to keep reading.</p>", summary));
+        let full = format!(
+            "<p>{}</p>",
+            "Synthetic sentence about careful work. ".repeat(40)
+        );
+        assert!(!looks_short(&full, summary));
+        // Hardly longer than what the feed already carried is a teaser too.
+        assert!(looks_short(&full, Some(full.as_str())));
+        assert_eq!(text_length("<p>a  b</p>\n<p>c</p>"), 5);
+    }
 
     fn fixture(id: u64) -> daynews_core::StoredArticle {
         daynews_core::StoredArticle {

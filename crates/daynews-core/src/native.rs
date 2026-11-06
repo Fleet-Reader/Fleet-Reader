@@ -2,7 +2,19 @@
 //! live on one database worker. Committed, owned projections are the only bridge.
 use day_core::Ambient;
 use day_model::Source;
+mod refresh;
+#[cfg(feature = "feedbin")]
 mod sync;
+#[cfg(not(feature = "feedbin"))]
+#[path = "native/local_sync.rs"]
+mod sync;
+mod sync_status;
+pub use refresh::{
+    refresh_all, refresh_due, refresh_feed, refresh_scheduled, refresh_sync_pending,
+};
+pub use sync_status::SyncStatus;
+#[cfg(feature = "experimental-webdav")]
+pub mod webdav;
 pub use sync::*;
 
 use day_persistence::{DatabaseWorker, DbError, ModelContainer, Pred};
@@ -14,9 +26,8 @@ use daynews_db::{
 };
 pub use daynews_db::{FeedSort, Scope as TimelineScope, article_id, feed_id, folder_id, tag_id};
 use futures_util::{
-    FutureExt, StreamExt,
+    FutureExt,
     future::{LocalBoxFuture, Shared},
-    stream,
 };
 use std::{
     cell::RefCell,
@@ -376,6 +387,7 @@ fn wire_scene(sc: NewsScene) {
 pub enum StatusMessage {
     RefreshedFeed(String, bool),
     RefreshedFeeds(usize, usize),
+    RefreshedFeedsPendingSync(usize, usize),
     Imported(usize, usize),
     ExportTitle,
 }
@@ -415,6 +427,9 @@ pub fn init(format_status: fn(StatusMessage) -> String) {
         },
     );
     let opening = async move {
+        #[cfg(feature = "experimental-webdav")]
+        let worker = webdav::open_worker(path).await?;
+        #[cfg(not(feature = "experimental-webdav"))]
         let worker = DatabaseWorker::open(move || Db::open(&path).map(|db| db.container)).await?;
         worker.enable_undo(UNDO_LEVELS).await?;
         Ok(worker)
@@ -985,107 +1000,8 @@ pub fn rename_feed(feed: u64, title: &str) {
         Ok(())
     });
 }
-/// Refresh one subscription: a feed row's Refresh and Feed ▸ Refresh Feed. A full refresh
-/// already under way fetches this feed too, so asking again while it runs does nothing.
-pub fn refresh_feed(feed: u64) {
-    let st = state();
-    if st.refresh_progress.get_untracked().is_some() {
-        return;
-    }
-    let Some((title, url)) = st
-        .feeds
-        .get_untracked()
-        .iter()
-        .find(|f| f.id == feed)
-        .map(|f| (f.title.clone(), f.feed_url.clone()))
-    else {
-        return;
-    };
-    st.refresh_progress.set(Some((0, 1)));
-    day_core::task(async move {
-        let ok = refresh_one(feed, url).await;
-        let st = state();
-        st.refresh_progress.set(None);
-        st.status
-            .set(status(StatusMessage::RefreshedFeed(title, ok)));
-    });
-}
-
-/// Per-feed Automatic polling, using durable due times in priority order.
-pub fn refresh_due() {
-    if state().refresh_progress.get_untracked().is_some() {
-        return;
-    }
-    day_core::task(async {
-        let worker = match ready_worker().await {
-            Ok(worker) => worker,
-            Err(error) => {
-                report(error);
-                return;
-            }
-        };
-        let due = worker
-            .read(|container| {
-                Db {
-                    container: container.clone(),
-                }
-                .due_feeds(daynews_time::now_unix())
-            })
-            .await;
-        match due {
-            Ok(feeds) => start_refresh(feeds),
-            Err(error) => report(error),
-        }
-    });
-}
-
 pub fn move_feed(feed: u64, to: usize) {
     edit(move |db| db.move_feed(feed, to));
-}
-
-// ---- refreshing -----------------------------------------------------------------------------
-
-/// Refresh up to four subscriptions concurrently. A slow server does not hold up every
-/// other feed; the bounded stream keeps resource use predictable. Futures still poll on
-/// the UI executor, where the store and reactive state belong.
-pub fn refresh_all() {
-    sync_auto_now();
-    let st = state();
-    if st.refresh_progress.get_untracked().is_some() {
-        return; // already running
-    }
-    let feeds: Vec<(u64, String)> = st
-        .feeds
-        .get_untracked()
-        .iter()
-        .map(|f| (f.id, f.feed_url.clone()))
-        .collect();
-    start_refresh(feeds);
-}
-
-fn start_refresh(feeds: Vec<(u64, String)>) {
-    let st = state();
-    if feeds.is_empty() || st.refresh_progress.get_untracked().is_some() {
-        return;
-    }
-    let total = feeds.len();
-    st.refresh_progress.set(Some((0, total)));
-    day_core::task(async move {
-        let mut failed = 0usize;
-        let mut pending = stream::iter(feeds)
-            .map(|(id, url)| refresh_one(id, url))
-            .buffer_unordered(4);
-        let mut done = 0;
-        while let Some(ok) = pending.next().await {
-            failed += usize::from(!ok);
-            done += 1;
-            state().refresh_progress.set(Some((done, total)));
-        }
-        let st = state();
-        st.refresh_progress.set(None);
-        st.status
-            .set(status(StatusMessage::RefreshedFeeds(total, failed)));
-    });
 }
 
 /// Fetch and store one feed. Returns whether it succeeded.
@@ -1154,6 +1070,16 @@ impl Drop for UpdatingFeed {
     }
 }
 
+// Recheck both before issuing HTTP and when applying its response. Sync or the user can
+// remove a subscription while a request waits for a slot or while it is in flight.
+fn feed_is_current(db: &ModelContainer, id: u64, url: &str) -> Result<bool, DbError> {
+    Ok(db.try_get::<daynews_db::Feed>(id)?.is_some_and(|feed| {
+        !feed.unsubscribed().peek()
+            && feed.sync_account().peek().is_none()
+            && feed.feed_url().peek() == url
+    }))
+}
+
 async fn refresh_one(id: u64, url: String) -> bool {
     if let Ok(w) = ready_worker().await {
         let managed = w
@@ -1191,11 +1117,17 @@ async fn refresh_one(id: u64, url: String) -> bool {
         }
     };
     let validators = worker
-        .read(move |db| {
-            Ok(Db {
-                container: db.clone(),
+        .read({
+            let url = url.clone();
+            move |db| {
+                if !feed_is_current(db, id, &url)? {
+                    return Ok(None);
+                }
+                Ok(Db {
+                    container: db.clone(),
+                }
+                .feed_cache(id))
             }
-            .feed_cache(id))
         })
         .await;
     let daynews_db::FeedCache {
@@ -1274,6 +1206,9 @@ async fn apply_update(
 ) -> bool {
     let applied = worker
         .write(move |container| {
+            if !feed_is_current(container, id, &url)? {
+                return Ok(true);
+            }
             day_model::with_author("feed-refresh", || {
                 let d = Db {
                     container: container.clone(),
@@ -1611,7 +1546,7 @@ mod tests {
         task::{Context, Poll, Wake, Waker},
         time::{Duration, Instant},
     };
-    fn wait<F: Future>(future: F) -> F::Output {
+    pub(super) fn wait<F: Future>(future: F) -> F::Output {
         struct Unpark(std::thread::Thread);
         impl Wake for Unpark {
             fn wake(self: Arc<Self>) {

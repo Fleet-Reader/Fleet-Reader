@@ -19,12 +19,14 @@ fn document(a: &StoredArticle, control_above: bool) -> String {
         .is_some()
     {
         let control = format!(
-            r#"<div id="reader-load-control"><button type="button" id="reader-load-full" aria-busy="false" aria-expanded="false" aria-controls="reader-full-slot" onclick="document.getElementById('reader-load-link').click()"><span class="reader-load-label">{}</span><span class="reader-spinner" aria-hidden="true"></span><svg class="reader-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 5 6 6 6-6M6 12l6 6 6-6"/></svg></button><button type="button" id="reader-load-error" hidden aria-haspopup="dialog" aria-label="{}" onclick="document.getElementById('reader-error-link').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z M12 9v5 M12 17v.1"/></svg></button><span id="reader-error-status" role="status" class="reader-sr-only"></span><a hidden id="reader-error-link" href="day-news-reader://error/{}"></a><a hidden id="reader-load-link" href="day-news-reader://load/{}"></a><a hidden id="reader-auto-link" href="day-news-reader://auto/{}"></a></div>"#,
+            r#"<div id="reader-load-control"><button type="button" id="reader-load-full" aria-busy="false" aria-expanded="false" aria-controls="reader-full-slot" onclick="document.getElementById('reader-load-link').click()"><span class="reader-load-label">{}</span><span class="reader-spinner" aria-hidden="true"></span><svg class="reader-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 5 6 6 6-6M6 12l6 6 6-6"/></svg></button><button type="button" id="reader-load-error" hidden aria-haspopup="dialog" aria-label="{}" onclick="document.getElementById('reader-error-link').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z M12 9v5 M12 17v.1"/></svg></button><span id="reader-error-status" role="status" class="reader-sr-only"></span><a hidden id="reader-error-link" href="day-news-reader://error/{}"></a><a hidden id="reader-load-link" href="day-news-reader://load/{}"></a><a hidden id="reader-auto-link" href="day-news-reader://auto/{}"></a></div><div id="reader-browse" hidden><span id="reader-browse-note"></span><a id="reader-browse-link" href="day-news-reader://browse/{}">{}</a></div>"#,
             escape(&crate::res::str::reader_load_full().format()),
             escape(&crate::res::str::reader_view_error_details().format()),
             a.id,
             a.id,
-            a.id
+            a.id,
+            a.id,
+            escape(&crate::res::str::reader_browse().format()),
         );
         document = if control_above {
             document.replace(
@@ -134,6 +136,13 @@ fn document_with_style(
   .reader-sr-only {{ position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden;
     clip-path: inset(50%); white-space: nowrap; }}
   #reader-full-slot {{ overflow-anchor: none; }}
+  /* Offered when Load Full Article failed or came back short: the page in the in-app browser,
+     where signing in reaches the next load. */
+  #reader-browse {{ display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px;
+    margin: 10px 2px 0; font-size: .85em; color: {muted}; }}
+  #reader-browse[hidden] {{ display: none; }}
+  #reader-browse-note {{ flex: 1 1 16em; }}
+  #reader-browse-link {{ font-weight: 600; text-decoration: none; white-space: nowrap; }}
   #reader-load-full {{ width: 100%; display: flex; align-items: center; gap: 12px;
     padding: 15px 16px; border: 1px solid {rule}; border-radius: 6px;
     background: linear-gradient(color-mix(in srgb, {alt} 80%, {bg}), {alt});
@@ -275,10 +284,11 @@ fn reader_body(
                     view.loading.get(),
                     view.active.get(),
                     view.error.get(),
+                    view.short.get(),
                     day::locale().get(),
                 )
             },
-            move |(ready, loading, active, error, _), _| {
+            move |(ready, loading, active, error, short, _), _| {
                 if !ready {
                     return;
                 }
@@ -295,8 +305,18 @@ fn reader_body(
                 let message =
                     serde_json::to_string(&if failed { view.status() } else { String::new() })
                         .unwrap();
+                // The way out of a paywall or a page extraction cannot read: open it here, where
+                // a sign-in lands in the profile the next load reads cookies from.
+                let browse = !*loading && (failed || *short) && crate::site_browser::can_browse();
+                let note = serde_json::to_string(&if failed {
+                    crate::res::str::reader_browse_failed().format()
+                } else {
+                    crate::res::str::reader_browse_short().format()
+                })
+                .unwrap();
+                let reason = if failed { "'failed'" } else { "'short'" };
                 let script = format!(
-                    "(() => {{ const button = document.getElementById('reader-load-full'); if (button) {{ button.disabled = {loading}; button.setAttribute('aria-busy', String({loading})); button.setAttribute('aria-expanded', String({active})); button.querySelector('.reader-load-label').textContent = {text}; }} const control = document.getElementById('reader-load-control'); const warning = document.getElementById('reader-load-error'); if (control && warning) {{ control.dataset.error = String({failed}); warning.hidden = !{failed}; warning.title = {message}; document.getElementById('reader-error-status').textContent = {message}; }} }})()"
+                    "(() => {{ const button = document.getElementById('reader-load-full'); if (button) {{ button.disabled = {loading}; button.setAttribute('aria-busy', String({loading})); button.setAttribute('aria-expanded', String({active})); button.querySelector('.reader-load-label').textContent = {text}; }} const control = document.getElementById('reader-load-control'); const warning = document.getElementById('reader-load-error'); if (control && warning) {{ control.dataset.error = String({failed}); warning.hidden = !{failed}; warning.title = {message}; document.getElementById('reader-error-status').textContent = {message}; }} const browse = document.getElementById('reader-browse'); if (browse) {{ browse.hidden = !{browse}; browse.dataset.reason = {reason}; document.getElementById('reader-browse-note').textContent = {note}; }} }})()"
                 );
                 day::task(async move {
                     let _ = js.eval(script).await;
@@ -396,7 +416,26 @@ fn reader_body(
                     }
                     return day_piece_webview::LinkPolicy::Ignore;
                 }
-                crate::settings::open_link(url);
+                let article = scene.article.with_untracked(|a| {
+                    a.as_ref()
+                        .map(|a| (a.id, a.feed_id, a.url.clone().unwrap_or_default()))
+                });
+                if let Some(id) = url
+                    .strip_prefix("day-news-reader://browse/")
+                    .and_then(|id| id.parse::<u64>().ok())
+                {
+                    // Asked for by the reader to sign in, so it opens here whatever Settings ▸
+                    // Browser says about other links.
+                    if let Some((article, feed, page)) = article
+                        && article == id
+                    {
+                        crate::site_browser::browse(&page, Some(feed));
+                    }
+                    return day_piece_webview::LinkPolicy::Ignore;
+                }
+                // Every other link, the masthead's site name included, opens the way links do,
+                // under the article's site profile.
+                crate::site_browser::open_link(url, article.map(|(_, feed, _)| feed));
                 day_piece_webview::LinkPolicy::Ignore
             })
             .id_of({

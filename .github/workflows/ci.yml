@@ -38,7 +38,7 @@ jobs:
       # resolved once per run, so every leg compiles the same one. Refresh the lock locally
       # (`cargo update -p day`) when a new framework API lands, so a local build matches.
       day-deps: ${{ inputs.day-main && 'main' || 'auto' }}
-      scripts: dayscript/seed-demo.yaml dayscript/reader-swipes.yaml dayscript/walkthrough.yaml dayscript/http-interception.yaml dayscript/feedbin-progress.yaml dayscript/feedbin-sync.yaml dayscript/feedbin-resume.yaml
+      scripts: dayscript/seed-demo.yaml dayscript/reader-swipes.yaml dayscript/walkthrough.yaml dayscript/http-interception.yaml
       launch-env: DAY_NEWS_HTTP_TEST=1 DAY_NEWS_SYNC_TEST=1 DAY_NEWS_SYNC_TEST_LATENCY_MS=1500
       preflight-checks: fmt test
       locales: en

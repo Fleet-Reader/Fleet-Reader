@@ -1,0 +1,53 @@
+# Start tests/site-session-server.py afresh (its session value is per run). Use a fresh
+# isolated data directory.
+# The paywall flow: Load Full Article comes back short or fails, the reader offers the page in
+# the in-app browser, a sign-in there, and the next load reads the article with that session.
+name: paywall-sign-in
+description: A short or failed full-article load offers the page in the in-app browser; signing in there unlocks the next load.
+flow:
+  - dialog_mode: { mode: scripted }
+  # New Feed is on the feeds page (a phone's bottom bar); a phone opens on Today's list.
+  - navigate: { route: "" }
+  - toolbar: { item: new_feed }
+  - wait_for: { id: feed_url }
+  - input: { id: feed_url, text: 'http://127.0.0.1:28764/paywall-feed.json' }
+  - tap: { id: feed_verify }
+  - tap: { id: feed_subscribe }
+  - pause: { secs: 2 }
+  # The fixture's session value is new each run, so the site's profile starts signed out.
+  # The teaser extracts as a few lines: the reader offers the page.
+  - select: { id: timeline, index: 0 }
+  - pause: { secs: 1 }
+  - web_eval: { id: reader_web, script: 'document.getElementById("reader-load-full").click(); "load"', text: 'load' }
+  - pause: { secs: 2 }
+  - web_eval: { id: reader_web, script: 'document.getElementById("reader-browse").hidden', text: 'false' }
+  - web_eval: { id: reader_web, script: 'document.getElementById("reader-browse").dataset.reason', text: 'short' }
+  - screenshot: paywall-short
+  # The protected article fails outright: the same offer, with the failure's note.
+  - select: { id: timeline, index: 1 }
+  - pause: { secs: 1 }
+  - web_eval: { id: reader_web, script: 'document.getElementById("reader-load-full").click(); "load"', text: 'load' }
+  - pause: { secs: 2 }
+  - web_eval: { id: reader_web, script: 'document.getElementById("reader-browse").dataset.reason', text: 'failed' }
+  - web_eval: { id: reader_web, script: 'document.getElementById("reader-browse").hidden', text: 'false' }
+  # Open the page, sign in, close: the reader loads the article again with the session.
+  - web_eval: { id: reader_web, script: 'document.getElementById("reader-browse-link").click(); "browse"', text: 'browse' }
+  - wait_for: { id: site_browser_web }
+  - pause: { secs: 1 }
+  - web_eval: { id: site_browser_web, script: 'location.pathname', text: '/protected' }
+  - screenshot: paywall-browser
+  - web_eval: { id: site_browser_web, script: 'document.getElementById("fixture-login").click(); "login"', text: 'login' }
+  - pause: { secs: 1 }
+  - web_eval: { id: site_browser_web, script: 'document.getElementById("fixture-session").textContent', text: 'Signed in' }
+  - tap: { id: site_browser_close }
+  - pause: { secs: 3 }
+  - web_eval: { id: reader_web, script: 'document.getElementById("reader-full-slot").textContent', contains: 'Authenticated full article fixture.' }
+  - web_eval: { id: reader_web, script: 'document.getElementById("reader-browse").hidden', text: 'true' }
+  # Another article of the same site reuses the session.
+  - select: { id: timeline, index: 0 }
+  - pause: { secs: 1 }
+  - web_eval: { id: reader_web, script: 'document.getElementById("reader-load-full").click(); "load"', text: 'load' }
+  - pause: { secs: 2 }
+  - web_eval: { id: reader_web, script: 'document.getElementById("reader-full-slot").textContent', contains: 'Authenticated teaser article fixture.' }
+  - web_eval: { id: reader_web, script: 'document.getElementById("reader-browse").hidden', text: 'true' }
+  - screenshot: paywall-signed-in

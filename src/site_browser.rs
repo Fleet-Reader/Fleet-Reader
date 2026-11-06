@@ -16,11 +16,26 @@ pub fn site_url(feed: u64) -> Option<String> {
         })
         .filter(|url| crate::extraction::web_url(url).is_some())
 }
+/// The web profile a feed's pages load in: one per feed site, persistent unless Incognito Mode
+/// is on. The in-app browser and the reader (which reads its cookies for Load Full Article)
+/// share it, so signing in to the site in one serves the other.
 pub fn profile(feed: u64) -> WebProfile {
     let name = site_url(feed)
         .and_then(|url| url::Url::parse(&url).ok())
         .map(|url| url.origin().ascii_serialization())
         .unwrap_or_else(|| format!("feed:{feed}"));
+    profile_named(&name)
+}
+
+/// The profile for a link with no feed behind it: its own site's.
+fn profile_for_url(url: &str) -> WebProfile {
+    let name = url::Url::parse(url)
+        .map(|url| url.origin().ascii_serialization())
+        .unwrap_or_else(|_| "links".into());
+    profile_named(&name)
+}
+
+fn profile_named(name: &str) -> WebProfile {
     if day_piece_webview::profile_support() != Support::Native {
         return if incognito() {
             WebProfile::private("default")
@@ -106,23 +121,50 @@ impl Binding<Option<String>> for FeedSelection {
         self.section.set(key);
     }
 }
+/// The window's in-app browser: a page, the feed whose site profile it loads in (the one the
+/// reader's Load Full Article reads cookies from), and what it shows while open.
 #[derive(Clone, Copy)]
 pub(crate) struct Browser {
+    /// The page it opens on; `None` while closed.
     open: Signal<Option<String>>,
+    /// The feed the page belongs to, when there is one.
+    feed: Signal<Option<u64>>,
 }
 impl Ambient for Browser {
     fn create() -> Self {
         let state = Self {
             open: Signal::new(None),
+            feed: Signal::new(None),
         };
         watch(incognito, move |private, _| {
             if *private {
                 state.open.set(None);
             }
         });
+        // Closing it, by Done or by swiping the sheet away, is the moment a sign-in can have
+        // happened: every reader of the window drops a load that failed or came back short, and
+        // the one on screen loads again with the session (`ReaderView::retry_after_browsing`).
+        watch(
+            move || state.open.get().is_some(),
+            move |open, previous| {
+                if !*open && previous == Some(&true) {
+                    SESSIONS.with(|s| s.update(|n| *n += 1));
+                }
+            },
+        );
         state
     }
 }
+thread_local! {
+    /// Counts the in-app browser's closings: each may have changed a site's session.
+    static SESSIONS: Signal<u64> = Signal::new(0);
+}
+
+/// Tracked: changes whenever the in-app browser closes, after which a site's cookies may differ.
+pub fn sessions() -> u64 {
+    SESSIONS.with(|s| s.get())
+}
+
 /// The Feed menu follows the focused window's sidebar selection.
 pub fn selected_feed() -> Option<u64> {
     match daynews_core::try_scene()?.scope.get() {
@@ -130,8 +172,12 @@ pub fn selected_feed() -> Option<u64> {
         _ => None,
     }
 }
+/// Whether pages can open in the app: a native web view, outside Incognito Mode.
+pub fn can_browse() -> bool {
+    !incognito() && day_piece_webview::support() == Support::Native
+}
 pub fn can_preview(feed: u64) -> bool {
-    !incognito() && day_piece_webview::support() == Support::Native && site_url(feed).is_some()
+    can_browse() && site_url(feed).is_some()
 }
 /// Shared entry point for the dashboard, app menu and the context-clicked feed.
 pub fn preview(feed: u64) {
@@ -146,8 +192,43 @@ pub fn preview_action(feed: u64) -> impl Fn() {
     move || open_preview(browser, feed)
 }
 fn open_preview(browser: Browser, feed: u64) {
-    if can_preview(feed) {
-        browser.open.set(Some(feed.to_string()));
+    if can_preview(feed)
+        && let Some(url) = site_url(feed)
+    {
+        browser.show(url, Some(feed));
+    }
+}
+impl Browser {
+    fn show(self, url: String, feed: Option<u64>) {
+        self.feed.set(feed);
+        self.open.set(Some(url));
+    }
+}
+/// Open a page in the in-app browser whatever Settings ▸ Browser says about links: the reader
+/// asks for it to sign in to a site. Without an in-app browser it goes out like any link.
+pub fn browse(url: &str, feed: Option<u64>) {
+    match Browser::try_ambient().or_else(Browser::focused) {
+        Some(browser) if can_browse() && crate::extraction::web_url(url).is_some() => {
+            browser.show(url.to_owned(), feed);
+        }
+        _ => crate::settings::open_link(url),
+    }
+}
+/// Open a link the way Settings ▸ Browser says: in the in-app browser, under `feed`'s site
+/// profile so a sign-in there reaches the reader, or in the external browser. Links the
+/// in-app browser cannot show (another scheme, Incognito Mode, no native web view) always go
+/// out.
+pub fn open_link(url: &str, feed: Option<u64>) {
+    let browser = Browser::try_ambient().or_else(Browser::focused);
+    match browser {
+        Some(browser)
+            if crate::settings::BROWSER.get_untracked().is_empty()
+                && can_browse()
+                && crate::extraction::web_url(url).is_some() =>
+        {
+            browser.show(url.to_owned(), feed);
+        }
+        _ => crate::settings::open_link(url),
     }
 }
 pub fn site_controls(feed: u64) -> impl Piece {
@@ -217,78 +298,125 @@ pub fn site_controls(feed: u64) -> impl Piece {
     ))
     .spacing(Space::XS)
 }
+/// The in-app browser, NetNewsWire's: Done, the page's title and site, and Open in Browser
+/// across the top; Back and Forward along the bottom. Escape closes it on a desktop, where it is
+/// a large sheet. Not a full browser: there is no address to type, only the page a link opened
+/// and where its own links lead.
 pub fn browser_cover() -> impl Piece {
     // Created in the window's ambient scope; dashboard controls find this same instance.
     let browser = Browser::ambient();
-    cover(browser.open, move |feed: &String| {
-        let feed = feed.parse::<u64>().unwrap_or_default();
-        let address = Signal::new(site_url(feed).unwrap_or_else(|| "about:blank".into()));
-        let back = Trigger::new();
-        let forward = Trigger::new();
-        let go = Trigger::new();
-        let content = column((
-            column((
-                row((
-                    button(res::str::site_browser_back())
-                        .action(move || back.notify())
-                        .id(day::id!(site_browser_back)),
-                    button(res::str::site_browser_forward())
-                        .action(move || forward.notify())
-                        .id(day::id!(site_browser_forward)),
-                    spacer().grow_w(),
-                    button(res::str::site_browser_close())
-                        .action(move || browser.open.set(None))
-                        .id(day::id!(site_browser_close)),
+    cover(browser.open, move |start: &String| {
+        let feed = browser.feed.get_untracked();
+        let web_profile = match feed {
+            Some(feed) => profile(feed),
+            None => profile_for_url(start),
+        };
+        let address = Signal::new(start.clone());
+        let page = Signal::new(day_piece_webview::NavigationState {
+            url: start.clone(),
+            ..Default::default()
+        });
+        let js = JsHandle::new();
+        let (back, forward) = (Trigger::new(), Trigger::new());
+        // The engine reports navigation state on request, not as it changes; ask while the
+        // sheet is up, which is what moves the title and the history buttons.
+        let poll = day::task(async move {
+            loop {
+                if let Ok(state) = js.navigation_state().await {
+                    page.set_if_changed(state);
+                }
+                day::sleep(400).await;
+            }
+        });
+        day::reactive::Scope::current().on_cleanup(move || poll.abort());
+        let host = move || {
+            let url = page.with(|p| p.url.clone());
+            url::Url::parse(&url)
+                .ok()
+                .and_then(|u| {
+                    u.host_str()
+                        .map(|h| h.trim_start_matches("www.").to_owned())
+                })
+                .unwrap_or(url)
+        };
+        let current = move || {
+            let url = page.with(|p| p.url.clone());
+            if crate::extraction::web_url(&url).is_some() {
+                url
+            } else {
+                address.get_untracked()
+            }
+        };
+        let icon_button = |label: fn() -> day::LocalizedText, symbol: Symbol| {
+            button(label()).icon(symbol).icon_only().plain()
+        };
+        column((
+            row((
+                button(res::str::site_browser_done())
+                    .plain()
+                    .action(move || browser.open.set(None))
+                    .id(day::id!(site_browser_close)),
+                column((
+                    label(move || {
+                        let title = page.with(|p| p.title.trim().to_owned());
+                        if title.is_empty() { host() } else { title }
+                    })
+                    .font(Font::Headline)
+                    .single_line()
+                    .id(day::id!(site_browser_title)),
+                    // The site under the page's title; a page with none shows its site once.
+                    when(
+                        move || page.with(|p| !p.title.trim().is_empty()),
+                        move || {
+                            label(host)
+                                .font(Font::Caption)
+                                .color(|| crate::theme::palette().text_muted)
+                                .single_line()
+                                .id(day::id!(site_browser_host))
+                        },
+                    ),
                 ))
-                .spacing(Space::S),
-                row((
-                    text_field(address)
-                        .placeholder(res::str::site_browser_address())
-                        .id(day::id!(site_browser_address))
-                        .grow_w(),
-                    button(res::str::site_browser_go())
-                        .action(move || {
-                            if crate::extraction::web_url(&address.get_untracked()).is_some() {
-                                go.notify();
-                            }
-                        })
-                        .id(day::id!(site_browser_go)),
-                ))
-                .spacing(Space::S),
+                .align(HAlign::Center)
+                .grow_w(),
+                button(res::str::site_browser_open_external())
+                    .image(res::vectors::open_browser)
+                    .icon_only()
+                    .plain()
+                    .action(move || crate::settings::open_link(&current()))
+                    .id(day::id!(site_browser_external)),
             ))
             .spacing(Space::S)
+            .align(VAlign::Center)
             .padding(Space::S),
             web_view(address)
-                .profile(profile(feed))
+                .profile(web_profile)
+                .js(js)
                 .back(back)
                 .forward(forward)
-                .go(go)
                 .on_external_link(|_| day_piece_webview::LinkPolicy::InView)
                 .id(day::id!(site_browser_web))
                 .grow(),
+            row((
+                icon_button(res::str::site_browser_back, Symbol::Back)
+                    .enabled(move || page.with(|p| p.can_go_back))
+                    .action(move || back.notify())
+                    .id(day::id!(site_browser_back)),
+                icon_button(res::str::site_browser_forward, Symbol::Forward)
+                    .enabled(move || page.with(|p| p.can_go_forward))
+                    .action(move || forward.notify())
+                    .id(day::id!(site_browser_forward)),
+                spacer().grow_w(),
+            ))
+            .spacing(Space::M)
+            .align(VAlign::Center)
+            .padding(Space::S),
         ))
         .id(day::id!(site_browser_sheet))
-        .grow();
-        if cfg!(any(feature = "appkit", feature = "uikit")) {
-            content.any()
-        } else {
-            // The cover still owns the modal input boundary on backends without native
-            // sheets. Keep its browser panel narrow and let the dimmed window show beside it;
-            // on a phone max_width simply accepts the available width.
-            zstack((content
-                .background(|| crate::theme::palette().bg)
-                .max_width(640.0),))
-            .grow()
-            .any()
-        }
+        .grow()
     })
-    .sheet()
-    .background(|_| {
-        if cfg!(any(feature = "appkit", feature = "uikit")) {
-            crate::theme::palette().bg
-        } else {
-            Color::rgba(0.0, 0.0, 0.0, 0.35)
-        }
-    })
+    // A large sheet on a desktop, the page needing more room than a form; the composed tiers
+    // dim the window around it, and a phone shows the full-window cover.
+    .large_sheet()
+    .background(|_| crate::theme::palette().bg)
     .unrouted()
 }

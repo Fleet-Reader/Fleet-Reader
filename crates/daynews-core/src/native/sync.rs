@@ -17,23 +17,6 @@ use std::{
     time::Instant,
 };
 
-#[derive(Clone, Debug, Default)]
-pub struct SyncStatus {
-    pub username: String,
-    pub connected: bool,
-    pub busy: bool,
-    pub preview: bool,
-    pub remote_feeds: usize,
-    pub local_feeds: usize,
-    pub pending: usize,
-    pub last_sync: Option<i64>,
-    pub error: Option<Error>,
-    pub progress: Option<Progress>,
-    pub elapsed_seconds: u64,
-    pub remaining_seconds: Option<u64>,
-    pub paused: bool,
-    pub cancellable: bool,
-}
 struct SyncRun {
     abort: AbortHandle,
     cancelled: Arc<AtomicBool>,
@@ -129,6 +112,8 @@ async fn remove_secret(account: u64) -> Result<()> {
 }
 
 pub fn sync_install() {
+    #[cfg(feature = "experimental-webdav")]
+    super::webdav::install();
     if SESSION.with(|s| s.installed.replace(true)) {
         return;
     }
@@ -404,6 +389,8 @@ pub fn sync_disconnect() {
 }
 
 pub fn sync_request_soon() {
+    #[cfg(feature = "experimental-webdav")]
+    super::webdav::request_soon();
     if sync_status().get_untracked().error.is_some() {
         return;
     }

@@ -1,0 +1,21 @@
+# Native WebDAV feature. Read-only UI checks for fresh or configured libraries.
+name: webdav-settings
+description: Normal builds expose WebDAV settings without Feedbin account controls.
+flow:
+  - navigate: { route: settings/accounts, only_on: [macos-appkit] }
+  - toolbar: { item: settings, only_on: [ios-uikit, android-material] }
+  - tap: { id: prefs_group:accounts, only_on: [ios-uikit, android-material] }
+  - assert_missing: { id: sync_username }
+  - wait_for: { id: dav_endpoint }
+  - assert_missing: { id: dav_space_id }
+  - tap: { id: dav_advanced }
+  - scroll_to: { id: dav_space_id }
+  - assert_visible: { id: dav_space_id }
+  - scroll_to: { id: dav_status }
+  - assert_visible: { id: dav_status }
+  - scroll_to: { id: dav_endpoint }
+  - screenshot: { name: webdav-settings, window: day.preferences, only_on: [macos-appkit] }
+  - screenshot: { name: webdav-settings, only_on: [ios-uikit, android-material] }
+  - nav_back: { only_on: [ios-uikit, android-material] }
+  - navigate: { route: settings/general, only_on: [macos-appkit] }
+  - close_window: { window: day.preferences }

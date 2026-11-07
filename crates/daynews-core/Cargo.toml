@@ -13,28 +13,28 @@ experimental-webdav = ["daynews-db/experimental-webdav", "dep:serde", "dep:serde
 zeroize = { version = "1.9", features = ["serde"], optional = true }
 serde = { version = "1", features = ["derive"], optional = true }
 serde_json = { version = "1", optional = true }
-daynews-sync = { path = "../daynews-sync" }
-daynews-credentials = { path = "../daynews-credentials" }
-day-async = "0.6"
+daynews-sync = { version = "0.*", path = "../daynews-sync" }
+daynews-credentials = { version = "0.*", path = "../daynews-credentials" }
+day-async = "0.*"
 log = "0.4"
 futures-util = "0.3"
-daynews-db = { path = "../daynews-db" }
-daynews-time = { path = "../daynews-time" }
-daynews-feed = { path = "../daynews-feed" }
-daynews-opml = { path = "../daynews-opml" }
+daynews-db = { version = "0.*", path = "../daynews-db" }
+daynews-time = { version = "0.*", path = "../daynews-time" }
+daynews-feed = { version = "0.*", path = "../daynews-feed" }
+daynews-opml = { version = "0.*", path = "../daynews-opml" }
 # The view-model publishes signals derived from live queries: standing effects bridge the
 # container's queries and count badges into the value shapes the UI binds. day-core supplies
 # the main-loop executor (`day::task`) the refresh loop runs on; no async runtime is involved.
-day-reactive = "0.6"
-day-core = "0.6"
-day-model = "0.6"
+day-reactive = "0.*"
+day-core = "0.*"
+day-model = "0.*"
 # From git with daynews-db (see its manifest) until a day-persistence release has day-sync's seam.
-day-persistence = { git = "https://github.com/daybrite/day-persistence.git" }
+day-persistence = "0.*"
 # The bundled demo feeds are written per language: `fetch_feed` reads the set for the locale the
 # app resolved (resource/assets/demo/README.md).
-day-localization = "0.6"
+day-localization = "0.*"
 # `storage::{data_dir, cache_dir}`: where the library and the feed icons live (`store_dir`).
-day-spec = "0.6"
+day-spec = "0.*"
 
 [dev-dependencies]
 tempfile = "3"

@@ -20,4 +20,4 @@ libc = "0.2"
 # build already links (the `dom` backend IS day-toolkit-dom), so this costs nothing there and nothing at
 # all anywhere else.
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-day-toolkit-dom = "0.6"
+day-toolkit-dom = "0.*"

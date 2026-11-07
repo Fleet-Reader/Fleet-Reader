@@ -37,30 +37,30 @@ name = "dayapp"
 crate-type = ["rlib"]
 
 [dependencies]
-day-piece-charts = "0.4"
-day-core = "0.6"
-day-spec = "0.6"
+day-piece-charts = "0.*"
+day-core = "0.*"
+day-spec = "0.*"
 serde_json = "1"
 serde = { version = "1", features = ["derive"] }
 url = "2"
 encoding_rs = "0.8"
 futures-util = "0.3"
-day-async = "0.6"
+day-async = "0.*"
 html5ever = "0.39"
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "ico", "webp"] }
-day-part-http = "0.6"
-day-piece-settings = "0.6"
-day = { package = "day-app", version = "0.6", features = ["model"] }
-day-piece-webview = "0.4"
-daynews-feed = { path = "crates/daynews-feed" }
-daynews-core = { path = "crates/daynews-core" }
-daynews-sync = { path = "crates/daynews-sync" }
-daynews-time = { path = "crates/daynews-time" }
-daynews-db = { path = "crates/daynews-db" }
-daynews-opml = { path = "crates/daynews-opml" }
+day-part-http = "0.*"
+day-piece-settings = "0.*"
+day = { package = "day-app", version = "0.*", features = ["model"] }
+day-piece-webview = "0.*"
+daynews-feed = { version = "0.*", path = "crates/daynews-feed" }
+daynews-core = { version = "0.*", path = "crates/daynews-core" }
+daynews-sync = { version = "0.*", path = "crates/daynews-sync" }
+daynews-time = { version = "0.*", path = "crates/daynews-time" }
+daynews-db = { version = "0.*", path = "crates/daynews-db" }
+daynews-opml = { version = "0.*", path = "crates/daynews-opml" }
 
 [build-dependencies]
-day-build = "0.6"
+day-build = "0.*"
 
 
 [workspace]

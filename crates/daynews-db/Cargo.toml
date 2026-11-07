@@ -10,7 +10,7 @@ experimental-webdav = ["dep:day-sync", "dep:day-sync-webdav", "dep:sha2", "dep:s
 [dependencies]
 sha2 = { version = "0.11", optional = true }
 serde = { version = "1", features = ["derive"], optional = true }
-daynews-sync = { path = "../daynews-sync" }
+daynews-sync = { version = "0.*", path = "../daynews-sync" }
 serde_json = "1"
 # The local article store rides day-persistence's lazy engine: models declared with
 # #[derive(Model)], relations with cascade rules, generated FTS5 shadows, and live queries
@@ -18,21 +18,21 @@ serde_json = "1"
 # From git, the same source day-sync uses, until a release carries the transaction-participant
 # seam: a crates.io copy beside day-sync's git copy would be a second, incompatible crate, and
 # `day patch --main` cannot re-point a git URL at itself.
-day-persistence = { git = "https://github.com/daybrite/day-persistence.git" }
-day-model = "0.6"
+day-persistence = "0.*"
+day-model = "0.*"
 # "Today" means today where the reader is, so the cut-off is local midnight, not UTC midnight;
 # that needs the machine's UTC offset and its DST rules, and a wall clock that also works on wasm.
 # Both come from the host's time-zone database through this workspace's `daynews-time`.
-daynews-time = { path = "../daynews-time" }
-day-reactive = "0.6"
+daynews-time = { version = "0.*", path = "../daynews-time" }
+day-reactive = "0.*"
 # Statement tracing rides the standard logging facade the day crates already pull in; the
 # engine's trace hook logs each executed SQL at `trace!` in debug builds (Day-Sketch's shape).
 log = "0.4"
 
 # WebDAV sync runs beside the native database worker; the web build has neither.
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-day-sync = { git = "https://github.com/daybrite/day-sync.git", optional = true }
-day-sync-webdav = { git = "https://github.com/daybrite/day-sync.git", optional = true, features = ["reqwest"] }
+day-sync = { version = "0.*", git = "https://github.com/daybrite/day-sync.git", optional = true }
+day-sync-webdav = { version = "0.*", git = "https://github.com/daybrite/day-sync.git", optional = true, features = ["reqwest"] }
 
 [dev-dependencies]
 futures-util = "0.3"

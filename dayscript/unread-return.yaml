@@ -1,0 +1,23 @@
+# Copyright © The Daybrite Project
+# SPDX-License-Identifier: MPL-2.0
+# Phones only. Requires seed-demo.yaml and an isolated DAY_DATA_DIR.
+name: day-news-unread-return
+description: An article read in All Unread stays while its list is open and is gone after Back and returning.
+flow:
+  - navigate: { route: unread }
+  - wait_for: { id: article_row:1 }
+  - assert_text: { id: article_row:0, contains: How monarch butterflies find their way }
+  - select: { id: timeline, index: 0 }
+  - pause: { secs: 2 }
+  - nav_back: {}
+  - pause: { secs: 1 }
+  # Read in place: the row stays until the list closes.
+  - assert_text: { id: article_row:0, contains: How monarch butterflies find their way }
+  - nav_back: {}
+  - assert_route: { route: "" }
+  - pause: { secs: 1 }
+  # Choosing the same section again keeps its scope, so this is the Back that released the row.
+  - navigate: { route: unread }
+  - pause: { secs: 2 }
+  - assert_text: { id: article_row:0, contains: What a honeybee's dance tells the hive }
+  - screenshot: unread-return

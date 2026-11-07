@@ -667,9 +667,11 @@ Regression coverage lives in daynews-db polling/store tests and the grouped-feed
 ### Scope dashboards
 
 An unselected reader is a native viewport-sized dashboard built from day-piece-charts.
-Individual feeds show their settings form (collection, inline and auto-load reader modes,
-reader script, site data) under the hero, then publication rhythm, contributor counts, reading
-time, a word cloud across the row below, and source metadata.
+Individual feeds show one settings card under the hero: the form (name, collection, inline and
+auto-load reader modes, reader script, site data), the feed's automatic-refresh schedule and
+countdown, and Refresh Now and Unsubscribe… (which confirms first). Article, unread, reading-time
+and contributor counts follow, and the word cloud fills the rest of the page; a feed's overview
+has no activity chart, publisher donut or separate forecast card.
 Today shows local-hour arrivals; Unread emphasizes backlog age; Starred maps the saved
 collection over publication time. Smart-feed dashboards set the word cloud beside a publisher
 donut and counts.
@@ -751,8 +753,8 @@ Group by Feeds defaults on when no preference is present; explicit off remains r
 Floating group headings use a translucent theme-tinted surface, rounded border and a tinted
 vector fallback when the publication has no icon.
 
-Refresh Now appears on individual feed dashboards and refreshes only the feed identity
-stored in that dashboard projection. Smart-feed overviews do not offer this single-source action. The button disables while a refresh is active and the
+Refresh Now appears on individual feed dashboards, in the settings card, and refreshes only
+that feed. Smart-feed overviews do not offer this single-source action. The button disables while a refresh is active and the
 forecast updates from the resulting stored scheduling metadata. Card borders use nested
 background layers, not foreground canvases, so native mouse hit testing reaches controls
 and interactive charts. DayScript taps dispatch actions directly and do not test occlusion.

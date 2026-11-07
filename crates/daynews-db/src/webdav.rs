@@ -1,5 +1,5 @@
 //! Experimental DAV feed-state profile. Durable choices are independent of article caches.
-use day_persistence::{DbError, SqliteConnection, Value};
+use day_persistence::{DbError, Refresh, RowChange, SqliteConnection, Value};
 pub use day_sync;
 use day_sync::{Application, BookmarkValue, Change, Identity, Probe, Replica};
 pub use day_sync_webdav;
@@ -86,6 +86,9 @@ impl Application for NewsApplication {
         c.execute_batch(include_str!("webdav.sql"))?;
         c.execute_batch(include_str!("webdav_layout.sql"))
     }
+    fn projected_tables(&self) -> Option<&'static [&'static str]> {
+        Some(&["feeds", "articles", "folders"])
+    }
     fn revision(&self) -> u32 {
         2
     }
@@ -114,7 +117,14 @@ impl Application for NewsApplication {
         }
         Ok(0)
     }
-    fn capture(&self, c: &mut dyn SqliteConnection) -> Result<Vec<Change>, DbError> {
+    // Capture still reads the trigger-fed pending tables: the feed-state identity is the feed
+    // URL, which a deleted row's key alone does not give back. The change set is unused until
+    // deletes carry it (persistence-integration-plan.md, Phase 2).
+    fn capture(
+        &self,
+        c: &mut dyn SqliteConnection,
+        _: &[RowChange],
+    ) -> Result<Vec<Change>, DbError> {
         c.execute("UPDATE _news_dav_guard SET projecting=1", &[])?;
         c.execute_batch("UPDATE articles SET is_read=COALESCE((SELECT v.value FROM _news_dav_values v JOIN feeds f ON f.feed_url=v.feed WHERE f.id=articles.feed AND f.sync_account IS NULL AND v.kind='read' AND v.guid=articles.guid),is_read),is_starred=COALESCE((SELECT v.value FROM _news_dav_values v JOIN feeds f ON f.feed_url=v.feed WHERE f.id=articles.feed AND f.sync_account IS NULL AND v.kind='star' AND v.guid=articles.guid),is_starred) WHERE id IN (SELECT id FROM _news_dav_arrivals); DELETE FROM _news_dav_arrivals;")?;
         c.execute("UPDATE _news_dav_guard SET projecting=0", &[])?;
@@ -258,7 +268,8 @@ impl day_persistence::TransactionParticipant for RecoveryReadOnly {
         &self,
         _: &mut dyn SqliteConnection,
         _: day_persistence::WriteOrigin,
-    ) -> Result<(), DbError> {
+        _: &[RowChange],
+    ) -> Result<Refresh, DbError> {
         Err(DbError::new(
             day_persistence::DbErrorKind::Deny,
             "news.webdav.read_only_recovery",

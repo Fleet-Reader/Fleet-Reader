@@ -35,9 +35,17 @@ flow:
   - assert_visible: { id: dashboard_feed_link }
   - assert_visible: { id: dashboard_refresh_now }
   - tap: { id: dashboard_refresh_now }
-  - assert_visible: { id: dashboard_activity_chart }
+  # A feed's overview has no activity chart: its schedule sits in its settings card, and the
+  # word cloud takes the rest of the page.
+  - assert_missing: { id: dashboard_activity_chart }
   - assert_visible: { id: dashboard_word_cloud }
   - assert_visible: { id: dashboard_refresh_countdown }
+  # Unsubscribe asks first; cancelling keeps the feed and its overview.
+  - tap: { id: dashboard_unsubscribe }
+  - assert_presented: {}
+  - respond: { button: 0 }
+  - assert_not_presented:
+  - assert_text: { id: dashboard_title, text: Kitchen Science }
   - pause: { secs: 1 } # Let the chart entrance settle before capturing.
   - screenshot: dashboard-feed-light
   - pause: { secs: 2 }

@@ -1595,8 +1595,9 @@ impl day_sync::Application for RevisionOne {
     fn capture(
         &self,
         c: &mut dyn day_persistence::SqliteConnection,
+        changes: &[day_persistence::RowChange],
     ) -> Result<Vec<day_sync::Change>, day_persistence::DbError> {
-        day_sync::Application::capture(&webdav::NewsApplication, c)
+        day_sync::Application::capture(&webdav::NewsApplication, c, changes)
     }
     fn validate(&self, change: &day_sync::Change) -> Result<(), day_persistence::DbError> {
         let state: State = serde_json::from_str(&change.value.as_ref().unwrap().title).unwrap();

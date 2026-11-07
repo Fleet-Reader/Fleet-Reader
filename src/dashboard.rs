@@ -363,126 +363,116 @@ fn next_check(data: Data) -> Option<i64> {
             .min()
     })
 }
-fn forecast(data: Data, scope: Signal<Scope>, clock: Signal<i64>) -> AnyPiece {
+/// The refresh schedule: the cadence, then the next check and its countdown.
+fn schedule(data: Data, clock: Signal<i64>) -> AnyPiece {
+    column((
+        row((
+            label(res::str::dashboard_automatic())
+                .font(Font::Caption2)
+                .weight(FontWeight::Bold)
+                .color(move || palette().accent),
+            spacer(),
+            label(move || {
+                let intervals = read(data, |d| {
+                    d.feeds.iter().map(|f| f.interval).collect::<Vec<_>>()
+                });
+                match (intervals.iter().min(), intervals.iter().max()) {
+                    (Some(a), Some(b)) if a != b => {
+                        res::str::dashboard_interval_range(res::str::DashboardIntervalRange {
+                            fast: cadence(*a),
+                            slow: cadence(*b),
+                        })
+                        .format()
+                    }
+                    (Some(a), _) => cadence(*a),
+                    _ => res::str::dashboard_no_schedule().format(),
+                }
+            })
+            .font(Font::Footnote)
+            .weight(FontWeight::Semibold)
+            .color(move || palette().text)
+            .single_line(),
+        ))
+        .align(VAlign::Center)
+        .grow_w(),
+        row((
+            label(move || match next_check(data) {
+                Some(next) => {
+                    let local =
+                        next + i64::from(daynews_time::local_offset_seconds(next).unwrap_or(0));
+                    res::str::dashboard_next(local as f64).format()
+                }
+                None if crate::refresh_schedule::schedule().0 == 0 => {
+                    res::str::dashboard_manual().format()
+                }
+                _ => res::str::dashboard_no_schedule().format(),
+            })
+            .preset(&CAPTION)
+            .color(move || palette().text_muted)
+            .grow_w(),
+            label(move || {
+                let now = clock.get();
+                if daynews_core::state().updating_feeds.with(|active| {
+                    read(data, |d| {
+                        d.feeds.iter().any(|feed| active.contains_key(&feed.id))
+                    })
+                }) {
+                    return res::str::dashboard_refreshing().format();
+                }
+                let Some(next) = next_check(data) else {
+                    return String::new();
+                };
+                let remaining = next.saturating_sub(now).max(0);
+                if remaining == 0 {
+                    return res::str::dashboard_due().format();
+                }
+                res::str::dashboard_countdown(res::str::DashboardCountdown {
+                    hours: (remaining / 3600) as f64,
+                    minutes: ((remaining / 60) % 60) as f64,
+                    seconds: (remaining % 60) as f64,
+                })
+                .format()
+            })
+            .font(Font::Footnote)
+            .weight(FontWeight::Semibold)
+            .color(move || palette().accent)
+            .tabular()
+            .id(day::id!(dashboard_refresh_countdown)),
+        ))
+        .spacing(Space::S)
+        .align(VAlign::Center)
+        .grow_w(),
+    ))
+    .spacing(5.0)
+    .align(HAlign::Leading)
+    .grow_w()
+    .any()
+}
+/// Why the schedule is what it is: backing off, a fixed interval, or the automatic policy.
+fn policy(data: Data) -> String {
+    if read(data, |d| {
+        d.feeds.iter().any(|f| f.failed || f.retry_after.is_some())
+    }) {
+        res::str::dashboard_backoff().format()
+    } else if !crate::refresh_schedule::automatic(crate::refresh_schedule::schedule().0)
+        && crate::refresh_schedule::schedule().0 != 0
+    {
+        res::str::dashboard_fixed().format()
+    } else {
+        res::str::dashboard_policy().format()
+    }
+}
+/// The library's refresh forecast along the bottom of every overview but a feed's, whose
+/// schedule sits in its settings card instead.
+fn forecast(data: Data, clock: Signal<i64>) -> AnyPiece {
     card(
         column((
-            row((
-                label(res::str::dashboard_automatic())
-                    .font(Font::Caption2)
-                    .weight(FontWeight::Bold)
-                    .color(move || palette().accent),
-                spacer(),
-                label(move || {
-                    let intervals = read(data, |d| {
-                        d.feeds.iter().map(|f| f.interval).collect::<Vec<_>>()
-                    });
-                    match (intervals.iter().min(), intervals.iter().max()) {
-                        (Some(a), Some(b)) if a != b => {
-                            res::str::dashboard_interval_range(res::str::DashboardIntervalRange {
-                                fast: cadence(*a),
-                                slow: cadence(*b),
-                            })
-                            .format()
-                        }
-                        (Some(a), _) => cadence(*a),
-                        _ => res::str::dashboard_no_schedule().format(),
-                    }
-                })
-                .font(Font::Footnote)
-                .weight(FontWeight::Semibold)
-                .color(move || palette().text)
-                .single_line(),
-            ))
-            .align(VAlign::Center)
-            .grow_w(),
-            row((
-                label(move || match next_check(data) {
-                    Some(next) => {
-                        let local =
-                            next + i64::from(daynews_time::local_offset_seconds(next).unwrap_or(0));
-                        res::str::dashboard_next(local as f64).format()
-                    }
-                    None if crate::refresh_schedule::schedule().0 == 0 => {
-                        res::str::dashboard_manual().format()
-                    }
-                    _ => res::str::dashboard_no_schedule().format(),
-                })
-                .preset(&CAPTION)
-                .color(move || palette().text_muted)
-                .grow_w(),
-                label(move || {
-                    let now = clock.get();
-                    if daynews_core::state().updating_feeds.with(|active| {
-                        read(data, |d| {
-                            d.feeds.iter().any(|feed| active.contains_key(&feed.id))
-                        })
-                    }) {
-                        return res::str::dashboard_refreshing().format();
-                    }
-                    let Some(next) = next_check(data) else {
-                        return String::new();
-                    };
-                    let remaining = next.saturating_sub(now).max(0);
-                    if remaining == 0 {
-                        return res::str::dashboard_due().format();
-                    }
-                    res::str::dashboard_countdown(res::str::DashboardCountdown {
-                        hours: (remaining / 3600) as f64,
-                        minutes: ((remaining / 60) % 60) as f64,
-                        seconds: (remaining % 60) as f64,
-                    })
-                    .format()
-                })
-                .font(Font::Footnote)
-                .weight(FontWeight::Semibold)
-                .color(move || palette().accent)
-                .tabular()
-                .id(day::id!(dashboard_refresh_countdown)),
-            ))
-            .spacing(Space::S)
-            .align(VAlign::Center)
-            .grow_w(),
-            row((
-                label(move || {
-                    if read(data, |d| {
-                        d.feeds.iter().any(|f| f.failed || f.retry_after.is_some())
-                    }) {
-                        res::str::dashboard_backoff().format()
-                    } else if !crate::refresh_schedule::automatic(
-                        crate::refresh_schedule::schedule().0,
-                    ) && crate::refresh_schedule::schedule().0 != 0
-                    {
-                        res::str::dashboard_fixed().format()
-                    } else {
-                        res::str::dashboard_policy().format()
-                    }
-                })
+            schedule(data, clock),
+            label(move || policy(data))
                 .font(Font::Caption2)
                 .color(move || palette().text_muted)
                 .single_line()
                 .grow_w(),
-                when(
-                    move || read(data, |d| d.feed_id.is_some()),
-                    move || {
-                        button(res::str::dashboard_refresh_now())
-                            .action(move || {
-                                if let Some(id) = read(data, |d| d.feed_id) {
-                                    daynews_core::refresh_feed(id);
-                                }
-                            })
-                            .enabled(move || {
-                                daynews_core::state().refresh_progress.get().is_none()
-                                    && read(data, |d| {
-                                        d.feed_id.is_some_and(|id| scope.get() == Scope::Feed(id))
-                                    })
-                            })
-                            .id(day::id!(dashboard_refresh_now))
-                    },
-                ),
-            ))
-            .spacing(Space::S)
-            .align(VAlign::Center)
-            .grow_w(),
         ))
         .spacing(5.0)
         .align(HAlign::Leading)
@@ -663,7 +653,8 @@ pub fn dashboard() -> impl Piece {
     let words = Signal::new(None);
     daynews_core::watch_word_cloud(scope, local_day, words);
     // The regions share the viewport, and scroll once it is too short for the charts to draw
-    // (`min_height`): a feed's settings take a short window's room first.
+    // (`min_height`): a feed's settings take a short window's room first, and its word cloud
+    // the rest.
     scroll(
         DashboardPieces(
             scope,
@@ -675,18 +666,26 @@ pub fn dashboard() -> impl Piece {
                         Scope::Feed(id) => Some((id, daynews_core::state().folders.with(Vec::len))),
                         _ => None,
                     },
-                    |&(feed, _)| feed_settings(feed),
+                    move |&(feed, _)| feed_settings(feed, data, scope, clock),
                 )
                 .any(),
                 metrics,
-                activity_card(data, scope),
+                when(
+                    move || !matches!(scope.get(), Scope::Feed(_)),
+                    move || activity_card(data, scope),
+                )
+                .any(),
                 words_card(words, scope),
                 when(
                     move || !matches!(scope.get(), Scope::Feed(_)),
                     move || sources_card(data),
                 )
                 .any(),
-                forecast(data, scope, clock),
+                when(
+                    move || !matches!(scope.get(), Scope::Feed(_)),
+                    move || forecast(data, clock),
+                )
+                .any(),
             ],
         )
         .padding(18.0),
@@ -697,8 +696,9 @@ pub fn dashboard() -> impl Piece {
 }
 
 /// A feed's settings, in one aligned form under its name: two columns of labeled controls where
-/// the window is wide enough, one on a phone.
-fn feed_settings(feed: u64) -> AnyPiece {
+/// the window is wide enough, one on a phone. Its refresh schedule and its actions (Refresh Now,
+/// Unsubscribe) close the same card.
+fn feed_settings(feed: u64, data: Data, scope: Signal<Scope>, clock: Signal<i64>) -> AnyPiece {
     let name = || {
         labeled(
             res::str::feed_name_label(),
@@ -755,7 +755,56 @@ fn feed_settings(feed: u64) -> AnyPiece {
         .column_spacing(28.0)
         .any()
     };
-    card(form((rows,)).grow_w()).any()
+    let actions = row((
+        button(res::str::dashboard_refresh_now())
+            .action(move || daynews_core::refresh_feed(feed))
+            .enabled(move || {
+                daynews_core::state().refresh_progress.get().is_none()
+                    && scope.get() == Scope::Feed(feed)
+            })
+            .id(day::id!(dashboard_refresh_now)),
+        button(res::str::unsubscribe_feed())
+            .action(move || unsubscribe(feed))
+            .id(day::id!(dashboard_unsubscribe)),
+    ))
+    .spacing(Space::S);
+    card(
+        column((
+            form((rows,)).grow_w(),
+            schedule(data, clock),
+            label(move || policy(data))
+                .font(Font::Caption2)
+                .color(move || palette().text_muted)
+                .grow_w(),
+            actions,
+        ))
+        .spacing(Space::S)
+        .align(HAlign::Leading)
+        .grow_w(),
+    )
+    .any()
+}
+
+/// Confirm, then unsubscribe from `feed`; the overview moves on to All Unread.
+fn unsubscribe(feed: u64) {
+    let name = daynews_core::state().feeds.with_untracked(|feeds| {
+        feeds
+            .iter()
+            .find(|f| f.id == feed)
+            .map(|f| f.title.clone())
+            .unwrap_or_default()
+    });
+    day::task(async move {
+        let confirmed = confirm(res::str::unsubscribe_feed_title(name.as_str()))
+            .message(res::str::unsubscribe_feed_message())
+            .confirm_label(res::str::unsubscribe())
+            .destructive()
+            .present()
+            .await;
+        if confirmed {
+            daynews_core::unsubscribe(feed);
+        }
+    });
 }
 
 /// The words of the scope's titles and summaries, most frequent drawn largest. Choosing one
@@ -1010,7 +1059,11 @@ fn cloud_layout(
         .collect();
     // The words that must fit before the cloud is allowed to drop any: the larger ones.
     let required = words.len().min(24).max(words.len() * 2 / 3);
-    let mut largest = (area.height * 0.24).clamp(18.0, 64.0);
+    // A feed's cloud can fill a tall page, so the largest word starts from the area's size,
+    // not a fixed cap; the passes below shrink it until the larger words all fit.
+    let mut largest = (area.height * 0.24)
+        .min(area.width * 0.14)
+        .clamp(18.0, 120.0);
     let mut best = Vec::new();
     for _ in 0..10 {
         let smallest = MIN_SIZE.min(largest * 0.4);
@@ -1188,9 +1241,10 @@ struct DashboardLayout {
     scope: Signal<Scope>,
 }
 /// The dashboard's seven regions, top to bottom: the hero, a feed's settings (`settings` tall,
-/// zero elsewhere), the metrics, the activity chart, the word cloud and, beside it when
-/// `publishers`, the publisher mix, then the refresh forecast along the bottom.
-fn regions(size: Size, settings: f64, publishers: bool) -> [Rect; 7] {
+/// zero elsewhere), the metrics, the activity chart, the word cloud and, beside it, the publisher
+/// mix, then the refresh forecast along the bottom. A `feed`'s overview has no activity chart,
+/// publisher mix or forecast (its schedule is in its settings), so its word cloud takes the rest.
+fn regions(size: Size, settings: f64, feed: bool) -> [Rect; 7] {
     let w = size.width.max(0.0);
     let h = size.height.max(0.0);
     let compact = w < 480.0;
@@ -1199,19 +1253,32 @@ fn regions(size: Size, settings: f64, publishers: bool) -> [Rect; 7] {
     // footer. Their old combined 74% allocation left only enough room for chart titles and
     // padding, so the flexible chart nodes collapsed to zero height.
     let hero = (if compact { 100.0_f64 } else { 112.0_f64 }).min(h * 0.15);
-    let settings = settings.min(h * 0.3).max(0.0);
-    let settings_gap = if settings > 0.0 { gap } else { 0.0 };
     let metrics = 62.0_f64.min(h * 0.08);
-    let footer = 104.0_f64.min(h * 0.2);
-    let plot = (h - hero - settings - settings_gap - metrics - footer - 4.0 * gap).max(0.0);
+    // A feed's settings keep their whole height; the dashboard scrolls (`min_height`) before
+    // they are cut short, so only a viewport too short for anything else squeezes them.
+    let settings = settings
+        .min((h - hero - metrics - 3.0 * gap).max(0.0))
+        .max(0.0);
+    let settings_gap = if settings > 0.0 { gap } else { 0.0 };
+    let (footer, footer_gaps) = if feed {
+        (0.0, 0.0)
+    } else {
+        (104.0_f64.min(h * 0.2), 2.0 * gap)
+    };
+    let plot =
+        (h - hero - settings - settings_gap - metrics - footer - footer_gaps - 2.0 * gap).max(0.0);
     let y = hero + settings + settings_gap + metrics + 2.0 * gap;
-    // The activity chart keeps enough height to draw its line even when a feed's settings take
-    // the top of a short window; the word cloud gets the rest.
-    let activity_h = (plot * 0.4).max((plot * 0.5).min(130.0));
-    let lower = (plot - activity_h - gap).max(0.0);
-    let lower_y = y + activity_h + gap;
+    // The activity chart keeps enough height to draw its line even in a short window; the word
+    // cloud gets the rest.
+    let (activity_h, activity_gap) = if feed {
+        (0.0, 0.0)
+    } else {
+        ((plot * 0.4).max((plot * 0.5).min(130.0)), gap)
+    };
+    let lower = (plot - activity_h - activity_gap).max(0.0);
+    let lower_y = y + activity_h + activity_gap;
     // The cloud takes the larger share beside the publishers: words need width.
-    let (cloud_w, side_w) = if publishers {
+    let (cloud_w, side_w) = if !feed {
         let cloud = ((w - gap) * 0.6).max(0.0);
         (cloud, (w - gap - cloud).max(0.0))
     } else {
@@ -1232,12 +1299,8 @@ const MIN_CLOUD: f64 = 180.0;
 
 /// The least height at which the regions give the word cloud `MIN_CLOUD` (and so the activity
 /// chart its own floor). The plots' share grows with the height, so halving finds it.
-fn min_height(width: f64, settings: f64, publishers: bool) -> f64 {
-    let cloud = |h: f64| {
-        regions(Size::new(width, h), settings, publishers)[4]
-            .size
-            .height
-    };
+fn min_height(width: f64, settings: f64, feed: bool) -> f64 {
+    let cloud = |h: f64| regions(Size::new(width, h), settings, feed)[4].size.height;
     let (mut low, mut high) = (0.0_f64, 4000.0_f64);
     if cloud(high) < MIN_CLOUD {
         return high;
@@ -1254,7 +1317,7 @@ fn min_height(width: f64, settings: f64, publishers: bool) -> f64 {
 }
 impl DashboardLayout {
     /// The settings form's own height at `width` (nothing builds there off a feed's overview),
-    /// and whether the publisher mix is showing (everywhere but a feed's overview).
+    /// and whether this is a feed's overview.
     fn measure_sections(
         &self,
         cx: &mut dyn LayoutOps,
@@ -1273,30 +1336,27 @@ impl DashboardLayout {
         });
         (
             settings,
-            !matches!(self.scope.get_untracked(), Scope::Feed(_)),
+            matches!(self.scope.get_untracked(), Scope::Feed(_)),
         )
     }
 }
 impl Layout for DashboardLayout {
     fn measure(&self, cx: &mut dyn LayoutOps, children: &[day::RNode], p: Proposal) -> Size {
         let width = p.width.unwrap_or(680.0);
-        let (settings, publishers) = self.measure_sections(cx, children, width);
+        let (settings, feed) = self.measure_sections(cx, children, width);
         let size = Size::new(
             width,
             p.height
-                .unwrap_or_else(|| min_height(width, settings, publishers)),
+                .unwrap_or_else(|| min_height(width, settings, feed)),
         );
-        for (&child, rect) in children.iter().zip(regions(size, settings, publishers)) {
+        for (&child, rect) in children.iter().zip(regions(size, settings, feed)) {
             cx.measure_child(child, Proposal::exact(rect.size));
         }
         size
     }
     fn place(&self, cx: &mut dyn LayoutOps, children: &[day::RNode], bounds: Rect) {
-        let (settings, publishers) = self.measure_sections(cx, children, bounds.size.width);
-        for (&child, rect) in children
-            .iter()
-            .zip(regions(bounds.size, settings, publishers))
-        {
+        let (settings, feed) = self.measure_sections(cx, children, bounds.size.width);
+        for (&child, rect) in children.iter().zip(regions(bounds.size, settings, feed)) {
             cx.place_child(child, rect);
         }
     }
@@ -1348,17 +1408,22 @@ mod tests {
     }
     #[test]
     fn dashboard_scrolls_before_the_charts_collapse() {
-        for (width, settings, publishers) in [
-            (390.0, 0.0, true),
-            (420.0, 200.0, false),
-            (420.0, 420.0, false),
-            (900.0, 120.0, false),
+        for (width, settings, feed) in [
+            (390.0, 0.0, false),
+            (420.0, 200.0, true),
+            (420.0, 420.0, true),
+            (900.0, 120.0, true),
+            (900.0, 0.0, false),
         ] {
-            let h = min_height(width, settings, publishers);
-            let boxes = regions(Size::new(width, h), settings, publishers);
+            let h = min_height(width, settings, feed);
+            let boxes = regions(Size::new(width, h), settings, feed);
             assert!(boxes[4].size.height >= MIN_CLOUD, "cloud {:?}", boxes[4]);
-            assert!(boxes[3].size.height >= 130.0, "activity {:?}", boxes[3]);
-            let shorter = regions(Size::new(width, h - 2.0), settings, publishers);
+            if feed {
+                assert_eq!(boxes[1].size.height, settings, "settings cut short");
+            } else {
+                assert!(boxes[3].size.height >= 130.0, "activity {:?}", boxes[3]);
+            }
+            let shorter = regions(Size::new(width, h - 2.0), settings, feed);
             assert!(
                 shorter[4].size.height < MIN_CLOUD,
                 "{h} is not the least height"
@@ -1367,13 +1432,13 @@ mod tests {
     }
     #[test]
     fn dashboard_regions_fit_small_and_large_viewports_without_overlap() {
-        for (width, height, settings, publishers) in [0.0, 280.0, 390.0, 640.0, 1000.0]
+        for (width, height, settings, feed) in [0.0, 280.0, 390.0, 640.0, 1000.0]
             .into_iter()
             .flat_map(|w| [0.0, 300.0, 550.0, 800.0, 1200.0].map(move |h| (w, h)))
-            .flat_map(|(w, h)| [(w, h, 0.0, true), (w, h, 96.0, false), (w, h, 400.0, true)])
+            .flat_map(|(w, h)| [(w, h, 0.0, false), (w, h, 96.0, true), (w, h, 400.0, true)])
         {
             {
-                let boxes = regions(Size::new(width, height), settings, publishers);
+                let boxes = regions(Size::new(width, height), settings, feed);
                 for rect in &boxes {
                     assert!(rect.origin.x >= 0.0 && rect.origin.y >= 0.0);
                     assert!(rect.size.width >= 0.0 && rect.size.height >= 0.0);
@@ -1393,5 +1458,16 @@ mod tests {
                 }
             }
         }
+    }
+    #[test]
+    fn a_feeds_word_cloud_fills_the_page_below_its_settings() {
+        let size = Size::new(700.0, 900.0);
+        let boxes = regions(size, 260.0, true);
+        for empty in [3, 5, 6] {
+            assert_eq!(boxes[empty].size.height * boxes[empty].size.width, 0.0);
+        }
+        assert_eq!(boxes[4].size.width, size.width);
+        assert_eq!(boxes[4].max_y(), size.height);
+        assert!(boxes[4].min_y() > boxes[2].max_y());
     }
 }

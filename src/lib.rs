@@ -420,7 +420,11 @@ fn bind_sidebar_scope(section: Signal<Option<String>>, sc: daynews_core::NewsSce
     watch(
         move || section.get(),
         move |key, _| {
-            if let Some(scope) = key.as_deref().and_then(scope_for_key)
+            if key.is_none() {
+                // A phone's Back closed the list. Picking the same section again keeps the
+                // scope, so the read articles held in it are released here instead.
+                owner.enter(daynews_core::release_sticky_read);
+            } else if let Some(scope) = key.as_deref().and_then(scope_for_key)
                 && sc.scope.get_untracked() != scope
             {
                 owner.enter(|| daynews_core::select_scope(scope));

@@ -165,8 +165,8 @@ pub struct NewsScene {
     pub reader_open: Signal<bool>,
     pub search: Signal<String>,
     /// Articles marked read while the unread scope shows them: they stay visible (their dot
-    /// clears in place) until the scope or search changes, which is NetNewsWire's rule. The
-    /// timeline fetch ORs these ids back into the unread predicate.
+    /// clears in place) until the scope or search changes, which is NetNewsWire's rule, or a
+    /// phone's list closes. The timeline fetch ORs these ids back into the unread predicate.
     sticky_read: Signal<Vec<u64>>,
 }
 
@@ -703,6 +703,12 @@ pub fn select_scope(scope: Scope) {
         sc.reader_open.set(false);
         sc.sticky_read.set(vec![]);
     });
+}
+/// Lets the articles read in the unread scope drop out of it. A phone calls this when its
+/// list closes, so returning to the same section starts from what is unread now: the scope
+/// itself never changed, so `select_scope` alone would keep them.
+pub fn release_sticky_read() {
+    scene().sticky_read.set(vec![]);
 }
 pub fn set_search(text: &str) {
     scene().search.set(text.to_owned());

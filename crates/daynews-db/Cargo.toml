@@ -15,7 +15,10 @@ serde_json = "1"
 # The local article store rides day-persistence's lazy engine: models declared with
 # #[derive(Model)], relations with cascade rules, generated FTS5 shadows, and live queries
 # the UI binds to directly. SQLite itself comes bundled through the engine.
-day-persistence = "0.1"
+# From git, the same source day-sync uses, until a release carries the transaction-participant
+# seam: a crates.io copy beside day-sync's git copy would be a second, incompatible crate, and
+# `day patch --main` cannot re-point a git URL at itself.
+day-persistence = { git = "https://github.com/daybrite/day-persistence.git" }
 day-model = "0.6"
 # "Today" means today where the reader is, so the cut-off is local midnight, not UTC midnight;
 # that needs the machine's UTC offset and its DST rules, and a wall clock that also works on wasm.

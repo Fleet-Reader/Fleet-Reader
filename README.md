@@ -368,7 +368,7 @@ ID and library, separate from the regular Day News:
 ../day/target/debug/day launch --flavor webdav -t macos-appkit
 ```
 
-The sync crates come from the `day-sync` repository as Git dependencies.
+The sync crates come from the `day-sync` repository as Git dependencies, and `day-persistence` comes from its repository the same way until a release carries the hooks `day-sync` needs.
 
 Accounts opens the WebDAV configuration panel. Builds with the optional `feedbin` feature also show the legacy provider picker. WebDAV uses an aligned account form; Advanced holds library and
 network controls, and the information button explains what is synchronized.

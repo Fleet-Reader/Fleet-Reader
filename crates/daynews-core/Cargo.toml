@@ -28,7 +28,8 @@ daynews-opml = { path = "../daynews-opml" }
 day-reactive = "0.6"
 day-core = "0.6"
 day-model = "0.6"
-day-persistence = "0.1"
+# From git with daynews-db (see its manifest) until a day-persistence release has day-sync's seam.
+day-persistence = { git = "https://github.com/daybrite/day-persistence.git" }
 # The bundled demo feeds are written per language: `fetch_feed` reads the set for the locale the
 # app resolved (resource/assets/demo/README.md).
 day-localization = "0.6"

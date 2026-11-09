@@ -360,7 +360,7 @@ fn color_row(
         ))
         .spacing(Space::M)
         .align(VAlign::Center)
-        .grow_w()
+        .grow(Dimension::Width)
     })
 }
 

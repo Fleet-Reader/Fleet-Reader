@@ -211,11 +211,11 @@ pub fn subscription_sheet() -> impl Piece {
                 button(crate::res::str::cancel_action())
                     .action(move || sheet.open.set(None))
                     .id(day::id!(feed_cancel)),
-                spacer().grow_w(),
+                spacer().grow(Dimension::Width),
                 label(crate::res::str::new_feed_title())
                     .font(Font::Headline)
                     .id(day::id!(subscription_title)),
-                spacer().grow_w(),
+                spacer().grow(Dimension::Width),
                 button(crate::res::str::subscribe_action())
                     .enabled(move || {
                         !busy.get() && verified_input.get().as_deref() == Some(address.get().trim())
@@ -273,7 +273,7 @@ pub fn subscription_sheet() -> impl Piece {
                     .input_purpose(InputPurpose::Url)
                     .placeholder(crate::res::str::subscribe_placeholder())
                     .id(day::id!(feed_url))
-                    .grow_w(),
+                    .grow(Dimension::Width),
                 button(crate::res::str::subscribe_verify())
                     .enabled(move || !busy.get() && !address.get().trim().is_empty())
                     .action(move || {
@@ -345,12 +345,12 @@ pub fn subscription_sheet() -> impl Piece {
             })
             .row_height(RowHeight::Uniform(100.0))
             .id(day::id!(feed_preview))
-            .grow(),
+            .grow(Dimension::Both),
         ))
         .spacing(Space::M)
         .align(HAlign::Leading)
         .padding(Space::L)
-        .grow()
+        .grow(Dimension::Both)
         .id(day::id!(subscription_sheet))
     })
     .sheet()

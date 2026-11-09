@@ -194,7 +194,7 @@ fn editor(open: Signal<Option<String>>, target: &str) -> impl Piece + use<> {
                         res::str::reader_script_address(),
                         text_field(address)
                             .id(day::id!(reader_script_address))
-                            .grow_w(),
+                            .grow(Dimension::Width),
                     ),
                     label(move || {
                         origin(&address.get())
@@ -208,16 +208,16 @@ fn editor(open: Signal<Option<String>>, target: &str) -> impl Piece + use<> {
         ),
         label(res::str::reader_script_help())
             .font(Font::Footnote)
-            .grow_w(),
+            .grow(Dimension::Width),
         label(res::str::reader_script_trust())
             .font(Font::Caption)
-            .grow_w(),
+            .grow(Dimension::Width),
         text_area(source)
             .spellcheck(false)
             .min_lines(8)
             .max_lines(14)
             .id(day::id!(reader_script_source))
-            .grow(),
+            .grow(Dimension::Both),
         row((
             button(res::str::reader_script_template())
                 .action(move || source.set(TEMPLATE.to_owned()))
@@ -264,7 +264,7 @@ fn editor(open: Signal<Option<String>>, target: &str) -> impl Piece + use<> {
         label(move || status.get())
             .font(Font::Caption)
             .id(day::id!(reader_script_status))
-            .grow_w(),
+            .grow(Dimension::Width),
         row((
             button(res::str::reader_script_remove())
                 .action(move || {
@@ -278,7 +278,7 @@ fn editor(open: Signal<Option<String>>, target: &str) -> impl Piece + use<> {
                 })
                 .enabled(move || !site || origin(&address.get()).is_some())
                 .id(day::id!(reader_script_remove)),
-            spacer().grow_w(),
+            spacer().grow(Dimension::Width),
             button(res::str::site_browser_close())
                 .action(move || open.set(None))
                 .id(day::id!(reader_script_close)),
@@ -304,12 +304,14 @@ fn editor(open: Signal<Option<String>>, target: &str) -> impl Piece + use<> {
     .spacing(Space::S)
     .padding(Space::L)
     .background(|| crate::theme::palette().bg)
-    .grow()
+    .grow(Dimension::Both)
     .id(day::id!(reader_script_editor));
     if cfg!(any(feature = "appkit", feature = "uikit")) {
         content.any()
     } else {
-        zstack((content.max_width(640.0),)).grow().any()
+        zstack((content.max_width(640.0),))
+            .grow(Dimension::Both)
+            .any()
     }
 }
 

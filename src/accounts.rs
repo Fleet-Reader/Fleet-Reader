@@ -35,7 +35,7 @@ pub fn page() -> impl Piece {
             .segmented()
             .id(day::id!(accounts_provider))
             .a11y(|a| a.label(res::str::accounts_provider()))
-            .grow_w(),
+            .grow(Dimension::Width),
             // The settings host owns scrolling on every target. An inner bounded
             // scroll clips this long form and competes with the phone's page scroll.
             keyed(
@@ -48,10 +48,10 @@ pub fn page() -> impl Piece {
                     }
                 },
             )
-            .grow_w(),
+            .grow(Dimension::Width),
         ))
         .spacing(Space::M)
-        .grow_w()
+        .grow(Dimension::Width)
         .any()
     }
     #[cfg(not(all(feature = "experimental-webdav", not(target_arch = "wasm32"))))]
@@ -77,12 +77,12 @@ fn feedbin_page() -> impl Piece {
                         .input_purpose(InputPurpose::Email)
                         .placeholder(res::str::sync_username())
                         .id(day::id!(sync_username))
-                        .grow_w(),
+                        .grow(Dimension::Width),
                     label(res::str::sync_password()),
                     secure_field(password)
                         .placeholder(res::str::sync_password())
                         .id(day::id!(sync_password))
-                        .grow_w(),
+                        .grow(Dimension::Width),
                     button(res::str::sync_sign_in())
                         .enabled(move || {
                             !status.get().busy
@@ -97,7 +97,7 @@ fn feedbin_page() -> impl Piece {
                         .id(day::id!(sync_sign_in)),
                 ))
                 .spacing(Space::S)
-                .grow_w()
+                .grow(Dimension::Width)
             },
         ),
         when(
@@ -114,7 +114,7 @@ fn feedbin_page() -> impl Piece {
                     .id(day::id!(sync_preview)),
                     label(res::str::sync_read_state_import()).font(Font::Footnote),
                     row((
-                        label(res::str::sync_merge()).grow_w(),
+                        label(res::str::sync_merge()).grow(Dimension::Width),
                         toggle(merge).id(day::id!(sync_merge)),
                     ))
                     .spacing(Space::S),
@@ -212,7 +212,7 @@ fn feedbin_page() -> impl Piece {
     ))
     .spacing(14.0)
     .align(HAlign::Leading)
-    .grow_w()
+    .grow(Dimension::Width)
 }
 
 /// Shared status footer for the article column and compact mobile feeds page.
@@ -229,7 +229,7 @@ pub fn sync_status_footer(id: day::ElementId) -> impl Piece {
             ))
             .id(id.clone())
             .background(move || crate::theme::palette().bg_alt)
-            .grow_w()
+            .grow(Dimension::Width)
         },
     )
 }
@@ -263,7 +263,7 @@ pub fn sync_progress() -> impl Piece {
                                     .unwrap_or(0.0)
                             })
                             .id(day::id!(sync_progress_bar))
-                            .grow_w()
+                            .grow(Dimension::Width)
                         },
                     ),
                     when(
@@ -279,7 +279,7 @@ pub fn sync_progress() -> impl Piece {
                     ),
                 ))
                 .height(20.0)
-                .grow_w(),
+                .grow(Dimension::Width),
                 row((
                     column((
                         label(move || progress_text(&status.get().progress.unwrap_or_default()))
@@ -287,7 +287,7 @@ pub fn sync_progress() -> impl Piece {
                             .single_line()
                             .color(move || crate::theme::palette().text)
                             .id(day::id!(sync_progress_activity))
-                            .grow_w(),
+                            .grow(Dimension::Width),
                         label(move || {
                             status
                                 .get()
@@ -301,19 +301,19 @@ pub fn sync_progress() -> impl Piece {
                         .color(move || crate::theme::palette().text_muted)
                         // Reserve a line even before the first feed arrives, using the
                         // caption's actual font metrics (including accessibility scaling).
-                        .reserving(res::str::sync_progress_feed(String::new()).format())
+                        .reserving(res::str::sync_progress_feed(String::new()))
                         .id(day::id!(sync_progress_feed))
-                        .grow_w(),
+                        .grow(Dimension::Width),
                         label(move || progress_timing(&status.get()))
                             .font(Font::Caption)
                             .single_line()
                             .color(move || crate::theme::palette().text_muted)
                             .id(day::id!(sync_progress_time))
-                            .grow_w(),
+                            .grow(Dimension::Width),
                     ))
                     .spacing(2.0)
                     .align(HAlign::Leading)
-                    .grow_w(),
+                    .grow(Dimension::Width),
                     button(res::str::sync_cancel())
                         .action(daynews_core::sync_cancel)
                         .enabled(move || status.get().cancellable)
@@ -321,11 +321,11 @@ pub fn sync_progress() -> impl Piece {
                 ))
                 .spacing(Space::S)
                 .align(VAlign::Center)
-                .grow_w(),
+                .grow(Dimension::Width),
             ))
             .spacing(2.0)
             .align(HAlign::Leading)
-            .grow_w()
+            .grow(Dimension::Width)
         },
     )
 }

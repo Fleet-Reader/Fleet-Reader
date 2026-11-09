@@ -377,7 +377,7 @@ pub fn browser_cover() -> impl Piece {
                     ),
                 ))
                 .align(HAlign::Center)
-                .grow_w(),
+                .grow(Dimension::Width),
                 button(res::str::site_browser_open_external())
                     .image(res::vectors::open_browser)
                     .icon_only()
@@ -395,7 +395,7 @@ pub fn browser_cover() -> impl Piece {
                 .forward(forward)
                 .on_external_link(|_| day_piece_webview::LinkPolicy::InView)
                 .id(day::id!(site_browser_web))
-                .grow(),
+                .grow(Dimension::Both),
             row((
                 icon_button(res::str::site_browser_back, Symbol::Back)
                     .enabled(move || page.with(|p| p.can_go_back))
@@ -405,14 +405,14 @@ pub fn browser_cover() -> impl Piece {
                     .enabled(move || page.with(|p| p.can_go_forward))
                     .action(move || forward.notify())
                     .id(day::id!(site_browser_forward)),
-                spacer().grow_w(),
+                spacer().grow(Dimension::Width),
             ))
             .spacing(Space::M)
             .align(VAlign::Center)
             .padding(Space::S),
         ))
         .id(day::id!(site_browser_sheet))
-        .grow()
+        .grow(Dimension::Both)
     })
     // A large sheet on a desktop, the page needing more room than a form; the composed tiers
     // dim the window around it, and a phone shows the full-window cover.

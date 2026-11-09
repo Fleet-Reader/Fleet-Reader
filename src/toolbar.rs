@@ -234,7 +234,7 @@ pub fn status_bar() -> impl Piece {
                             .color(muted)
                             .id(day::id!(status_bar_activity))
                     }),
-                    spacer().grow_w(),
+                    spacer().grow(Dimension::Width),
                     when(sync_busy, sync_controls),
                     when(refreshing, move || {
                         progress(move || {
@@ -264,11 +264,11 @@ pub fn status_bar() -> impl Piece {
                 .align(VAlign::Center)
                 .padding(Insets::symmetric(12.0, 0.0))
                 .height(STATUS_BAR_HEIGHT)
-                .grow_w(),
+                .grow(Dimension::Width),
             ))
             .background(move || crate::theme::palette().bg_alt)
             .id(day::id!(status_bar))
-            .grow_w()
+            .grow(Dimension::Width)
         },
     )
 }

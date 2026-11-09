@@ -609,7 +609,7 @@ pub fn collections_editor() -> impl Piece {
             .align(VAlign::Center)
             .padding(Insets::symmetric(8.0, 0.0))
             .id(day::id!(collection_row, id))
-            .grow_w()
+            .grow(Dimension::Width)
         },
     )
     .row_height(RowHeight::Uniform(36.0))
@@ -632,7 +632,7 @@ pub fn collections_editor() -> impl Piece {
     }))
     .id(day::id!(collections_list))
     .height(200.0)
-    .grow_w();
+    .grow(Dimension::Width);
     let chosen = move || {
         selected.get().and_then(|id| {
             current_collections()
@@ -669,7 +669,7 @@ pub fn collections_editor() -> impl Piece {
     ))
     .spacing(Space::S)
     .align(HAlign::Leading)
-    .grow_w()
+    .grow(Dimension::Width)
 }
 
 /// The default collection's mark in Settings: a small accent capsule.

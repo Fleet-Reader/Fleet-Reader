@@ -22,7 +22,9 @@ pub fn page() -> impl Piece {
     };
     column((
         row((
-            label(res::str::dav_title()).font(Font::Title3).grow_w(),
+            label(res::str::dav_title())
+                .font(Font::Title3)
+                .grow(Dimension::Width),
             button(res::str::dav_information())
                 .icon(Symbol::Info)
                 .icon_only()
@@ -38,7 +40,7 @@ pub fn page() -> impl Piece {
                 .id(day::id!(dav_information))
                 .frame(44.0, 44.0),
         ))
-        .grow_w(),
+        .grow(Dimension::Width),
         form((section((
             labeled(
                 res::str::dav_endpoint(),
@@ -46,18 +48,22 @@ pub fn page() -> impl Piece {
                     .input_purpose(InputPurpose::Url)
                     .read_only(configured)
                     .id(day::id!(dav_endpoint))
-                    .grow_w(),
+                    .grow(Dimension::Width),
             ),
             labeled(
                 res::str::dav_username(),
-                text_field(username).id(day::id!(dav_username)).grow_w(),
+                text_field(username)
+                    .id(day::id!(dav_username))
+                    .grow(Dimension::Width),
             ),
             labeled(
                 res::str::dav_password(),
-                secure_field(password).id(day::id!(dav_password)).grow_w(),
+                secure_field(password)
+                    .id(day::id!(dav_password))
+                    .grow(Dimension::Width),
             ),
         )),))
-        .grow_w(),
+        .grow(Dimension::Width),
         when(configured, move || {
             button(res::str::dav_update_credentials())
                 .prominent()
@@ -74,7 +80,7 @@ pub fn page() -> impl Piece {
                     );
                 })
                 .id(day::id!(dav_update_credentials))
-                .grow_w()
+                .grow(Dimension::Width)
         }),
         when(
             move || !configured(),
@@ -100,7 +106,7 @@ pub fn page() -> impl Piece {
                         );
                     })
                     .id(day::id!(dav_connect))
-                    .grow_w()
+                    .grow(Dimension::Width)
             },
         ),
         label(move || match status.get().phase {
@@ -116,7 +122,7 @@ pub fn page() -> impl Piece {
         })
         .font(Font::Footnote)
         .id(day::id!(dav_status))
-        .grow_w(),
+        .grow(Dimension::Width),
         when(configured, move || {
             button(res::str::sync_now())
                 .bordered()
@@ -128,7 +134,7 @@ pub fn page() -> impl Piece {
                 })
                 .action(webdav::sync_now)
                 .id(day::id!(dav_sync_now))
-                .grow_w()
+                .grow(Dimension::Width)
         }),
         button(res::str::dav_advanced())
             .plain()
@@ -141,7 +147,7 @@ pub fn page() -> impl Piece {
             })
             .action(move || advanced.set(!advanced.get_untracked()))
             .id(day::id!(dav_advanced))
-            .grow_w(),
+            .grow(Dimension::Width),
         when(
             move || advanced.get(),
             move || {
@@ -152,7 +158,7 @@ pub fn page() -> impl Piece {
                             text_field(space_id)
                                 .read_only(configured)
                                 .id(day::id!(dav_space_id))
-                                .grow_w(),
+                                .grow(Dimension::Width),
                         ),
                         labeled(
                             res::str::dav_reqwest(),
@@ -160,7 +166,7 @@ pub fn page() -> impl Piece {
                         ),
                     ))
                     .footer(res::str::dav_advanced_help()),))
-                    .grow_w(),
+                    .grow(Dimension::Width),
                     when(configured, move || {
                         column((
                             button(res::str::dav_copy_space())
@@ -170,7 +176,7 @@ pub fn page() -> impl Piece {
                                         day::clipboard::set_text(&status.get_untracked().space_id);
                                 })
                                 .id(day::id!(dav_copy_space))
-                                .grow_w(),
+                                .grow(Dimension::Width),
                             button(move || {
                                 if status.get().phase == Phase::Paused {
                                     res::str::dav_resume().format()
@@ -189,7 +195,7 @@ pub fn page() -> impl Piece {
                                 webdav::pause(status.get_untracked().phase != Phase::Paused)
                             })
                             .id(day::id!(dav_pause))
-                            .grow_w(),
+                            .grow(Dimension::Width),
                             label(move || {
                                 res::str::sync_pending(status.get().pending as f64).format()
                             })
@@ -210,20 +216,20 @@ pub fn page() -> impl Piece {
                                     });
                                 })
                                 .id(day::id!(dav_disconnect))
-                                .grow_w(),
+                                .grow(Dimension::Width),
                         ))
                         .spacing(Space::M)
                         .align(HAlign::Leading)
-                        .grow_w()
+                        .grow(Dimension::Width)
                     }),
                 ))
                 .spacing(Space::M)
                 .align(HAlign::Leading)
-                .grow_w()
+                .grow(Dimension::Width)
             },
         ),
     ))
     .spacing(Space::M)
     .align(HAlign::Leading)
-    .grow_w()
+    .grow(Dimension::Width)
 }

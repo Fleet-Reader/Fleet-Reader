@@ -448,7 +448,7 @@ fn reader_body(
                     }
                 }
             })
-            .grow()
+            .grow(Dimension::Both)
             .any()
     }
 }
@@ -523,10 +523,10 @@ fn article_text() -> impl Piece {
         .spacing(10.0)
         .align(HAlign::Leading)
         .padding(Space::XL)
-        .grow_w(),
+        .grow(Dimension::Width),
     )
     .id(day::id!(reader_text))
-    .grow()
+    .grow(Dimension::Both)
 }
 
 /// The reader pane. Empty state until an article is open.
@@ -551,7 +551,7 @@ pub fn reader_pane() -> AnyPiece {
                 crate::reader_pager::reader_pager,
             ),
         ))
-        .grow()
+        .grow(Dimension::Both)
         .any()
     } else {
         reader_document(true).any()
@@ -721,7 +721,7 @@ pub(crate) fn reader_document(chrome: bool) -> impl Piece {
                         }),
                     ))
                     .spacing(Space::M)
-                    .grow()
+                    .grow(Dimension::Both)
                     .any()
                 }
             },
@@ -753,7 +753,7 @@ pub(crate) fn reader_document(chrome: bool) -> impl Piece {
         ),
     ))
     .background(move || palette().bg)
-    .grow()
+    .grow(Dimension::Both)
     // The commands follow the open article: a new one re-derives the list with its own starred
     // and read state, and no article at all contributes nothing, so the bar carries them only
     // while there is something to act on (https://daybrite.dev/docs/reference/toolbars).

@@ -391,12 +391,12 @@ fn shell_body(sc: daynews_core::NewsScene, prefs: day_piece_settings::Prefs) -> 
         )
     });
     column((
-        navigation.id(day::id!(nav)).grow(),
+        navigation.id(day::id!(nav)).grow(Dimension::Both),
         toolbar::status_bar(),
         site_browser::browser_cover(),
         subscriptions::subscription_sheet(),
     ))
-    .grow()
+    .grow(Dimension::Both)
 }
 
 /// The reader as a destination. The timeline is no longer in here; it is the nav's
@@ -406,7 +406,7 @@ fn shell_body(sc: daynews_core::NewsScene, prefs: day_piece_settings::Prefs) -> 
 /// reader through the nav's `detail_visible` binding. (Android once added a Back button row
 /// here as well, which put two back controls on one screen.)
 fn reader_dest() -> impl Piece {
-    reader::reader_pane().grow()
+    reader::reader_pane().grow(Dimension::Both)
 }
 
 fn bind_sidebar_scope(section: Signal<Option<String>>, sc: daynews_core::NewsScene) {

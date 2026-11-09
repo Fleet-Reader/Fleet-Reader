@@ -84,7 +84,7 @@ fn metric(
     ))
     .spacing(3.0)
     .align(HAlign::Leading)
-    .grow_w()
+    .grow(Dimension::Width)
     .any()
 }
 fn age_labels() -> [String; 5] {
@@ -224,11 +224,11 @@ fn activity_card(data: Data, scope: Signal<Scope>) -> AnyPiece {
                         .guides(day_piece_charts::Guides::RULE),
                 )
                 .id(day::id!(dashboard_activity_chart))
-                .grow(),
+                .grow(Dimension::Both),
         ))
         .spacing(5.0)
         .align(HAlign::Leading)
-        .grow(),
+        .grow(Dimension::Both),
     )
     .any()
 }
@@ -325,11 +325,11 @@ fn sources_card(data: Data) -> AnyPiece {
                 .links(links)
                 .any(),
             ])
-            .grow(),
+            .grow(Dimension::Both),
         ))
         .spacing(3.0)
         .align(HAlign::Leading)
-        .grow(),
+        .grow(Dimension::Both),
     )
     .any()
 }
@@ -394,7 +394,7 @@ fn schedule(data: Data, clock: Signal<i64>) -> AnyPiece {
             .single_line(),
         ))
         .align(VAlign::Center)
-        .grow_w(),
+        .grow(Dimension::Width),
         row((
             label(move || match next_check(data) {
                 Some(next) => {
@@ -409,7 +409,7 @@ fn schedule(data: Data, clock: Signal<i64>) -> AnyPiece {
             })
             .preset(&CAPTION)
             .color(move || palette().text_muted)
-            .grow_w(),
+            .grow(Dimension::Width),
             label(move || {
                 let now = clock.get();
                 if daynews_core::state().updating_feeds.with(|active| {
@@ -441,11 +441,11 @@ fn schedule(data: Data, clock: Signal<i64>) -> AnyPiece {
         ))
         .spacing(Space::S)
         .align(VAlign::Center)
-        .grow_w(),
+        .grow(Dimension::Width),
     ))
     .spacing(5.0)
     .align(HAlign::Leading)
-    .grow_w()
+    .grow(Dimension::Width)
     .any()
 }
 /// Why the schedule is what it is: backing off, a fixed interval, or the automatic policy.
@@ -472,11 +472,11 @@ fn forecast(data: Data, clock: Signal<i64>) -> AnyPiece {
                 .font(Font::Caption2)
                 .color(move || palette().text_muted)
                 .single_line()
-                .grow_w(),
+                .grow(Dimension::Width),
         ))
         .spacing(5.0)
         .align(HAlign::Leading)
-        .grow_w(),
+        .grow(Dimension::Width),
     )
     .any()
 }
@@ -566,7 +566,7 @@ pub fn dashboard() -> impl Piece {
     ))
     .spacing(5.0)
     .align(HAlign::Leading)
-    .grow_w()
+    .grow(Dimension::Width)
     .any();
     let hero = row((
         keyed(
@@ -605,7 +605,7 @@ pub fn dashboard() -> impl Piece {
     ))
     .spacing(14.0)
     .align(VAlign::Center)
-    .grow_w()
+    .grow(Dimension::Width)
     .any();
     let metrics = row((
         metric(
@@ -648,7 +648,7 @@ pub fn dashboard() -> impl Piece {
     ))
     .spacing(10.0)
     .align(VAlign::Center)
-    .grow_w()
+    .grow(Dimension::Width)
     .any();
     let words = Signal::new(None);
     daynews_core::watch_word_cloud(scope, local_day, words);
@@ -692,7 +692,7 @@ pub fn dashboard() -> impl Piece {
     )
     .background(move || palette().bg)
     .id(day::id!(feed_dashboard))
-    .grow()
+    .grow(Dimension::Both)
 }
 
 /// A feed's settings, in one aligned form under its name: two columns of labeled controls where
@@ -770,17 +770,17 @@ fn feed_settings(feed: u64, data: Data, scope: Signal<Scope>, clock: Signal<i64>
     .spacing(Space::S);
     card(
         column((
-            form((rows,)).grow_w(),
+            form((rows,)).grow(Dimension::Width),
             schedule(data, clock),
             label(move || policy(data))
                 .font(Font::Caption2)
                 .color(move || palette().text_muted)
-                .grow_w(),
+                .grow(Dimension::Width),
             actions,
         ))
         .spacing(Space::S)
         .align(HAlign::Leading)
-        .grow_w(),
+        .grow(Dimension::Width),
     )
     .any()
 }
@@ -922,11 +922,11 @@ fn words_card(
                 }
             })
             .a11y(|a| a.label(res::str::dashboard_words_title()))
-            .grow(),
+            .grow(Dimension::Both),
         ))
         .spacing(4.0)
         .align(HAlign::Leading)
-        .grow(),
+        .grow(Dimension::Both),
     )
     .any()
 }

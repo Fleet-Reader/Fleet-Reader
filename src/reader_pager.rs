@@ -178,7 +178,7 @@ pub(crate) fn reader_pager() -> impl Piece {
     })
     .id(day::id!(reader_pager))
     .background(move || crate::theme::palette().bg)
-    .grow()
+    .grow(Dimension::Both)
     .toolbar(move || {
         scene
             .article

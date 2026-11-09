@@ -116,7 +116,7 @@ fn row_for(
                     .single_line()
                     .weight(FontWeight::Medium)
                     .color(sub_color)
-                    .grow_w(),
+                    .grow(Dimension::Width),
                 label(move || slot.field(|a| relative_time(a.published_at)))
                     .font(FOOTER_FONT)
                     .font_scale(scale)
@@ -124,11 +124,11 @@ fn row_for(
                     .color(sub_color),
             ))
             .spacing(Space::S)
-            .grow_w(),
+            .grow(Dimension::Width),
         ))
         .spacing(3.0)
         .align(HAlign::Leading)
-        .grow_w(),
+        .grow(Dimension::Width),
         when(
             move || slot.field(|a| a.is_starred),
             move || {
@@ -200,7 +200,7 @@ fn row_for(
             .unwrap_or(usize::MAX);
         day::id!(article_row, pos)
     })
-    .grow_w()
+    .grow(Dimension::Width)
 }
 
 /// A feed's section header in the grouped timeline: the list's own group header, which the
@@ -229,13 +229,13 @@ fn feed_header(feed: impl Fn() -> (u64, String) + Copy + 'static) -> impl Piece 
             .weight(FontWeight::Semibold)
             .single_line()
             .id_of(move || day::id!(feed_group_name, feed().0))
-            .grow_w(),
+            .grow(Dimension::Width),
     ))
     .spacing(GUTTER_GAP)
     .align(VAlign::Center)
     .padding(Insets::symmetric(0.0, 6.0))
     .id_of(move || day::id!(feed_group, feed().0))
-    .grow_w()
+    .grow(Dimension::Width)
 }
 
 /// Prompt for a tag name and toggle it on the article, creating the tag on first use.
@@ -303,7 +303,7 @@ pub fn timeline_pane() -> impl Piece {
             ))
             .spacing(1.0)
             .align(HAlign::Leading)
-            .grow_w(),
+            .grow(Dimension::Width),
             // Both commands are toolbar items where there is a toolbar; repeating them in the
             // content there would just be two ways to press the same button.
             when(
@@ -326,21 +326,21 @@ pub fn timeline_pane() -> impl Piece {
             bottom: 8.0,
             trailing: 12.0,
         })
-        .grow_w(),
+        .grow(Dimension::Width),
         when(
             move || !in_toolbar,
             move || {
                 row((text_field(search)
                     .placeholder(crate::res::str::search_placeholder())
                     .id(day::id!(search))
-                    .grow_w(),))
+                    .grow(Dimension::Width),))
                 .padding(Insets {
                     top: 0.0,
                     leading: 12.0,
                     bottom: 10.0,
                     trailing: 12.0,
                 })
-                .grow_w()
+                .grow(Dimension::Width)
             },
         ),
         // Refresh progress, shown only while a refresh is running, unless the bottom bar's
@@ -365,7 +365,7 @@ pub fn timeline_pane() -> impl Piece {
                 .spacing(Space::S)
                 .align(VAlign::Center)
                 .padding(Insets::symmetric(12.0, 4.0))
-                .grow_w()
+                .grow(Dimension::Width)
             },
         ),
         divider(),
@@ -391,7 +391,7 @@ pub fn timeline_pane() -> impl Piece {
     ))
     .background(move || palette().bg_alt)
     .toolbar(crate::toolbar::list_items)
-    .grow()
+    .grow(Dimension::Both)
 }
 
 fn timeline_rows(
@@ -405,31 +405,26 @@ fn timeline_rows(
             move || sc.articles.with(|a| a.is_empty()),
             move || {
                 column((
-                    column((
-                        spacer(),
-                        // An empty unread scope is an achievement, not an absence.
-                        label(move || {
-                            if crate::commands::refreshing() {
-                                crate::res::str::timeline_synchronizing().format()
-                            } else if sc.scope.get() == Scope::Unread {
-                                crate::res::str::timeline_empty_unread().format()
-                            } else {
-                                crate::res::str::timeline_empty().format()
-                            }
-                        })
-                        .font(Font::Body)
-                        .font_scale(scale)
-                        .color(move || palette().text_muted)
-                        .id(day::id!(timeline_empty)),
-                        spacer(),
-                    ))
-                    .align(HAlign::Center)
+                    label(move || {
+                        if crate::commands::refreshing() {
+                            crate::res::str::timeline_synchronizing().format()
+                        } else if sc.scope.get() == Scope::Unread {
+                            crate::res::str::timeline_empty_unread().format()
+                        } else {
+                            crate::res::str::timeline_empty().format()
+                        }
+                    })
+                    .font(Font::Body)
+                    .font_scale(scale)
+                    .color(move || palette().text_muted)
+                    .id(day::id!(timeline_empty))
+                    .aligned(Alignment::Center)
                     .height(row_height(preview_lines, scale))
-                    .grow_w()
-                    .id(day::id!(timeline_empty_row)),
+                    .grow(Dimension::Width)
+                    .wrapper_id(day::id!(timeline_empty_row)),
                     divider(),
                 ))
-                .grow_w()
+                .grow(Dimension::Width)
             },
         ),
         {
@@ -554,8 +549,8 @@ fn timeline_rows(
                 // native selection, and stationary while a swipe slides the row past them.
                 .separators()
                 .id(day::id!(timeline))
-                .grow()
+                .grow(Dimension::Both)
         },
     ))
-    .grow()
+    .grow(Dimension::Both)
 }

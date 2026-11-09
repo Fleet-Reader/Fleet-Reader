@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
 //! The wall clock and the reader's UTC offset, asked of the host.
 //!
-//! Day-News needs exactly two facts about time-of-day, and neither is in the standard library
+//! Fleet Reader needs exactly two facts about time-of-day, and neither is in the standard library
 //! everywhere this app runs:
 //!
 //! - **Now.** `SystemTime::now()` traps on `wasm32-unknown-unknown` rather than failing, so the

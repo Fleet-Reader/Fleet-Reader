@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Synthetic publication fixtures: active HTML must never reach the reader.
 
 #[test]

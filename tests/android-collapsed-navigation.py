@@ -73,7 +73,7 @@ if find(root, 'Navigate up') is not None:
     tap(find(root, 'Navigate up'))
 # Start with full root chrome regardless of its retained scroll position.
 swipe(500, 1900)
-assert find(screen('root-expanded'), 'Day News') is not None
+assert find(screen('root-expanded'), 'Fleet Reader') is not None
 
 # Test collapsed first: the old implementation must fail before any repair-inducing
 # back-stack transition or viewport change. Choose a real feed visible after scrolling.
@@ -84,9 +84,9 @@ for name, distance in [('collapsed', 700), ('expanded', 0), ('partial', 250),
         swipe(1500, 1500-distance)
     root = screen(f'{name}-root')
     if name.startswith('collapsed'):
-        assert find(root, 'Day News') is None and find(root, 'Search articles') is None
+        assert find(root, 'Fleet Reader') is None and find(root, 'Search articles') is None
     if name == 'partial':
-        assert find(root, 'Day News') is None and find(root, 'Search articles') is not None, (
+        assert find(root, 'Fleet Reader') is None and find(root, 'Search articles') is not None, (
             'Expected partially collapsed root: title hidden, search still visible')
     rows = [n for n in root.iter('node')
             if n.get('resource-id', '').endswith('/design_menu_item_text')
@@ -101,7 +101,7 @@ for name, distance in [('collapsed', 700), ('expanded', 0), ('partial', 250),
     swipe(650, 1800)
     tap(assert_up(screen(f'{name}-list-returned')))
     root = screen(f'{name}-back')
-    assert find(root, 'Day News') is not None and find(root, 'Navigate up') is None
+    assert find(root, 'Fleet Reader') is not None and find(root, 'Navigate up') is None
     # A real Up tap must reveal the native sidebar; a retained hidden label is insufficient.
     native = adb('shell', 'dumpsys', 'activity', 'top').decode()
     pane = re.search(r'DayNavHost\$\d+\{[^\n]*? (\d+),\d+-(\d+),\d+\}', native)

@@ -1,5 +1,5 @@
 # Run tests/feed-refresh-server.py first, with a fresh isolated app data directory.
-name: day-news-feed-refresh
+name: fleet-reader-feed-refresh
 description: Conditional refresh, simultaneous updating indicators, icons and unread filtering.
 flow:
   - dialog_mode: { mode: scripted }

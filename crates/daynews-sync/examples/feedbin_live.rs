@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Opt-in live trial test. Credentials are read from an owner-only external JSON file;
 //! never pass them in command arguments or write them into fixtures.
 use daynews_sync::{Changes, Credentials, Mutation, Operation, Provider, ReadChanges, ReadState};
@@ -107,7 +108,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     revision: 6,
                     mutation: Mutation::Rename {
                         subscription: subscription.id.clone(),
-                        title: "Day News live verification".into(),
+                        title: "Fleet Reader live verification".into(),
                     },
                 }])
                 .await;
@@ -128,7 +129,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ) || !matches!(
                 restored.first(),
                 Some(daynews_sync::Outcome::Applied { .. })
-            ) || !matches!(observed?,Changes::Snapshot(rows) if rows.iter().any(|s|s.id==subscription.id && s.title=="Day News live verification"))
+            ) || !matches!(observed?,Changes::Snapshot(rows) if rows.iter().any(|s|s.id==subscription.id && s.title=="Fleet Reader live verification"))
             {
                 return Err(daynews_sync::Error::Rejected);
             }

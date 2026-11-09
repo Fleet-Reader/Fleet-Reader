@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Settings and About (https://daybrite.dev/docs/reference/settings): the typed, persisted preferences
 //! the rest of the app reads, and the declaration of the groups Day's shared surface presents.
 //! The surface itself is Day's: the Settings window and the App menu's Settings…/About items on
@@ -17,9 +18,9 @@ pub const TOOLBAR_SETTINGS: bool = cfg!(any(
 ));
 
 /// The project site the About window links to.
-const WEBSITE: &str = "https://daybrite.github.io/Day-News";
+const WEBSITE: &str = "https://fleet-reader.github.io/Fleet-Reader";
 /// The repository the About window links to.
-const SOURCE: &str = "https://github.com/daybrite/Day-News";
+const SOURCE: &str = "https://github.com/Fleet-Reader/Fleet-Reader";
 
 // ---------------------------------------------------------------------------------------------
 // Articles

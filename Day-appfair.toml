@@ -1,0 +1,8 @@
+# Copyright © The Daybrite Project
+# SPDX-License-Identifier: MPL-2.0
+#
+# The App Fair build of this app (https://daybrite.dev/docs/flavors). The catalog
+# (github.com/appfair/appfair-apps) builds every submission with `day --flavor appfair …`, which
+# merges this file over Day.toml. Day.toml already states the App Fair identity,
+# org.appfair.app.FleetReader on every platform, so this flavor changes nothing: the ids, the
+# sources, the listing, the icons and the version are the app's own.

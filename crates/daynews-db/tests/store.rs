@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! The store's contracts, headless: deterministic identity, read-state preservation across
 //! refreshes, scoped timelines, two-shadow full-text search, deep cascades, tags, retention,
 //! and live count badges.

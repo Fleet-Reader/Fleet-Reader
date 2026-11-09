@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Fetching and parsing syndication feeds, normalized to the shape the store keeps.
 //!
 //! [`parse`] is pure and offline-testable; [`fetch`] adds the network on top of it. Policy that
@@ -287,9 +288,9 @@ fn retry_after(value: &str, now: i64) -> Option<i64> {
 
 /// Identifies us to publishers; several block requests with no agent string.
 pub const USER_AGENT: &str = concat!(
-    "DayNews/",
+    "FleetReader/",
     env!("CARGO_PKG_VERSION"),
-    " (+https://daybrite.dev)"
+    " (+https://fleet-reader.github.io/Fleet-Reader)"
 );
 
 fn normalize(f: feed_rs::model::Feed, base_url: &str) -> ParsedFeed {

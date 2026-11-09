@@ -1,4 +1,5 @@
-//! Day News: a feed reader built on [Day](https://daybrite.dev), modeled on NetNewsWire.
+// SPDX-License-Identifier: Apache-2.0
+//! Fleet Reader: a feed reader built on [Day](https://daybrite.dev), modeled on NetNewsWire.
 //!
 //! Three panes on a desktop (feed sidebar, timeline, article) and a push-navigation stack on a
 //! phone, from one `root()`. Everything the UI shows is a reactive signal published by

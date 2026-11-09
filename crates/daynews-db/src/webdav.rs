@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Experimental DAV feed-state profile. Durable choices are independent of article caches.
 use day_persistence::{DbError, Refresh, RowChange, SqliteConnection, Value};
 pub use day_sync;

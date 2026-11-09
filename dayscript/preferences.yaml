@@ -1,5 +1,5 @@
 # Run with seeded validation data. Restore System appearance/language and default browser.
-name: day-news-preferences
+name: fleet-reader-preferences
 description: Native preferences and live appearance changes on Apple platforms.
 flow:
   # General explicitly: a reopened desktop window keeps the group it last showed.

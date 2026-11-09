@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! One app-wide refresh timer, driven by the Refresh Feeds setting and independent of any
 //! window's lifetime.
 use day::prelude::Signal;
@@ -6,7 +7,7 @@ use futures_util::future::{AbortHandle, Abortable};
 use std::cell::{OnceCell, RefCell};
 
 pref_enum! {
-    /// How the feeds refresh on their own: Day News's per-feed cadence, never, or on a fixed
+    /// How the feeds refresh on their own: Fleet Reader's per-feed cadence, never, or on a fixed
     /// interval. Stored under short tags.
     pub enum Refresh {
         Automatic = "auto",

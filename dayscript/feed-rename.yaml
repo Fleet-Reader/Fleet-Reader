@@ -1,6 +1,6 @@
 # Rename a feed from its overview, from the Feed menu and from its sidebar row's context menu.
 # Requires seed-demo.yaml and an isolated DAY_DATA_DIR. Feed IDs are deterministic.
-name: day-news-feed-rename
+name: fleet-reader-feed-rename
 description: Rename a feed three ways; its overview and its article list follow each new title.
 flow:
   - dialog_mode: { mode: scripted }

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Managing subscriptions: add by URL, import/export OPML, and per-feed actions.
 
 use day::prelude::*;
@@ -508,7 +509,7 @@ pub fn export_opml() {
         // `save_file` takes the bytes up front: the picker writes them itself, which is the only
         // shape that works on the sandboxed platforms (the app never gets a writable path).
         let saved = save_file(text.into_bytes())
-            .suggested_name("Day-News-Subscriptions.opml")
+            .suggested_name("Fleet-Reader-Subscriptions.opml")
             .filter(crate::res::str::opml_filter().format(), &["opml"])
             .await;
         daynews_core::state().status.set(match saved {

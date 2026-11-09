@@ -1,11 +1,11 @@
 # Android navigation audit
 
-The October 2026 audit found genuine framework state defects, rather than a Day-News
+The October 2026 audit found genuine framework state defects, rather than a Fleet Reader
 placeholder destination intentionally inserted into navigation.
 
 ## Ownership and layouts
 
-Day-News owns the selected feed/smart-feed section and article/reader visibility.
+Fleet Reader owns the selected feed/smart-feed section and article/reader visibility.
 Day's selector creates the selected section's page; its gated detail creates the
 article reader. On a compact phone these compose into one Android host: feeds →
 article list → reader. On a wide window the sidebar and section are visible together,

@@ -1,5 +1,5 @@
-# Network-free smoke check against the real Day News navigation, with or without feeds.
-name: day-news-smoke
+# Network-free smoke check against the real Fleet Reader navigation, with or without feeds.
+name: fleet-reader-smoke
 description: Library overview and preferences mount without any subscriptions.
 flow:
   - wait_for: { id: nav }

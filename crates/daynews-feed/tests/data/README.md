@@ -3,7 +3,7 @@
 Real feeds, saved byte for byte as their publishers served them on 2026-09-01, for
 `real_feeds.rs` to parse offline. Each takes a shape the parser has to get right. The app does not
 bundle them: its screenshots and walkthrough read the demo feeds in `resource/assets/demo/`,
-written for Day News, which `demo_feeds.rs` covers.
+written for Fleet Reader, which `demo_feeds.rs` covers.
 
 | File | Source | Shape |
 |---|---|---|

@@ -1,6 +1,6 @@
 # Start tests/feed-refresh-server.py and use a fresh DAY_DATA_DIR.
 # /stats must show rotating=4, busy=1, modified=2, unchanged=2, invalid_conditions=0.
-name: day-news-conditional-cache
+name: fleet-reader-conditional-cache
 description: Identical 200 rotates validators, following 304 avoids imports, Retry-After suppresses polls.
 flow:
   - dialog_mode: { mode: scripted }

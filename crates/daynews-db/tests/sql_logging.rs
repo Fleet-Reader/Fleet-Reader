@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Separate processes keep environment changes isolated from concurrent database tests.
 use std::process::Command;
 
@@ -26,7 +27,7 @@ fn sql_logging_is_opt_in_and_independent_of_log_level() {
         let result = child.output().unwrap();
         let logs = String::from_utf8_lossy(&result.stderr);
         assert!(result.status.success(), "{logs}");
-        assert_eq!(logs.contains("[Day-News SQL]"), enabled, "{logs}");
+        assert_eq!(logs.contains("[Fleet-Reader SQL]"), enabled, "{logs}");
         if enabled {
             for expected in ["CREATE TABLE", "INSERT", "SELECT", "SQL trace fixture"] {
                 assert!(logs.contains(expected), "missing {expected}: {logs}");

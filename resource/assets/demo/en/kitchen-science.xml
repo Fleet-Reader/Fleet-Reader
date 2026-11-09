@@ -2,49 +2,49 @@
 <rss version="2.0">
   <channel>
     <title>Kitchen Science</title>
-    <link>https://github.com/daybrite/Day-News/tree/main/resource/assets/demo</link>
-    <description>The chemistry and physics behind everyday cooking. A Day News demo feed.</description>
+    <link>https://github.com/Fleet-Reader/Fleet-Reader/tree/main/resource/assets/demo</link>
+    <description>The chemistry and physics behind everyday cooking. A Fleet Reader demo feed.</description>
     <language>en</language>
     <lastBuildDate>Fri, 11 Sep 2026 12:05:00 +0000</lastBuildDate>
     <item>
       <title>What makes bread rise</title>
       <link>https://en.wikipedia.org/wiki/Leavening_agent</link>
-      <guid isPermaLink="false">day-news-demo:kitchen-science:bread-rise</guid>
+      <guid isPermaLink="false">fleet-reader-demo:kitchen-science:bread-rise</guid>
       <pubDate>Fri, 11 Sep 2026 12:05:00 +0000</pubDate>
       <description>Yeast feeds on sugars in the dough and gives off carbon dioxide and a little alcohol. Kneading develops gluten, a stretchy network of proteins that traps those gas bubbles, so the dough swells. In the oven the gas expands, the alcohol evaporates, and the heat sets the structure into a loaf.</description>
     </item>
     <item>
       <title>The chemistry behind a golden crust</title>
       <link>https://en.wikipedia.org/wiki/Maillard_reaction</link>
-      <guid isPermaLink="false">day-news-demo:kitchen-science:maillard-reaction</guid>
+      <guid isPermaLink="false">fleet-reader-demo:kitchen-science:maillard-reaction</guid>
       <pubDate>Tue, 08 Sep 2026 12:30:00 +0000</pubDate>
       <description>The browning on toast, seared steak and roasted coffee comes largely from the Maillard reaction, in which amino acids and sugars combine into hundreds of flavor and color compounds. It speeds up at around 140 °C (280 °F), which is why boiled food never browns: water cannot get hotter than its boiling point. The reaction is named after the French chemist Louis-Camille Maillard, who described it in 1912.</description>
     </item>
     <item>
       <title>Why cutting onions makes you cry</title>
       <link>https://en.wikipedia.org/wiki/Syn-Propanethial-S-oxide</link>
-      <guid isPermaLink="false">day-news-demo:kitchen-science:onion-tears</guid>
+      <guid isPermaLink="false">fleet-reader-demo:kitchen-science:onion-tears</guid>
       <pubDate>Sat, 05 Sep 2026 12:10:00 +0000</pubDate>
       <description>Slicing an onion breaks open its cells and lets enzymes turn sulfur compounds into syn-propanethial-S-oxide, a gas that irritates the eyes, which respond by making tears to wash it away. Chilling the onion first slows the reaction, and a sharp knife crushes fewer cells.</description>
     </item>
     <item>
       <title>Water boils at a lower temperature on a mountain</title>
       <link>https://en.wikipedia.org/wiki/High-altitude_cooking</link>
-      <guid isPermaLink="false">day-news-demo:kitchen-science:boiling-altitude</guid>
+      <guid isPermaLink="false">fleet-reader-demo:kitchen-science:boiling-altitude</guid>
       <pubDate>Wed, 02 Sep 2026 12:40:00 +0000</pubDate>
       <description>At sea level, water boils at 100 °C (212 °F). Higher up the air pressure is lower, so water boils sooner: about one degree Celsius cooler for every 300 meters or so of altitude. In Denver, about 1,600 meters up, water boils at roughly 95 °C, which is why pasta and beans take longer to cook there.</description>
     </item>
     <item>
       <title>Why honey keeps for so long</title>
       <link>https://en.wikipedia.org/wiki/Honey</link>
-      <guid isPermaLink="false">day-news-demo:kitchen-science:honey</guid>
+      <guid isPermaLink="false">fleet-reader-demo:kitchen-science:honey</guid>
       <pubDate>Sun, 30 Aug 2026 12:15:00 +0000</pubDate>
       <description>Honey contains very little water and a great deal of sugar, which draws moisture out of microbes and stops them from growing. It is also acidic, and an enzyme the bees add produces small amounts of hydrogen peroxide. Sealed, honey keeps for years, and if it crystallizes, gently warming the jar turns it liquid again.</description>
     </item>
     <item>
       <title>What gives sourdough its tang</title>
       <link>https://en.wikipedia.org/wiki/Sourdough</link>
-      <guid isPermaLink="false">day-news-demo:kitchen-science:sourdough</guid>
+      <guid isPermaLink="false">fleet-reader-demo:kitchen-science:sourdough</guid>
       <pubDate>Thu, 27 Aug 2026 12:50:00 +0000</pubDate>
       <description>A sourdough starter is a community of wild yeasts and lactic acid bacteria living in flour and water. The yeasts make the bread rise, while the bacteria produce lactic and acetic acids that give the loaf its sour flavor. The balance between the two acids, and so the taste, shifts with temperature, hydration and time.</description>
     </item>

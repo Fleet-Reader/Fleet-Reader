@@ -1,7 +1,7 @@
 [app]
-id = "dev.daybrite.news.webdav"
-scheme = "daynews-webdav"
-title = "Day News WebDAV Lab"
+id = "org.appfair.app.FleetReader.webdav"
+scheme = "fleetreader-webdav"
+title = "Fleet Reader WebDAV Lab"
 targets = ["macos-appkit", "ios-uikit", "android-material"]
 [cargo]
 features = ["experimental-webdav"]

@@ -1,4 +1,5 @@
-//! Day News state. Native platforms use an asynchronous database actor; the web build
+// SPDX-License-Identifier: Apache-2.0
+//! Fleet Reader state. Native platforms use an asynchronous database actor; the web build
 //! retains its OPFS transport until transferable worker jobs are available there.
 #[cfg(not(target_arch = "wasm32"))]
 mod native;

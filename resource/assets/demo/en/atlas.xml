@@ -2,14 +2,14 @@
 <rss version="2.0">
   <channel>
     <title>Atlas</title>
-    <link>https://github.com/daybrite/Day-News/tree/main/resource/assets/demo</link>
-    <description>Rivers, lakes, mountains and deserts, and the lines we draw between them. A Day News demo feed.</description>
+    <link>https://github.com/Fleet-Reader/Fleet-Reader/tree/main/resource/assets/demo</link>
+    <description>Rivers, lakes, mountains and deserts, and the lines we draw between them. A Fleet Reader demo feed.</description>
     <language>en</language>
     <lastBuildDate>Fri, 11 Sep 2026 08:30:00 +0000</lastBuildDate>
     <item>
       <title>The Danube flows through ten countries</title>
       <link>https://en.wikipedia.org/wiki/Danube</link>
-      <guid isPermaLink="false">day-news-demo:atlas:danube</guid>
+      <guid isPermaLink="false">fleet-reader-demo:atlas:danube</guid>
       <pubDate>Fri, 11 Sep 2026 08:30:00 +0000</pubDate>
       <description>&lt;p&gt;The Danube is Europe's second-longest river, after the Volga, running about 2,850 kilometers from the Black Forest in Germany to the Black Sea.&lt;/p&gt;
 &lt;p&gt;Along the way it passes through or along the borders of ten countries: Germany, Austria, Slovakia, Hungary, Croatia, Serbia, Romania, Bulgaria, Moldova and Ukraine. No other river in the world touches so many.&lt;/p&gt;
@@ -18,7 +18,7 @@
     <item>
       <title>Lake Baikal, the deepest lake on Earth</title>
       <link>https://en.wikipedia.org/wiki/Lake_Baikal</link>
-      <guid isPermaLink="false">day-news-demo:atlas:lake-baikal</guid>
+      <guid isPermaLink="false">fleet-reader-demo:atlas:lake-baikal</guid>
       <pubDate>Tue, 08 Sep 2026 07:55:00 +0000</pubDate>
       <description>&lt;p&gt;Lake Baikal in southern Siberia is the world's deepest lake, reaching about 1,640 meters at its deepest point. It is also one of the oldest, formed in a rift valley some 25 million years ago.&lt;/p&gt;
 &lt;p&gt;Because it is so deep, Baikal holds more fresh water than any other lake: roughly a fifth of the unfrozen fresh water on Earth's surface, more than all of North America's Great Lakes combined.&lt;/p&gt;
@@ -27,7 +27,7 @@
     <item>
       <title>How tall is Mount Everest?</title>
       <link>https://en.wikipedia.org/wiki/Mount_Everest</link>
-      <guid isPermaLink="false">day-news-demo:atlas:everest-height</guid>
+      <guid isPermaLink="false">fleet-reader-demo:atlas:everest-height</guid>
       <pubDate>Sat, 05 Sep 2026 08:05:00 +0000</pubDate>
       <description>&lt;p&gt;In 2020, Nepal and China jointly announced a new official height for Mount Everest: 8,848.86 meters above sea level, the result of survey teams working from both sides of the mountain.&lt;/p&gt;
 &lt;p&gt;Measuring it is harder than it sounds. Surveyors have to work out where sea level would be beneath a mountain range, and decide whether to count the snow and ice on the summit. The 2020 figure measures to the top of the snow.&lt;/p&gt;
@@ -36,7 +36,7 @@
     <item>
       <title>The Atacama, where rain almost never falls</title>
       <link>https://en.wikipedia.org/wiki/Atacama_Desert</link>
-      <guid isPermaLink="false">day-news-demo:atlas:atacama</guid>
+      <guid isPermaLink="false">fleet-reader-demo:atlas:atacama</guid>
       <pubDate>Wed, 02 Sep 2026 07:50:00 +0000</pubDate>
       <description>&lt;p&gt;The Atacama Desert, along the Pacific coast of northern Chile, is one of the driest places on Earth. Parts of it receive only a millimeter or two of rain a year, and some weather stations there have never recorded rain at all.&lt;/p&gt;
 &lt;p&gt;Its dry, clear air and high altitude make it one of the best places on the planet for astronomy, and several major observatories stand there.&lt;/p&gt;
@@ -45,7 +45,7 @@
     <item>
       <title>Why the International Date Line zigzags</title>
       <link>https://en.wikipedia.org/wiki/International_Date_Line</link>
-      <guid isPermaLink="false">day-news-demo:atlas:date-line</guid>
+      <guid isPermaLink="false">fleet-reader-demo:atlas:date-line</guid>
       <pubDate>Sun, 30 Aug 2026 07:45:00 +0000</pubDate>
       <description>&lt;p&gt;The International Date Line runs roughly along the 180° meridian in the middle of the Pacific Ocean. Cross it heading west and the calendar jumps forward a day; heading east, it goes back one.&lt;/p&gt;
 &lt;p&gt;It is not a straight line. It bends around island groups so that neighboring islands can share a date. In 1995, Kiribati moved it far to the east so that the whole country, spread across more than 3,000 kilometers of ocean, would keep the same day.&lt;/p&gt;
@@ -54,7 +54,7 @@
     <item>
       <title>The Amazon carries more water than any other river</title>
       <link>https://en.wikipedia.org/wiki/Amazon_River</link>
-      <guid isPermaLink="false">day-news-demo:atlas:amazon-discharge</guid>
+      <guid isPermaLink="false">fleet-reader-demo:atlas:amazon-discharge</guid>
       <pubDate>Thu, 27 Aug 2026 07:35:00 +0000</pubDate>
       <description>&lt;p&gt;The Amazon pours more water into the ocean than any other river: on average more than 200,000 cubic meters every second, around a fifth of all the river water that reaches the world's oceans.&lt;/p&gt;
 &lt;p&gt;That is more than the next several largest rivers combined, and the outflow is strong enough that its fresh water can be detected far out at sea.&lt;/p&gt;

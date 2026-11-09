@@ -15,7 +15,7 @@
 # CONTRACT: expects a store with no other subscriptions (the count is the whole sidebar); CI
 # runners start empty. On a store already seeded, each New Feed meets the Already Subscribed
 # question instead (src/subscriptions.rs `already_subscribed`), so run it on an empty one.
-name: day-news-seed-demo
+name: fleet-reader-seed-demo
 description: Subscribe to the bundled demo feeds — the offline seed for the walkthrough.
 flow:
   - dialog_mode: { mode: scripted }

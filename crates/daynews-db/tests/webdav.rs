@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 #![cfg(all(feature = "experimental-webdav", not(target_arch = "wasm32")))]
 use day_persistence::Value;
 use day_reactive::Binding;

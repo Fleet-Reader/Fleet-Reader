@@ -1,4 +1,4 @@
-name: day-news-list-preview-lines
+name: fleet-reader-list-preview-lines
 description: Preview preferences rebuild visible rows, preserve the reader, and reset together.
 flow:
   - wait_for: { id: nav }

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Publication metadata only: no page scripts, third-party favicon services, or credentials.
 use html5ever::tokenizer::{
     BufferQueue, StartTag, Token, TokenSink, TokenSinkResult, Tokenizer, states::RawKind,

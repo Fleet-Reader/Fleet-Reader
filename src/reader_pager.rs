@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Mobile reader paging. Three stable page slots retain their webviews while the
 //! reading order rotates. Preparing a page never calls open_article/set_read.
 use crate::reader_view::{ReaderView, ReaderVisibility};

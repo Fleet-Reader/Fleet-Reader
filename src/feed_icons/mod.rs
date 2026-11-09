@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! App-wide discovery queue. Four downloads at a time; native disk/decoding work stays off UI.
 mod cache;
 mod discovery;
@@ -191,7 +192,10 @@ async fn fetch(
     let response = client
         .fetch_limited_future(
             day_part_http::Request::get(url.as_str())
-                .header("User-Agent", concat!("DayNews/", env!("CARGO_PKG_VERSION")))
+                .header(
+                    "User-Agent",
+                    concat!("FleetReader/", env!("CARGO_PKG_VERSION")),
+                )
                 .timeout(Duration::from_secs(8)),
             max,
         )

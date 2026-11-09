@@ -1,6 +1,6 @@
 # Desktop regression: run after seed-demo.yaml in an isolated store.
 # Mobile navigation sidebars intentionally omit drag reordering.
-name: day-news-grouped-feeds
+name: fleet-reader-grouped-feeds
 description: Feed section headers, the floating header and persistent feed priority.
 flow:
   # On a phone or the web the section is a root list of groups: open it and tap the group's

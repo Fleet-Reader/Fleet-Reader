@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Reader operations shared by native chrome and content fallbacks.
 use crate::res;
 use day::prelude::*;

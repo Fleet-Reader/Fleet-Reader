@@ -10,7 +10,7 @@
 # below covers the whole sidebar, including feeds present before the import. Re-running is
 # otherwise safe: feed ids are a hash of the feed URL, so importing twice adds nothing the
 # second time.
-name: day-news-import
+name: fleet-reader-import
 description: Import an OPML file through the real file picker and refresh every feed.
 flow:
   - wait_for: { id: nav }

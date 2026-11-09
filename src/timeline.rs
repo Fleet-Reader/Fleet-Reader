@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! The article list, NetNewsWire's middle pane: title, summary, and a feed·date footer, with
 //! an unread dot in the left gutter.
 

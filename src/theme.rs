@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Colors, resolved per light/dark so the reader looks native on every platform.
 
 use day::prelude::*;

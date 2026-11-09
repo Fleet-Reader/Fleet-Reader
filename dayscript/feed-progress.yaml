@@ -1,5 +1,5 @@
 # Start tests/feed-refresh-server.py and use an isolated DAY_DATA_DIR.
-name: day-news-feed-progress
+name: fleet-reader-feed-progress
 flow:
   - dialog_mode: { mode: scripted }
   # New Feed is on the feeds page (a phone's bottom bar); a phone opens on Today's list.

@@ -55,7 +55,7 @@ def assert_destination(title):
     root = screen()
     assert any(node.get("text") == title and bounds(node)[1] < 300
                for node in root.iter("node")), f"Real tap did not open {title}"
-    if title == "Day News":
+    if title == "Fleet Reader":
         # Hidden sidebar children are still in the accessibility tree. The native
         # detail pane must actually be off-screen, or this could be the blank root.
         hierarchy = adb("shell", "dumpsys", "activity", "top")
@@ -103,7 +103,7 @@ def test_tablet():
         assert_destination("All Articles")
         adb("shell", "input", "keyevent", "4")
         time.sleep(1)
-        assert_destination("Day News")
+        assert_destination("Fleet Reader")
         print("PASS wide reader → compact reader → list → feeds", flush=True)
     finally:
         adb("shell", "wm", "size", original_size)
@@ -120,17 +120,17 @@ def test_edge_swipes():
             str(width * 5 // 6), str(height // 2), "300")
         time.sleep(1)
 
-    assert_destination("Day News")
+    assert_destination("Fleet Reader")
     tap(text_node(screen(), "All Articles"))
     back_swipe()
-    assert_destination("Day News")
+    assert_destination("Fleet Reader")
     print("PASS committed edge swipe: section → feeds", flush=True)
     tap(text_node(screen(), "All Articles"))
     tap(text_node(screen(), args.article))
     back_swipe()
     assert_destination("All Articles")
     back_swipe()
-    assert_destination("Day News")
+    assert_destination("Fleet Reader")
     print("PASS committed edge swipes: reader → list → feeds", flush=True)
 
 
@@ -139,14 +139,14 @@ if args.tablet:
 elif args.edge_swipes:
     test_edge_swipes()
 else:
-    assert_destination("Day News")
+    assert_destination("Fleet Reader")
     for title in ["Today", "All Unread", "Starred", "All Articles", "Settings", args.feed]:
         tap(text_node(screen(), title))
         assert_destination(title)
         print(f"PASS real tap: {title}")
         adb("shell", "input", "keyevent", "4")
         time.sleep(1)
-        assert_destination("Day News")
+        assert_destination("Fleet Reader")
 
     tap(text_node(screen(), args.feed), long=True)
     root = screen()
@@ -155,7 +155,7 @@ else:
     print("PASS native long-press feed menu")
     adb("shell", "input", "keyevent", "4")
     time.sleep(1)
-    assert_destination("Day News")
+    assert_destination("Fleet Reader")
 
 
     for cycle in range(args.back_cycles):
@@ -172,10 +172,10 @@ else:
         assert any(node.get("class") == "androidx.recyclerview.widget.RecyclerView"
                    for node in screen().iter("node")), "Article list missing after Back"
         toolbar_up()
-        assert_destination("Day News")
+        assert_destination("Fleet Reader")
         tap(text_node(screen(), "Settings"))
         assert_destination("Settings")
         adb("shell", "input", "keyevent", "4")
         time.sleep(1)
-        assert_destination("Day News")
+        assert_destination("Fleet Reader")
         print(f"PASS reader Back/Up → section Up → settings Back: {cycle + 1}", flush=True)

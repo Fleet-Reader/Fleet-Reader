@@ -1,4 +1,4 @@
-# Day News — design
+# Fleet Reader — design
 
 A feed reader on the [Day](https://daybrite.dev) framework, modeled on
 [NetNewsWire](https://github.com/Ranchero-Software/NetNewsWire): subscriptions on the left, a
@@ -30,7 +30,7 @@ The libraries live under `crates/`; the UI crate is the repository root.
 | `crates/daynews-credentials` | native credential vaults | keyring, day-bridge |
 | `crates/daynews-db` | the store: models, relations, FTS5, queries | day-persistence, day-model, day-macros, `daynews-time`, `daynews-sync` |
 | `crates/daynews-core` | the view-model: signals, refresh orchestration, OPML import/export | `daynews-db`, `daynews-feed`, `daynews-opml`, day-core |
-| `day-news` | the UI | `daynews-core`, day, day-piece-webview |
+| `fleet-reader` | the UI | `daynews-core`, day, day-piece-webview |
 
 ### Dependency choices
 
@@ -282,7 +282,7 @@ boundary rather than trusting the renderer.
 `ArticleExtractor` (`src/extraction.rs`) returns an owned `ExtractedArticle` from an article URL.
 It is independent of selection, commands, database storage, and presentation; an authorized
 HTTP service or an offscreen engine can replace `LocalReadability`. The current provider uses
-Day's native HTTP stack with the DayNews user agent, validates status/content type, decodes the
+Day's native HTTP stack with the FleetReader user agent, validates status/content type, decodes the
 response charset, and resolves links against the final redirect URL. It rejects documents above
 5 MiB before parsing and limits Readability to 50,000 elements. This is a parse limit, not a
 streaming download limit. The command has a 30-second deadline.
@@ -532,17 +532,17 @@ checks enabled and disabled restoration in separate processes.
 ## Worker migration validation (2026-10-01)
 
 The migration was checked against isolated test libraries, not the user's active database.
-Day-News's AppKit walkthrough passed 127 executed steps (2 platform skips); UIKit passed 97
+Fleet Reader's AppKit walkthrough passed 127 executed steps (2 platform skips); UIKit passed 97
 (32 skips). Native AppKit Cmd-F and actual keyboard typing were verified separately, since
 synthetic toolbar events alone do not exercise NSSearchField's action delivery.
 
-Day-News builds passed for AppKit, UIKit, Android, GTK, Qt, web and HarmonyOS. Harmony was
+Fleet Reader builds passed for AppKit, UIKit, Android, GTK, Qt, web and HarmonyOS. Harmony was
 compile/package checked only; no emulator was run. Its local build needed NODE_PATH pointing
 to the installed Hvigor modules and a temporary versioned SDK root because the machine's SDK
 symlink was stale. Windows/XAML was not built on this macOS host.
 
 Framework validation includes 38 worker tests, plus existing model, persistence, core and spec
-suites. The worker suite also passed ten consecutive runs to vary thread scheduling. Day-News's
+suites. The worker suite also passed ten consecutive runs to vary thread scheduling. Fleet Reader's
 77 headless tests include six native worker/projection regressions. The Showcase query script
 passed 48 steps; Sketch's editor script passed 640 executed steps (15 skips). Stanza-Redux's
 27 tests, Sketch's 109 tests and day-lite's 13 tests passed. Compatibility checks also passed

@@ -5,7 +5,7 @@
 # Deleting a collection keeps its feeds. The default collection's name and place are real
 # preferences, so the script restores them. A native sidebar's section headers
 # are not Day elements, so the sidebar's "Name (feeds)" titles are checked in the screenshots.
-name: day-news-collections
+name: fleet-reader-collections
 description: Feed collections from the Feed menu, the feed overview and Settings.
 flow:
   - dialog_mode: { mode: scripted }

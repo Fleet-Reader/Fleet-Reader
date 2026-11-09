@@ -1,5 +1,5 @@
 # Requires seed-demo.yaml and an isolated DAY_DATA_DIR. Feed IDs are deterministic.
-name: day-news-reader-filter-selection
+name: fleet-reader-reader-filter-selection
 description: Reading the last unread article hides its feed without closing or reloading the reader.
 flow:
   - toolbar: { item: unread_feeds_only, on: false }

@@ -1,4 +1,4 @@
-# Run against an English windows-winui Day-News with its sidebar expanded.
+# Run against an English windows-winui Fleet Reader with its sidebar expanded.
 # Uses real mouse input: scripted navigation and UIA selection bypass this path.
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName UIAutomationClient
@@ -13,7 +13,7 @@ public static class NewsSidebarInput {
 }
 '@
 $app = Get-Process day-news | Select-Object -First 1
-if (!$app) { throw 'Launch Day-News with --locale en first.' }
+if (!$app) { throw 'Launch Fleet Reader with --locale en first.' }
 $window = [System.Windows.Automation.AutomationElement]::RootElement.FindFirst(
     [System.Windows.Automation.TreeScope]::Children,
     [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::ProcessIdProperty, $app.Id))

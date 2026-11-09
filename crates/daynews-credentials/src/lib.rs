@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Native credential storage. Failure is explicit; there is no plaintext or mock fallback.
 #[derive(Debug, Clone, Copy)]
 pub struct Unavailable;
@@ -14,7 +15,7 @@ mod mobile;
 mod platform {
     use super::Unavailable;
     fn entry(key: &str) -> Result<keyring::Entry, Unavailable> {
-        keyring::Entry::new("dev.daybrite.DayNews.sync", key).map_err(|_| Unavailable)
+        keyring::Entry::new("org.appfair.app.FleetReader.sync", key).map_err(|_| Unavailable)
     }
     pub fn save(key: &str, password: &str) -> Result<(), Unavailable> {
         entry(key)?.set_password(password).map_err(|_| Unavailable)

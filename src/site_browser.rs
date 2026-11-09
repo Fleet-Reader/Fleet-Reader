@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Dedicated site profiles shared by the interactive browser and inert reader extraction.
 use crate::res;
 use day::prelude::*;

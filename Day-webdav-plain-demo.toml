@@ -1,8 +1,8 @@
 # Plaintext protocol v4 demo, isolated from both the personal library and encrypted pilot.
 [app]
-id = "dev.daybrite.news.webdav.plain.demo"
-scheme = "daynews-webdav-plain-demo"
-title = "Day News Plain Sync Demo"
+id = "org.appfair.app.FleetReader.webdav.plain.demo"
+scheme = "fleetreader-webdav-plain-demo"
+title = "Fleet Reader Plain Sync Demo"
 targets = ["macos-appkit", "ios-uikit", "android-material"]
 [cargo]
 features = ["experimental-webdav"]

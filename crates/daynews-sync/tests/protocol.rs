@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 use day_part_http::{
     Client,
     simulation::{Reply, Simulation},

@@ -1,5 +1,5 @@
 # Run after seed-demo.yaml with an isolated DAY_DATA_DIR.
-name: day-news-reading-navigation
+name: fleet-reader-reading-navigation
 description: Previous/Next follow the visible list and search; link copying preserves the reader.
 flow:
   - wait_for: { id: nav }

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
   <title>Night Sky</title>
-  <subtitle>What to look for overhead, and why it looks that way. A Day News demo feed.</subtitle>
-  <link rel="alternate" href="https://github.com/daybrite/Day-News/tree/main/resource/assets/demo"/>
-  <id>day-news-demo:night-sky</id>
+  <subtitle>What to look for overhead, and why it looks that way. A Fleet Reader demo feed.</subtitle>
+  <link rel="alternate" href="https://github.com/Fleet-Reader/Fleet-Reader/tree/main/resource/assets/demo"/>
+  <id>fleet-reader-demo:night-sky</id>
   <updated>2026-09-12T07:40:00Z</updated>
   <author><name>Night Sky desk</name></author>
   <entry>
     <title>Why we only ever see one side of the Moon</title>
     <link rel="alternate" href="https://en.wikipedia.org/wiki/Tidal_locking"/>
-    <id>day-news-demo:night-sky:tidal-locking</id>
+    <id>fleet-reader-demo:night-sky:tidal-locking</id>
     <published>2026-09-12T07:40:00Z</published>
     <updated>2026-09-12T07:40:00Z</updated>
     <author><name>Night Sky desk</name></author>
@@ -22,7 +22,7 @@
   <entry>
     <title>Sunlight is eight minutes old</title>
     <link rel="alternate" href="https://en.wikipedia.org/wiki/Astronomical_unit"/>
-    <id>day-news-demo:night-sky:light-travel-time</id>
+    <id>fleet-reader-demo:night-sky:light-travel-time</id>
     <published>2026-09-09T20:15:00Z</published>
     <updated>2026-09-09T20:15:00Z</updated>
     <author><name>Night Sky desk</name></author>
@@ -34,7 +34,7 @@
   <entry>
     <title>What makes a Harvest Moon</title>
     <link rel="alternate" href="https://en.wikipedia.org/wiki/Harvest_moon"/>
-    <id>day-news-demo:night-sky:harvest-moon</id>
+    <id>fleet-reader-demo:night-sky:harvest-moon</id>
     <published>2026-09-06T21:05:00Z</published>
     <updated>2026-09-06T21:05:00Z</updated>
     <author><name>Night Sky desk</name></author>
@@ -47,7 +47,7 @@
   <entry>
     <title>Finding the North Star</title>
     <link rel="alternate" href="https://en.wikipedia.org/wiki/Polaris"/>
-    <id>day-news-demo:night-sky:north-star</id>
+    <id>fleet-reader-demo:night-sky:north-star</id>
     <published>2026-09-03T20:50:00Z</published>
     <updated>2026-09-03T20:50:00Z</updated>
     <author><name>Night Sky desk</name></author>
@@ -60,7 +60,7 @@
   <entry>
     <title>Where meteor showers come from</title>
     <link rel="alternate" href="https://en.wikipedia.org/wiki/Meteor_shower"/>
-    <id>day-news-demo:night-sky:meteor-showers</id>
+    <id>fleet-reader-demo:night-sky:meteor-showers</id>
     <published>2026-08-31T21:10:00Z</published>
     <updated>2026-08-31T21:10:00Z</updated>
     <author><name>Night Sky desk</name></author>
@@ -73,7 +73,7 @@
   <entry>
     <title>Saturn's rings are made of ice</title>
     <link rel="alternate" href="https://en.wikipedia.org/wiki/Rings_of_Saturn"/>
-    <id>day-news-demo:night-sky:saturn-rings</id>
+    <id>fleet-reader-demo:night-sky:saturn-rings</id>
     <published>2026-08-28T21:40:00Z</published>
     <updated>2026-08-28T21:40:00Z</updated>
     <author><name>Night Sky desk</name></author>

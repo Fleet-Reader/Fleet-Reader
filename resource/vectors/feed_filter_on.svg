@@ -1,4 +1,4 @@
-<!-- Feed filter, on: the filled circle with its three lines cut out. Original Day-News artwork. -->
+<!-- Feed filter, on: the filled circle with its three lines cut out. Original Fleet Reader artwork. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
   <path fill="#000" fill-rule="evenodd" d="M1.65 12a10.35 10.35 0 1 0 20.7 0a10.35 10.35 0 1 0-20.7 0ZM8 8.15h8a.85.85 0 0 1 0 1.7H8a.85.85 0 0 1 0-1.7Zm1.5 3h5a.85.85 0 0 1 0 1.7h-5a.85.85 0 0 1 0-1.7Zm1.5 3h2a.85.85 0 0 1 0 1.7h-2a.85.85 0 0 1 0-1.7Z"/>
 </svg>

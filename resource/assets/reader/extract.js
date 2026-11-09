@@ -1,4 +1,4 @@
-// Day-News local extraction adapter. Publication HTML is parsed in a detached document.
+// Fleet Reader local extraction adapter. Publication HTML is parsed in a detached document.
 // Readability is not a sanitizer: sanitize before parsing and again before rendering.
 function extractArticle(input, customExtract) {
   const clean = DOMPurify.sanitize(input.html, {

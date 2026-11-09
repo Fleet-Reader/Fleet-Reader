@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Shared, persistent sidebar filtering, and the sidebar's feed collections: one section per
 //! collection in the user's order, each sorted its own way. The default collection ("Feeds"
 //! until renamed) holds the feeds in no collection; it has no folder in the store, and its

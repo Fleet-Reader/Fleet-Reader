@@ -1,4 +1,4 @@
-<!-- Feed filter with an unread dot. Original Day-News artwork. -->
+<!-- Feed filter with an unread dot. Original Fleet Reader artwork. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
   <path d="M14 4H3l7 8v7l4 2v-9l3-3"/>
   <circle cx="19" cy="4" r="2.5" fill="#000" stroke="none"/>

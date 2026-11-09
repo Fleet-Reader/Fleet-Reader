@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Native account setup; translated presentation stays on the UI thread.
 use crate::res;
 use day::prelude::*;

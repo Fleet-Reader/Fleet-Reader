@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Small display helpers: relative dates and text snippets, the way a reader shows them.
 
 /// Compact, localized ages for recent articles and a local calendar date for older ones.

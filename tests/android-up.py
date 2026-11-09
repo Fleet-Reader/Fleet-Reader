@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Native Up regression, including cold launch into the selected Today page.
 
-Run against an English Day-News install. Uses real toolbar touches, not nav_back,
+Run against an English Fleet Reader install. Uses real toolbar touches, not nav_back,
 which can pass even when the native button is absent. Does not edit articles.
 """
 
@@ -56,7 +56,7 @@ def tap(node):
 def assert_root():
     root = screen()
     assert up(root) is None, "Root should not have Up"
-    assert any(node.get("text") == "Day News" and bounds(node)[1] < 300
+    assert any(node.get("text") == "Fleet Reader" and bounds(node)[1] < 300
                for node in root.iter("node")), "Did not return to feeds"
     # Hidden accessibility children alone do not prove that the root is visible.
     native = adb("shell", "dumpsys", "activity", "top")
@@ -72,8 +72,8 @@ def capture(name):
 
 
 for attempt in range(3):
-    adb("shell", "am", "force-stop", "dev.daybrite.news")
-    adb("shell", "am", "start", "-W", "-n", "dev.daybrite.news/dev.daybrite.day.bridge.DayActivity")
+    adb("shell", "am", "force-stop", "org.appfair.app.FleetReader")
+    adb("shell", "am", "start", "-W", "-n", "org.appfair.app.FleetReader/dev.daybrite.day.bridge.DayActivity")
     time.sleep(2)
     root = screen()
     assert up(root) is not None, "Cold launch into Today has no Up button"

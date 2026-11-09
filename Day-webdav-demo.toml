@@ -1,8 +1,8 @@
-# Isolated local interactive sync pilot; normal Day-News data remains separate.
+# Isolated local interactive sync pilot; normal Fleet Reader data remains separate.
 [app]
-id = "dev.daybrite.news.webdav.demo"
-scheme = "daynews-webdav-demo"
-title = "Day News Sync Demo"
+id = "org.appfair.app.FleetReader.webdav.demo"
+scheme = "fleetreader-webdav-demo"
+title = "Fleet Reader Sync Demo"
 targets = ["macos-appkit", "ios-uikit", "android-material"]
 [cargo]
 features = ["experimental-webdav"]

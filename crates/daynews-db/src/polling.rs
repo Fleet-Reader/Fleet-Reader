@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Deterministic publication-based polling. Samples survive retention and app restarts.
 const MIN: i64 = 30 * 60;
 const MAX: i64 = 24 * 60 * 60;

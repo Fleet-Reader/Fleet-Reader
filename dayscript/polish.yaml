@@ -1,11 +1,11 @@
-# Day News polish check: Smart Feeds, unread dots, and sidebar alignment.
+# Fleet Reader polish check: Smart Feeds, unread dots, and sidebar alignment.
 #
 #     day launch -t macos-gtk --script dayscript/polish.yaml
 #
 # CONTRACT: expects an imported store (run dayscript/import.yaml first). The screenshots are
 # what this run is for: the dot, the sidebar's left edge, and the timeline background are all
 # things an assertion cannot see.
-name: day-news-polish
+name: fleet-reader-polish
 description: Smart Feeds section, unread dots, and sidebar alignment.
 flow:
   - wait_for: { id: nav }

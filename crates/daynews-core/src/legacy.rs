@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! The app's view-model: opens the container, wires live queries, and publishes what the UI
 //! renders as reactive signals, every one of them derived. There is no reload call anywhere:
 //! a write lands in the store, the affected queries re-derive, the standing effects rebuild
@@ -1224,7 +1225,7 @@ pub fn export_opml() -> String {
             .map(to_outline),
     );
     daynews_opml::write(&daynews_opml::Opml {
-        title: Some("Day News Subscriptions".into()),
+        title: Some("Fleet Reader Subscriptions".into()),
         outlines: root,
     })
     .unwrap_or_default()

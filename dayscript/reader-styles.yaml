@@ -1,4 +1,4 @@
-name: day-news-reader-styles
+name: fleet-reader-reader-styles
 description: Persistent reader controls update the existing document and reset together.
 flow:
   - wait_for: { id: nav }

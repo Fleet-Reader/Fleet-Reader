@@ -8,7 +8,7 @@
   https://github.com/cure53/DOMPurify/tree/3.4.16. Used under Apache-2.0;
   see `purify-LICENSE` and the source header.
   SHA-256: `2c90a9b46d6463f26038a29b686e82bc91de01fdac9d5229e7cfe3b360134ea2`.
-- `extract.js`: Day-News's adapter. The upstream libraries are unchanged. Update the pinned
+- `extract.js`: Fleet Reader's adapter. The upstream libraries are unchanged. Update the pinned
   versions, hashes, licenses, and browser regression tests together when upgrading.
 
 The app accesses these files through generated `res::assets::reader` constants. Publication

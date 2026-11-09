@@ -1,0 +1,51 @@
+# The store listing (https://daybrite.dev/docs/store): the text every store shows, the details a
+# reviewer reads, and which walkthrough captures each listing carries. The bundle id is Day.toml's.
+
+[storefront.submission-info]
+copyright = "2026 The App Fair Project"
+contact-email = "support@appfair.org"
+review-notes = """
+Fleet Reader reads RSS, Atom, RDF, and JSON feeds, and needs no sign-in. To try it, tap New Feed…,
+enter a feed or website address such as https://daringfireball.net, tap Verify, then Subscribe.
+The app downloads articles directly from each publisher's site.
+
+Settings > Accounts can connect a WebDAV server to sync subscriptions, read status, and stars
+between devices. Sync stays off until someone connects a server.
+"""
+
+[storefront.ios-uikit.apple-app-store.submission-info]
+apple-category = "NEWS"
+
+[storefront.metadata]
+name = "Fleet Reader"
+subtitle = "RSS, Atom, and JSON feeds"
+short = "Follow news sites and blogs through their RSS, Atom, and JSON feeds."
+description = """
+Fleet Reader is a feed reader for following news sites, blogs, and other publications in one place. Subscribe to the sites you read, browse their latest articles, and keep track of what you've read.
+
+On an iPad or a computer, your subscriptions, article list, and reader sit side by side. On a phone, tap a subscription to see its articles, then tap an article to read it.
+
+• Follow RSS, Atom, RDF, and JSON feeds, and organize subscriptions into collections.
+• Read across every subscription in Today, All Unread, and Starred.
+• Search your articles and star the ones you want to keep.
+• Read articles in the app, load the full article when the site allows it, or open it in your browser.
+• Adjust text size, fonts, and colors, and choose a light or dark appearance.
+• Import and export your subscriptions as OPML.
+
+Fleet Reader fetches feeds directly from the sites you follow and keeps your library on your device. You can read without an account. Experimental WebDAV sync shares your subscriptions, read status, and stars across devices through a server you choose.
+
+Fleet Reader is open source under the Apache 2.0 license: github.com/Fleet-Reader/Fleet-Reader
+"""
+keywords = ["rss", "feed", "reader", "atom", "json feed", "opml", "news", "blogs", "subscriptions", "webdav"]
+release-notes = "First release. Follow RSS, Atom, and JSON feeds, organize them into collections, search and star articles, import and export OPML, and try experimental WebDAV sync between devices."
+promo = "Subscribe to the sites you read and catch up on their articles in one list. Bring your subscriptions from another reader with OPML."
+marketing-url = "https://fleet-reader.github.io/Fleet-Reader/"
+support-url = "https://github.com/Fleet-Reader/Fleet-Reader/issues"
+privacy-url = "https://appfair.org/privacy/"
+
+# The walkthrough captures (dayscript/walkthrough.yaml) each listing shows, in order.
+[storefront.ios-uikit.screenshots]
+default = ["timeline", "article", "sidebar", "search-results", "dashboard-feed", "settings"]
+
+[storefront.android-material.screenshots]
+default = ["timeline", "article", "sidebar", "search-results", "dashboard-feed", "settings"]

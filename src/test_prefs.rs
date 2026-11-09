@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Isolate the subprocess chains used to verify preference persistence.
 //!
 //! Each chain gets a private store: the children run with `DAY_PREFS_DIR` naming a fresh

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! UI signals stay on the UI thread; SQLite, migrations, FTS, materialization, and undo
 //! live on one database worker. Committed, owned projections are the only bridge.
 use day_core::Ambient;
@@ -1403,7 +1404,8 @@ pub fn store_dir() -> PathBuf {
 /// The app's cache directory, for what can be fetched again (feed icons):
 /// `day_spec::storage::cache_dir()`.
 pub fn cache_dir() -> PathBuf {
-    day_spec::storage::cache_dir().unwrap_or_else(|| std::env::temp_dir().join("day-news-cache"))
+    day_spec::storage::cache_dir()
+        .unwrap_or_else(|| std::env::temp_dir().join("fleet-reader-cache"))
 }
 
 /// Subscribe only while a dashboard is mounted; scope disposal cancels obsolete projections.

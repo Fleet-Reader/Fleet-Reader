@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Offline maintenance through the regular journal. Stop the app and take a backup first.
 //! Usage: webdav_mark_read_before DATABASE PUBLIC_CONFIG UNIX_CUTOFF
 #[cfg(feature = "experimental-webdav")]

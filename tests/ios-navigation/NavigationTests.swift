@@ -3,7 +3,7 @@ import XCTest
 // Real UIKit gestures: injected route changes cannot catch an offstage split column.
 // Run only against the isolated English fixtures documented in native-interactions.md.
 final class NavigationTests: XCTestCase {
-    let app = XCUIApplication(bundleIdentifier: "dev.daybrite.news")
+    let app = XCUIApplication(bundleIdentifier: "org.appfair.app.FleetReader")
 
     func testNewFeedRemainsUsableWhenPasteIsDenied() {
         continueAfterFailure = false
@@ -51,7 +51,7 @@ final class NavigationTests: XCTestCase {
         app.launchEnvironment["DAY_NEWS_SYNC_TEST"] = "1"
         app.launch()
         let back = app.navigationBars.buttons.matching(
-            NSPredicate(format: "label == 'Back' OR label == 'Day News'")).firstMatch
+            NSPredicate(format: "label == 'Back' OR label == 'Fleet Reader'")).firstMatch
         if back.waitForExistence(timeout: 2) && back.isHittable { back.tap() }
         let search = app.searchFields.firstMatch
         // Pull down first: the previous session may have left the list scrolled.
@@ -103,13 +103,13 @@ final class NavigationTests: XCTestCase {
         let filter = app.navigationBars.buttons["Show Only Unread Feeds"].firstMatch
         visible(refresh)
         visible(filter)
-        // The commands belong to the middle column, and its title must not repeat Day News.
+        // The commands belong to the middle column, and its title must not repeat Fleet Reader.
         let bars = app.navigationBars.allElementsBoundByIndex.filter { $0.isHittable }
             .sorted { $0.frame.minX < $1.frame.minX }
         XCTAssertEqual(bars.count, 3)
         XCTAssertTrue(bars[1].frame.contains(refresh.frame))
         XCTAssertTrue(bars[1].frame.contains(filter.frame))
-        XCTAssertFalse(bars[1].staticTexts["Day News"].exists)
+        XCTAssertFalse(bars[1].staticTexts["Fleet Reader"].exists)
         XCTAssertEqual(app.navigationBars.buttons.matching(identifier: "Refresh").count, 1)
         for button in app.navigationBars.buttons.allElementsBoundByIndex where button.isHittable {
             XCTAssertGreaterThanOrEqual(button.frame.width, 28, "Compressed toolbar: \(button.label)")
@@ -130,7 +130,7 @@ final class NavigationTests: XCTestCase {
         // A compact initial selection may show the list or the root. Either way,
         // a visible list must provide UIKit's Back, not just a scripted nav_back.
         let back = app.navigationBars.buttons.matching(
-            NSPredicate(format: "label == 'Back' OR label == 'Day News'")).firstMatch
+            NSPredicate(format: "label == 'Back' OR label == 'Fleet Reader'")).firstMatch
         if app.staticTexts["No articles"].waitForExistence(timeout: 3) {
             visible(back)
             back.tap()

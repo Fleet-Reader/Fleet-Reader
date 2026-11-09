@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Explicit dayscript-only synthetic publication. Never contacts a publisher.
 //! Enable with DAY_NEWS_HTTP_TEST=1 before launch; ordinary app launches do not install it.
 pub(crate) fn install() {

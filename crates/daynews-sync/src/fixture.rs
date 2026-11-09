@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Synthetic fixtures implementing Feedbin's observed wire format, installed only by tests.
 //! Based on the trial round trip on 2026-10-18: 200 auth, subscription 201, paged entries,
 //! unread ID array and per-ID 200 acknowledgements. Taggings and tags follow the published

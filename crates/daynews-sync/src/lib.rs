@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Provider-independent synchronization contracts. IDs and cursors belong to the provider;
 //! article caches, account state and durable user intent belong to the application.
 use futures_util::future::LocalBoxFuture;

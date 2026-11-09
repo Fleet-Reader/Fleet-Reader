@@ -2,14 +2,14 @@
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
     <title>Field Notes</title>
-    <link>https://github.com/daybrite/Day-News/tree/main/resource/assets/demo</link>
-    <description>Short dispatches on the animals and plants around us. A Day News demo feed.</description>
+    <link>https://github.com/Fleet-Reader/Fleet-Reader/tree/main/resource/assets/demo</link>
+    <description>Short dispatches on the animals and plants around us. A Fleet Reader demo feed.</description>
     <language>en</language>
     <lastBuildDate>Sat, 12 Sep 2026 09:15:00 +0000</lastBuildDate>
     <item>
       <title>How monarch butterflies find their way to Mexico</title>
       <link>https://en.wikipedia.org/wiki/Monarch_butterfly_migration</link>
-      <guid isPermaLink="false">day-news-demo:field-notes:monarch-migration</guid>
+      <guid isPermaLink="false">fleet-reader-demo:field-notes:monarch-migration</guid>
       <dc:creator>Field Notes desk</dc:creator>
       <pubDate>Sat, 12 Sep 2026 09:15:00 +0000</pubDate>
       <description>Every autumn, monarchs from eastern North America fly as far as 4,800 kilometers to a few mountain forests in central Mexico, steering by the Sun.</description>
@@ -22,7 +22,7 @@
     <item>
       <title>What a honeybee's dance tells the hive</title>
       <link>https://en.wikipedia.org/wiki/Waggle_dance</link>
-      <guid isPermaLink="false">day-news-demo:field-notes:waggle-dance</guid>
+      <guid isPermaLink="false">fleet-reader-demo:field-notes:waggle-dance</guid>
       <dc:creator>Field Notes desk</dc:creator>
       <pubDate>Wed, 09 Sep 2026 08:25:00 +0000</pubDate>
       <description>A forager that finds a good patch of flowers comes home and dances, turning direction and distance into a figure eight the other bees can read.</description>
@@ -33,7 +33,7 @@
     <item>
       <title>Three hearts and blue blood: inside the octopus</title>
       <link>https://en.wikipedia.org/wiki/Octopus</link>
-      <guid isPermaLink="false">day-news-demo:field-notes:octopus-hearts</guid>
+      <guid isPermaLink="false">fleet-reader-demo:field-notes:octopus-hearts</guid>
       <dc:creator>Field Notes desk</dc:creator>
       <pubDate>Sun, 06 Sep 2026 08:45:00 +0000</pubDate>
       <description>Two hearts serve the gills, a third serves the body, and a copper-based protein turns the blood blue.</description>
@@ -44,7 +44,7 @@
     <item>
       <title>Reading the tide pools: why the sea rises twice a day</title>
       <link>https://en.wikipedia.org/wiki/Tide</link>
-      <guid isPermaLink="false">day-news-demo:field-notes:tides</guid>
+      <guid isPermaLink="false">fleet-reader-demo:field-notes:tides</guid>
       <dc:creator>Field Notes desk</dc:creator>
       <pubDate>Thu, 03 Sep 2026 08:15:00 +0000</pubDate>
       <description>Most coasts see two high tides roughly every 24 hours and 50 minutes, pulled along by the Moon and nudged by the Sun.</description>
@@ -56,7 +56,7 @@
     <item>
       <title>Trees that were growing when the Great Pyramid was built</title>
       <link>https://en.wikipedia.org/wiki/Pinus_longaeva</link>
-      <guid isPermaLink="false">day-news-demo:field-notes:bristlecone-pines</guid>
+      <guid isPermaLink="false">fleet-reader-demo:field-notes:bristlecone-pines</guid>
       <dc:creator>Field Notes desk</dc:creator>
       <pubDate>Mon, 31 Aug 2026 08:20:00 +0000</pubDate>
       <description>Great Basin bristlecone pines in the mountains of California and Nevada can live for more than 4,800 years.</description>
@@ -68,7 +68,7 @@
     <item>
       <title>The Arctic tern's pole-to-pole commute</title>
       <link>https://en.wikipedia.org/wiki/Arctic_tern</link>
-      <guid isPermaLink="false">day-news-demo:field-notes:arctic-tern</guid>
+      <guid isPermaLink="false">fleet-reader-demo:field-notes:arctic-tern</guid>
       <dc:creator>Field Notes desk</dc:creator>
       <pubDate>Fri, 28 Aug 2026 08:35:00 +0000</pubDate>
       <description>Tracking tags show these small seabirds fly around 70,000 kilometers a year between Arctic breeding grounds and Antarctic waters.</description>

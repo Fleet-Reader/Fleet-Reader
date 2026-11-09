@@ -43,7 +43,7 @@ navigation and feed overview. The iPad's split layout can legitimately keep the 
 visible alongside the article list. Clipboard permission must be granted for `seed-demo`,
 or seed the isolated simulator store from a consistent backup of the synthetic desktop store.
 On Android use an app-private store path such as
-`/data/user/0/dev.daybrite.news/files/regression`. Browser tests use `web-dom` with the configured
+`/data/user/0/org.appfair.app.FleetReader/files/regression`. Browser tests use `web-dom` with the configured
 Day web driver and a fresh browser profile; their database lives in browser storage.
 
 The long-reader script checks visibility-triggered loading, no top loading banner, preserved
@@ -149,7 +149,7 @@ python3 tests/android-navigation.py --adb /path/to/adb --edge-swipes
 
 The first alternates article toolbar Up and system Back, then leaves the section
 and opens Settings. It checks the native pane is actually offscreen at the feeds
-root, so the blank interstitial cannot pass merely because its title says Day News.
+root, so the blank interstitial cannot pass merely because its title says Fleet Reader.
 The second temporarily widens the emulator, checks section changes create no history,
 closes/reopens a reader, and narrows back to verify reader → list → feeds. It restores
 the prior size override and logging property in `finally`; use an isolated emulator
@@ -224,7 +224,7 @@ replace, the cold-launch, smart-feed, reader, system Back and tablet checks abov
 
 `NavigationProbe/NavigationTests/testTabletToolbarColumns` uses the same isolated iPad
 fixture. It verifies that Refresh and Show Only Unread Feeds belong to the middle bar,
-that its duplicate Day News title is absent, that visible buttons have usable widths,
+that its duplicate Fleet Reader title is absent, that visible buttons have usable widths,
 and that filtering does not change the M/N subscription count. UIKit's older plain-bar
 fallback also has host unit tests in `day-toolkit-uikit/src/toolbar_policy.rs`. Validate iOS 15
 on hardware: the reader should expose its primary actions plus a visible ellipsis menu,

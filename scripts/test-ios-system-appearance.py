@@ -3,7 +3,7 @@
 
 Requires Pillow, Xcode and a Day CLI. Use an isolated DAY_DATA_DIR and seed-demo.yaml
 when launching the app; do not pass DAY_THEME. This test does not relaunch the app between
-changes. It checks rendered Day-News palette colors, not just UIKit's native toolbar.
+changes. It checks rendered Fleet Reader palette colors, not just UIKit's native toolbar.
 
 Usage: python3 scripts/test-ios-system-appearance.py SIMULATOR_UDID --day /path/to/day
 """

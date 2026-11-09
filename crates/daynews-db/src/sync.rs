@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Durable synchronization records. No credential material is stored in this database.
 //! Call mutations inside the same worker transaction as the user's edit.
 use crate::*;
@@ -337,7 +338,7 @@ impl Db {
         }
         Ok(())
     }
-    /// A newly linked feed Day-News subscribed itself keeps the folder it was filed under.
+    /// A newly linked feed Fleet Reader subscribed itself keeps the folder it was filed under.
     fn sync_queue_linked_folder(
         &self,
         account: u64,
@@ -423,7 +424,7 @@ impl Db {
             if feed.sync_account().peek() != Some(account) {
                 continue;
             }
-            // Day-News files a feed once; several tags resolve to the alphabetically first.
+            // Fleet Reader files a feed once; several tags resolve to the alphabetically first.
             let name = names
                 .get(&link.remote_feed)
                 .and_then(|n| n.iter().min_by_key(|n| (n.to_lowercase(), n.as_str())));

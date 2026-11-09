@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! The article pane: a native web view showing the feed's own HTML, wrapped in a readable
 //! document of our own so text is legible and matches the app's appearance.
 

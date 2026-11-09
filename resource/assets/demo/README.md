@@ -1,6 +1,6 @@
 # Demo feeds
 
-The articles Day News shows in its screenshots and in the walkthrough CI runs on every platform.
+The articles Fleet Reader shows in its screenshots and in the walkthrough CI runs on every platform.
 They ship inside the app, one directory per language, and `dayscript/seed-demo.yaml` subscribes to
 them with `asset:` URLs, so a run needs no network and every platform shows the same articles.
 
@@ -11,7 +11,7 @@ each holds the same seven files. A subscription names a feed without its languag
 
     asset:demo/night-sky.xml
 
-When Day News reads that feed, it looks in the directory for the app's current language, then in
+When Fleet Reader reads that feed, it looks in the directory for the app's current language, then in
 the one for that language without its region, and finally in `en/`. With the app running in
 `zh-CN`, that is `demo/zh-CN/night-sky.xml`, then `demo/zh/night-sky.xml`, then
 `demo/en/night-sky.xml`. A screenshot run with `--locale zh-CN` shows Chinese articles as soon as
@@ -46,4 +46,4 @@ timeline has the same shape in every language. The walkthrough searches for "moo
 language arrives, give that step a localized search term (`toolbar:` takes a Fluent `key:`) and
 make sure several feeds in every set contain it.
 
-The articles were written for Day News and are covered by the app's Apache-2.0 license.
+The articles were written for Fleet Reader and are covered by the app's Apache-2.0 license.

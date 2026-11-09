@@ -1,5 +1,5 @@
 # The reader loop: opening an article must clear its dot and swap the content pane.
-name: day-news-reader
+name: fleet-reader-reader
 description: Unread clears on open; a second article replaces the first in the reader.
 flow:
   - wait_for: { id: nav }

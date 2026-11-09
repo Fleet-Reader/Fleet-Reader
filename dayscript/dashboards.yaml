@@ -1,5 +1,5 @@
 # Run after seed-demo.yaml. Dashboard graphics use only real stored article metadata.
-name: day-news-dashboards
+name: fleet-reader-dashboards
 description: Feed and smart-feed dashboards, refresh forecast, themes and returning to reading.
 flow:
   # On a phone or the web the section is a root list of groups: open it and tap the group's

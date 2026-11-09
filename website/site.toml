@@ -1,4 +1,4 @@
-# Day News's website — built from this file plus data the project already maintains, by the
+# Fleet Reader's website — built from this file plus data the project already maintains, by the
 # daysite template (https://github.com/daybrite/daysite).
 #
 # When this repository's CI uses the daybrite/actions dayapp workflow, the presence of
@@ -19,12 +19,12 @@
 # is case-sensitive there, so this is the one place an app spells its name the way GitHub
 # does rather than the way Cargo does. A custom domain works too. A path component becomes
 # the site's base path automatically.
-host = "https://daybrite.github.io/Day-News"
+host = "https://fleet-reader.github.io/Fleet-Reader"
 
 # Everything below is optional — these are the defaults, spelled out to edit.
 #
 # The app's localized store/ name titles the site; set `title` only to differ from it.
-# title = "Day News"
+# title = "Fleet Reader"
 # tagline = ""
 
 # Brand accent (any CSS color) and starting theme: light | dark | system.
@@ -53,4 +53,4 @@ icon-effect = "raise"
 
 # Footer line, printed under the Day attribution; {year} interpolates. Absent by default: a
 # copyright notice is yours to write, not the scaffold's to guess.
-# footer = "© {year} Day News"
+# footer = "© {year} Fleet Reader"

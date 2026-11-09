@@ -1,5 +1,5 @@
 [package]
-name = "day-news"
+name = "fleet-reader"
 version.workspace = true
 edition = "2024"
 license = "Apache-2.0"
@@ -77,7 +77,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.2.1"
+version = "0.3.0"
 
 # The bundled SQLite is C compiled by its build script at the profile's optimization level, and
 # unoptimized it runs the dashboard's word count and full-text searches about seven times slower

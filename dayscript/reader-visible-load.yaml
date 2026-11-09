@@ -1,5 +1,5 @@
 # Start tests/reader-view-server.py 28762 with an isolated data directory.
-name: day-news-reader-visible-load
+name: fleet-reader-reader-visible-load
 description: Auto-load waits for visibility, shows progress, and preserves reading position.
 flow:
   - dialog_mode: { mode: scripted }

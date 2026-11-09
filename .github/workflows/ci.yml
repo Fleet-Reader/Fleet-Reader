@@ -24,6 +24,16 @@ permissions:
   contents: read
 
 jobs:
+  # The App Fair's rules: the licence texts, an SPDX line in every Rust file, and the flavor
+  # manifest the catalog builds with. Submissions run the same action
+  # (https://github.com/appfair/appfair-apps).
+  appfair-lint:
+    name: appfair-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: appfair/appfair-apps/.github/actions/appfair-lint@main
+
   app:
     uses: daybrite/actions/.github/workflows/dayapp.yml@v1
     permissions:
@@ -33,17 +43,18 @@ jobs:
     secrets: inherit
     with:
       targets: windows-winui, macos-appkit, linux-gtk, linux-qt, ios-uikit, android-material, harmony-arkui, web-dom
-      # Build against the tip of the day branch the app tracks, not the revision the committed
-      # lock pins: a sample app exists to prove the current framework still builds it, and a
-      # lock left at an older revision would silently stop testing day at all. The revision is
-      # resolved once per run, so every leg compiles the same one. Refresh the lock locally
-      # (`cargo update -p day`) when a new framework API lands, so a local build matches.
+      # A tag and the nightly run build against the newest day release; a push builds against
+      # day's main branch, as does a manual run that asks for it. The revision is resolved once
+      # per run, so every leg compiles the same one.
       day-deps: ${{ inputs.day-main && 'main' || 'auto' }}
       scripts: dayscript/seed-demo.yaml dayscript/reader-swipes.yaml dayscript/walkthrough.yaml dayscript/http-interception.yaml
       launch-env: DAY_NEWS_HTTP_TEST=1 DAY_NEWS_SYNC_TEST=1 DAY_NEWS_SYNC_TEST_LATENCY_MS=1500
       preflight-checks: fmt test
       locales: en
       deploy-web: true
+      # A tag publishes a pre-release. The App Fair queue builds the same tag, compares its
+      # packages with this release's, and marks the release Latest once the stores have it.
+      release-mode: pre-release
       # HarmonyOS runs on the phone panel only for now. The default tablet row (a 1280×800
       # panel on the same emulator image) kills the walkthrough intermittently inside ArkWeb's
       # in-process GPU thread as the article web view comes up: `Chrome_InProcGp →

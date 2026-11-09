@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 use daynews_opml::{FeedRef, Opml, Outline, parse, write};
 
 // Real-world OPML, vendored so these tests run on any host (tests/data/README.md records where
@@ -74,7 +75,10 @@ fn folders_become_paths() {
 #[test]
 fn sample_list_mixes_folders_and_top_level_feeds() {
     let doc = parse(SAMPLE).expect("parse");
-    assert_eq!(doc.title.as_deref(), Some("Day News sample subscriptions"));
+    assert_eq!(
+        doc.title.as_deref(),
+        Some("Fleet Reader sample subscriptions")
+    );
     let found: Vec<_> = doc
         .feeds()
         .iter()

@@ -1,1 +1,0 @@
-First public release. Three-pane reading, smart feeds, folders, full-text search, starring, and OPML import and export.

@@ -1,4 +1,4 @@
-# Day News walkthrough: the reader loop end to end against the imported subscriptions.
+# Fleet Reader walkthrough: the reader loop end to end against the imported subscriptions.
 #
 #     day launch -t macos-appkit --script dayscript/walkthrough.yaml
 # Short-window regression: add --capture-size 2048x1400@2 (1024x700 points).
@@ -7,7 +7,7 @@
 # dayscript/seed-demo.yaml first, as CI does). Written to be re-runnable: it reads from
 # "All Articles", which is unaffected by the read state a previous run left behind, and only
 # asserts emptiness in the unread scope where it has just marked everything read itself.
-name: day-news-walkthrough
+name: fleet-reader-walkthrough
 description: Sidebar, timeline, reader, search, and read/unread marking.
 flow:
   - dialog_mode: { mode: scripted }

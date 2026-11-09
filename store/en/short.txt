@@ -1,1 +1,0 @@
-A fast RSS reader: subscriptions, timeline, article. Import your OPML and go.

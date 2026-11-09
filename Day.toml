@@ -17,11 +17,11 @@ mime_types = ["application/atom+xml"]
 apple_uti = "org.atom.atom"
 
 [app]
-id = "dev.daybrite.news"
-# The deep-link scheme this app shipped (docs/deep-links.md). Left explicit because the
-# default is the id\'s last segment, which is not what this app published.
-scheme = "daynews"
-title = "Day News"
+id = "org.appfair.app.FleetReader"
+# The deep-link scheme (docs/deep-links.md). Left explicit because the default is the id's
+# last segment, and a scheme takes no capitals.
+scheme = "fleetreader"
+title = "Fleet Reader"
 build = 8
 targets = ["macos-appkit", "macos-gtk", "macos-qt", "windows-winui", "ios-uikit", "android-material", "web-dom", "harmony-arkui"]
 

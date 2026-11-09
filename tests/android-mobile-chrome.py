@@ -44,18 +44,18 @@ def capture(name):
 root = screen()
 if find(root, 'Navigate up') is not None:
     tap(find(root, 'Navigate up'))
-assert find(screen(), 'Day News') is not None
+assert find(screen(), 'Fleet Reader') is not None
 capture('phone-expanded')
 adb('shell', 'input', 'swipe', '500', '1900', '500', '650', '600')
 time.sleep(1)
 root = screen()
-assert find(root, 'Day News') is None, 'App-bar title did not scroll away'
+assert find(root, 'Fleet Reader') is None, 'App-bar title did not scroll away'
 assert find(root, 'Search articles') is None, 'Search did not scroll away'
 capture('phone-collapsed')
 adb('shell', 'input', 'swipe', '500', '650', '500', '1900', '600')
 time.sleep(1)
 root = screen()
-assert find(root, 'Day News') is not None, 'App bar did not return'
+assert find(root, 'Fleet Reader') is not None, 'App bar did not return'
 assert find(root, 'Search articles') is not None, 'Search did not return'
 # Opening a destination must restore the toolbar with an accessible Up action.
 tap(find(root, 'Today'))

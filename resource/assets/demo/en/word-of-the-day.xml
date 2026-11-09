@@ -2,14 +2,14 @@
 <rss version="2.0">
   <channel>
     <title>Word of the Day</title>
-    <link>https://github.com/daybrite/Day-News/tree/main/resource/assets/demo</link>
-    <description>One word, what it means, and where it came from. A Day News demo feed.</description>
+    <link>https://github.com/Fleet-Reader/Fleet-Reader/tree/main/resource/assets/demo</link>
+    <description>One word, what it means, and where it came from. A Fleet Reader demo feed.</description>
     <language>en</language>
     <lastBuildDate>Thu, 10 Sep 2026 16:45:00 +0000</lastBuildDate>
     <item>
       <title>halcyon</title>
       <link>https://en.wiktionary.org/wiki/halcyon</link>
-      <guid isPermaLink="false">day-news-demo:word-of-the-day:halcyon</guid>
+      <guid isPermaLink="false">fleet-reader-demo:word-of-the-day:halcyon</guid>
       <pubDate>Thu, 10 Sep 2026 16:45:00 +0000</pubDate>
       <description><![CDATA[<p><strong>halcyon</strong> · adjective</p>
 <p>Calm and peaceful; happy and carefree, especially when remembered from the past.</p>
@@ -19,7 +19,7 @@
     <item>
       <title>petrichor</title>
       <link>https://en.wiktionary.org/wiki/petrichor</link>
-      <guid isPermaLink="false">day-news-demo:word-of-the-day:petrichor</guid>
+      <guid isPermaLink="false">fleet-reader-demo:word-of-the-day:petrichor</guid>
       <pubDate>Mon, 07 Sep 2026 16:40:00 +0000</pubDate>
       <description><![CDATA[<p><strong>petrichor</strong> · noun</p>
 <p>The pleasant, earthy smell that rises when rain falls on dry ground.</p>
@@ -29,7 +29,7 @@
     <item>
       <title>serendipity</title>
       <link>https://en.wiktionary.org/wiki/serendipity</link>
-      <guid isPermaLink="false">day-news-demo:word-of-the-day:serendipity</guid>
+      <guid isPermaLink="false">fleet-reader-demo:word-of-the-day:serendipity</guid>
       <pubDate>Fri, 04 Sep 2026 16:30:00 +0000</pubDate>
       <description><![CDATA[<p><strong>serendipity</strong> · noun</p>
 <p>The luck of finding something good or useful without looking for it.</p>
@@ -39,7 +39,7 @@
     <item>
       <title>gossamer</title>
       <link>https://en.wiktionary.org/wiki/gossamer</link>
-      <guid isPermaLink="false">day-news-demo:word-of-the-day:gossamer</guid>
+      <guid isPermaLink="false">fleet-reader-demo:word-of-the-day:gossamer</guid>
       <pubDate>Tue, 01 Sep 2026 16:20:00 +0000</pubDate>
       <description><![CDATA[<p><strong>gossamer</strong> · noun, adjective</p>
 <p>Fine, filmy cobwebs that drift through the air in calm weather; anything very light, thin and delicate.</p>
@@ -49,7 +49,7 @@
     <item>
       <title>lunation</title>
       <link>https://en.wiktionary.org/wiki/lunation</link>
-      <guid isPermaLink="false">day-news-demo:word-of-the-day:lunation</guid>
+      <guid isPermaLink="false">fleet-reader-demo:word-of-the-day:lunation</guid>
       <pubDate>Sat, 29 Aug 2026 16:10:00 +0000</pubDate>
       <description><![CDATA[<p><strong>lunation</strong> · noun</p>
 <p>The time from one new moon to the next, about 29.5 days; a lunar month.</p>
@@ -59,7 +59,7 @@
     <item>
       <title>meander</title>
       <link>https://en.wiktionary.org/wiki/meander</link>
-      <guid isPermaLink="false">day-news-demo:word-of-the-day:meander</guid>
+      <guid isPermaLink="false">fleet-reader-demo:word-of-the-day:meander</guid>
       <pubDate>Wed, 26 Aug 2026 16:05:00 +0000</pubDate>
       <description><![CDATA[<p><strong>meander</strong> · verb</p>
 <p>To follow a winding course; to wander without hurry or aim.</p>

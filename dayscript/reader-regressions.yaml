@@ -1,5 +1,5 @@
 # Requires seed-demo.yaml. Run with DAY_DATA_DIR pointing to an isolated store.
-name: day-news-reader-regressions
+name: fleet-reader-reader-regressions
 description: Next Unread crosses scopes, clears search, and preserves the loaded reader on flag changes.
 flow:
   - wait_for: { id: nav }

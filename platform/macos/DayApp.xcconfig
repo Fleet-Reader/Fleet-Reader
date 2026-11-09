@@ -16,12 +16,12 @@
 // and the version in Cargo.toml [package].
 // The app's name: the .app bundle, the executable, and what Xcode shows.
 // Renaming a fork is this line (plus the id below) and nothing in the pbxproj.
-PRODUCT_NAME = DayNews
+PRODUCT_NAME = FleetReader
 // The name on the home screen. The generated include below rewrites it from Day.toml [app]
 // title on every `day build`; this line only carries a checkout that has not built yet.
-DAY_APP_TITLE = Day News
-PRODUCT_BUNDLE_IDENTIFIER = dev.daybrite.news
-MARKETING_VERSION = 0.1.0
+DAY_APP_TITLE = Fleet Reader
+PRODUCT_BUNDLE_IDENTIFIER = org.appfair.app.FleetReader
+MARKETING_VERSION = 0.3.0
 CURRENT_PROJECT_VERSION = 1
 
 // ===========================================================================

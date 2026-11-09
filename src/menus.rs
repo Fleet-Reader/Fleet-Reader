@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! The desktop menu bar (File, Go, Feed and Article, modeled on NetNewsWire's) and the sidebar
 //! feed rows' context menu.
 //!

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! One isolated integration-test process exercises global interception of the ordinary fetch API.
 use day_part_http::{
     Session,

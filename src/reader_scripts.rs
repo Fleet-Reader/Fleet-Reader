@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! User-authored extraction hooks. Preferences store copies, never paths to mutable files.
 use crate::res;
 use day::prelude::*;
@@ -252,7 +253,7 @@ fn editor(open: Signal<Option<String>>, target: &str) -> impl Piece + use<> {
                     let bytes = source.get_untracked().into_bytes();
                     day::task(async move {
                         save_file(bytes)
-                            .suggested_name("Day-News-Reader.js")
+                            .suggested_name("Fleet-Reader-Script.js")
                             .filter(res::str::reader_script_filter().format(), &["js"])
                             .await;
                     });

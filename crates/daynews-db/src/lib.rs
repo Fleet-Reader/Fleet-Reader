@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! The local article store, on day-persistence's lazy engine.
 //!
 //! The schema is relational and declared: folders own feeds (ordered, cascade), feeds own
@@ -392,7 +393,7 @@ fn traced(driver: Sqlite) -> Sqlite {
         driver.trace_sql(|sql| {
             use std::io::Write;
             // A closed console must not interrupt a database operation.
-            let _ = writeln!(std::io::stderr().lock(), "[Day-News SQL] {sql}");
+            let _ = writeln!(std::io::stderr().lock(), "[Fleet-Reader SQL] {sql}");
         })
     } else if cfg!(debug_assertions) && log::log_enabled!(log::Level::Trace) {
         driver.trace_sql(|sql| log::trace!("sql: {sql}"))

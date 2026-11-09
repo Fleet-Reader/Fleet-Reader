@@ -1,6 +1,6 @@
 # Run tests/feed-refresh-server.py first in a fresh DAY_DATA_DIR.
 # Compare /stats before/after the final tap: only /feed/1 should gain one request.
-name: day-news-dashboard-single-refresh
+name: fleet-reader-dashboard-single-refresh
 description: Refresh Now targets the displayed source and preserves conditional requests.
 flow:
   - dialog_mode: { mode: scripted }

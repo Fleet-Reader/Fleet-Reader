@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Small PNG thumbnails, with a week-long successful cache and a one-day miss backoff.
 use super::discovery::Source;
 use serde::{Deserialize, Serialize};

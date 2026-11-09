@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Verify Day's native IME lifecycle using the synthetic Feedbin form.
 
-Launch Day-News on the chosen emulator with DAY_NEWS_SYNC_TEST=1 and an isolated
+Launch Fleet Reader on the chosen emulator with DAY_NEWS_SYNC_TEST=1 and an isolated
 DAY_DATA_DIR, without signing in. Day's current android-material drive target must
 be that emulator. Tests use Android's actual IME state, not a UI focus proxy.
 """

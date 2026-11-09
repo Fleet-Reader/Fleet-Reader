@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Provider-neutral, count-based progress. Unknown work never gets a fictitious ETA.
 use std::time::Duration;
 

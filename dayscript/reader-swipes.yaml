@@ -1,6 +1,6 @@
 # Programmatic pager selection verifies the shared commit/cache contract on all mobile
 # backends. Real gestures are covered separately by the XCTest and Android input tests.
-name: day-news-reader-paging
+name: fleet-reader-reader-paging
 description: Mobile paging retains prepared documents and commits the selected article.
 flow:
   - toolbar: { item: unread_feeds_only, on: false, only_on: [ios-uikit, android-material, harmony-arkui] }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
-  <channel rdf:about="https://github.com/daybrite/Day-News/tree/main/resource/assets/demo">
+  <channel rdf:about="https://github.com/Fleet-Reader/Fleet-Reader/tree/main/resource/assets/demo">
     <title>Workshop</title>
-    <link>https://github.com/daybrite/Day-News/tree/main/resource/assets/demo</link>
-    <description>How everyday things work, and who worked them out. A Day News demo feed.</description>
+    <link>https://github.com/Fleet-Reader/Fleet-Reader/tree/main/resource/assets/demo</link>
+    <description>How everyday things work, and who worked them out. A Fleet Reader demo feed.</description>
     <dc:language>en</dc:language>
     <items>
       <rdf:Seq>

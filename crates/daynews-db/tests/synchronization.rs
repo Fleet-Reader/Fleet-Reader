@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 use daynews_db::{
     Article, ArticleFields, Db,
     sync::{Account, EntryLink},
@@ -1095,7 +1096,7 @@ fn folder_moves_upload_as_taggings_replacing_others_and_coalesce() {
     let a = Replica::new();
     wait(synchronize(&p, &a)).unwrap();
     let feed = daynews_db::feed_id(FIXTURE_FEED);
-    // Another client filed the feed twice; Day-News keeps one collection per feed.
+    // Another client filed the feed twice; Fleet Reader keeps one collection per feed.
     server.tag(FIXTURE_REMOTE_FEED, "Elsewhere");
     server.tag(FIXTURE_REMOTE_FEED, "Twice");
     a.file(feed, Some("Tech"));

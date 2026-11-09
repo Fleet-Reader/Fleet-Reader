@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! Replaceable full-article extraction. Providers return publication data, never UI strings.
 //! The default fetches HTML with native networking and runs bundled Mozilla Readability in
 //! an inert DOM in the reader's JS engine. It never navigates to or runs the publisher page.
@@ -75,7 +76,10 @@ impl ArticleExtractor for LocalReadability<'_> {
                     .unwrap_or_default();
                 let mut request = day_part_http::Request::get(target.as_str())
                     .header("Accept", "text/html, application/xhtml+xml;q=0.9")
-                    .header("User-Agent", concat!("DayNews/", env!("CARGO_PKG_VERSION")))
+                    .header(
+                        "User-Agent",
+                        concat!("FleetReader/", env!("CARGO_PKG_VERSION")),
+                    )
                     .timeout(Duration::from_secs(25));
                 if !cookies.is_empty() {
                     request = request.header("Cookie", &cookies);

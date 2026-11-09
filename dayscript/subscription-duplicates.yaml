@@ -1,6 +1,6 @@
 # Subscribing to a feed already in the library asks first instead of adding it twice.
 # Requires seed-demo.yaml and an isolated DAY_DATA_DIR.
-name: day-news-subscription-duplicates
+name: fleet-reader-subscription-duplicates
 description: A second subscription to the same address offers the existing feed.
 flow:
   - dialog_mode: { mode: scripted }

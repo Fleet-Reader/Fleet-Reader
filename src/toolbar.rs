@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! The window's toolbar items, its status bar, and the search signal they share
 //! (docs/toolbars.md).
 //!

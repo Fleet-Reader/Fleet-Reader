@@ -1,5 +1,5 @@
 # Start tests/reader-view-server.py; use an isolated DAY_DATA_DIR.
-name: day-news-inline-reader
+name: fleet-reader-inline-reader
 description: Inline full content, automatic loading, and independent per-feed preferences.
 flow:
   - dialog_mode: { mode: scripted }

@@ -1,4 +1,4 @@
-name: day-news-reader-styles-persist
+name: fleet-reader-reader-styles-persist
 description: Save reader choices; follow with reader-styles-restore.yaml in a new process.
 flow:
   # On a phone or the web the section is a root list of groups: open it and tap the group's

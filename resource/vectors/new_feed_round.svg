@@ -1,4 +1,4 @@
-<!-- New feed: a circle around a plus. Original Day-News artwork. -->
+<!-- New feed: a circle around a plus. Original Fleet Reader artwork. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.7" stroke-linecap="round">
   <circle cx="12" cy="12" r="9.5"/>
   <path d="M12 7.75v8.5M7.75 12h8.5"/>

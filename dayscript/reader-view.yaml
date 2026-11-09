@@ -1,5 +1,5 @@
 # Start tests/reader-view-server.py and launch with a fresh isolated DAY_DATA_DIR.
-name: day-news-reader-view
+name: fleet-reader-reader-view
 description: Local full-text extraction, cached toggling, selection cancellation, and errors.
 flow:
   - dialog_mode: { mode: scripted }

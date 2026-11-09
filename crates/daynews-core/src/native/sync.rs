@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 //! One account session per application, independent of window lifetimes.
 use super::*;
 use daynews_db::sync::AccountFields;

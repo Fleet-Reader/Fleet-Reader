@@ -1,11 +1,11 @@
-# Day News desktop menus: File and Go, driven through the native menu bar.
+# Fleet Reader desktop menus: File and Go, driven through the native menu bar.
 #
 #     day launch -t macos-appkit --script dayscript/menus.yaml
 #
 # CONTRACT: expects an imported store (run dayscript/import.yaml first) with at least one
 # unread article, so Go ▸ Next Unread has somewhere to go. Does not invoke File ▸ Refresh,
 # which fetches every subscription over the network.
-name: day-news-menus
+name: fleet-reader-menus
 description: The File and Go menus drive navigation and windows on every desktop toolkit.
 flow:
   - wait_for: { id: nav }

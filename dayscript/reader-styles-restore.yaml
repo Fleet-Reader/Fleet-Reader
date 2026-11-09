@@ -1,4 +1,4 @@
-name: day-news-reader-styles-restore
+name: fleet-reader-reader-styles-restore
 description: Verify saved styles in a fresh process and restore defaults afterwards.
 flow:
   - wait_for: { id: nav }

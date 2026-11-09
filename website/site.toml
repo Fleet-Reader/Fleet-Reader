@@ -19,7 +19,7 @@
 # is case-sensitive there, so this is the one place an app spells its name the way GitHub
 # does rather than the way Cargo does. A custom domain works too. A path component becomes
 # the site's base path automatically.
-host = "https://fleet-reader.github.io/Fleet-Reader"
+host = "https://fleet-reader.app"
 
 # Everything below is optional — these are the defaults, spelled out to edit.
 #

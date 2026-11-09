@@ -4,6 +4,9 @@
 [storefront.submission-info]
 copyright = "2026 The App Fair Project"
 contact-email = "support@appfair.org"
+contact-first-name = "App"
+contact-last-name = "Fair"
+contact-phone = "3107337836"
 review-notes = """
 Fleet Reader reads RSS, Atom, RDF, and JSON feeds, and needs no sign-in. To try it, tap New Feed…,
 enter a feed or website address such as https://daringfireball.net, tap Verify, then Subscribe.
@@ -39,7 +42,7 @@ Fleet Reader is open source under the Apache 2.0 license: github.com/Fleet-Reade
 keywords = ["rss", "feed", "reader", "atom", "json feed", "opml", "news", "blogs", "subscriptions", "webdav"]
 release-notes = "First release. Follow RSS, Atom, and JSON feeds, organize them into collections, search and star articles, import and export OPML, and try experimental WebDAV sync between devices."
 promo = "Subscribe to the sites you read and catch up on their articles in one list. Bring your subscriptions from another reader with OPML."
-marketing-url = "https://fleet-reader.github.io/Fleet-Reader/"
+marketing-url = "https://fleet-reader.app/"
 support-url = "https://github.com/Fleet-Reader/Fleet-Reader/issues"
 privacy-url = "https://appfair.org/privacy/"
 
@@ -47,5 +50,15 @@ privacy-url = "https://appfair.org/privacy/"
 [storefront.ios-uikit.screenshots]
 default = ["timeline", "article", "sidebar", "search-results", "dashboard-feed", "settings"]
 
+# The App Store leaves out the empty Today list, and the iPhone opens on unread articles.
+[storefront.ios-uikit.apple-app-store.screenshots]
+iphone = ["seeded-demo", "article", "search-results", "dashboard-feed", "settings-reader", "settings"]
+ipad = ["timeline", "article", "search-results", "dashboard-feed", "settings-reader", "settings"]
+
 [storefront.android-material.screenshots]
 default = ["timeline", "article", "sidebar", "search-results", "dashboard-feed", "settings"]
+
+# Google Play takes the same set as the App Store.
+[storefront.android-material.google-play-store.screenshots]
+phone = ["seeded-demo", "article", "search-results", "dashboard-feed", "settings-reader", "settings"]
+tablet = ["timeline", "article", "search-results", "dashboard-feed", "settings-reader", "settings"]

@@ -7,7 +7,7 @@ On a computer, your subscriptions, article list, and reader sit side by side. On
 subscription to see its articles, then tap an article to read it.
 
 <p align="center">
-  <img src="https://fleet-reader.github.io/Fleet-Reader/gallery/macos-appkit/en/timeline.png"
+  <img src="https://fleet-reader.app/gallery/macos-appkit/en/timeline.png"
        width="760" alt="Fleet Reader on Mac, with subscriptions, articles, and the reader side by side">
 </p>
 

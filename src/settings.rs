@@ -18,9 +18,11 @@ pub const TOOLBAR_SETTINGS: bool = cfg!(any(
 ));
 
 /// The project site the About window links to.
-const WEBSITE: &str = "https://fleet-reader.github.io/Fleet-Reader";
+const WEBSITE: &str = "https://fleet-reader.app";
 /// The repository the About window links to.
 const SOURCE: &str = "https://github.com/Fleet-Reader/Fleet-Reader";
+/// The privacy policy the About window links to, the one both store listings name.
+const PRIVACY: &str = "https://appfair.org/privacy/";
 
 // ---------------------------------------------------------------------------------------------
 // Articles
@@ -132,7 +134,8 @@ pub fn install() -> Prefs {
             About::from_manifest()
                 .icon(res::images::app_logo)
                 .link(res::str::day_about_website(), WEBSITE)
-                .link(res::str::day_about_source(), SOURCE),
+                .link(res::str::day_about_source(), SOURCE)
+                .privacy(PRIVACY),
         )
         .group(general_group(res::locales::ALL))
         .group(articles_group())

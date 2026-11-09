@@ -22,7 +22,7 @@ id = "org.appfair.app.FleetReader"
 # last segment, and a scheme takes no capitals.
 scheme = "fleetreader"
 title = "Fleet Reader"
-build = 9
+build = 10
 targets = ["macos-appkit", "macos-gtk", "macos-qt", "windows-winui", "ios-uikit", "android-material", "web-dom", "harmony-arkui"]
 
 [window]

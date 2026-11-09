@@ -290,7 +290,7 @@ fn retry_after(value: &str, now: i64) -> Option<i64> {
 pub const USER_AGENT: &str = concat!(
     "FleetReader/",
     env!("CARGO_PKG_VERSION"),
-    " (+https://fleet-reader.github.io/Fleet-Reader)"
+    " (+https://fleet-reader.app)"
 );
 
 fn normalize(f: feed_rs::model::Feed, base_url: &str) -> ParsedFeed {

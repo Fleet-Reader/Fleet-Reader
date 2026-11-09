@@ -1,66 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Fleet Reader: the feed symbol as a sail. The dot and two arcs hang from the mast, above a
+       hull on a calm sea. Layers follow docs/icons.md in the day repository. -->
   <defs>
     <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-      <stop stop-color="#174D58"/>
-      <stop offset="1" stop-color="#092C39"/>
-    </linearGradient>
-    <linearGradient id="paper" x1="0" y1="0" x2="0.8" y2="1">
-      <stop stop-color="#FFFEF7"/>
-      <stop offset="1" stop-color="#E5EEE8"/>
-    </linearGradient>
-    <linearGradient id="sunrise" x1="0" y1="0" x2="0" y2="1">
-      <stop stop-color="#FFB64B"/>
-      <stop offset="1" stop-color="#F46A35"/>
+      <stop stop-color="#FF8A3D"/>
+      <stop offset="1" stop-color="#E04E14"/>
     </linearGradient>
   </defs>
-
-  <!-- Full bleed: the platform supplies its own launcher mask. -->
   <rect id="day:background" width="1024" height="1024" fill="url(#background)"/>
 
-  <!-- The morning edition: one generous paper silhouette, a rising sun, and bold
-       editorial columns. All details are geometry, with no fonts or bitmap assets. -->
-  <g id="day:foreground">
-    <path d="M282 204H710L804 298V748Q804 822 730 822H282Q230 822 230 770V256Q230 204 282 204Z"
-          fill="#061E29" opacity="0.28" transform="translate(0 18)"/>
-    <path d="M282 204H710L804 298V748Q804 822 730 822H282Q230 822 230 770V256Q230 204 282 204Z"
-          fill="url(#paper)"/>
-    <!-- Turned corner. -->
-    <path d="M710 204V266Q710 298 742 298H804Z" fill="#CCE0D9"/>
-
-    <!-- Sunrise masthead: open rays and a half-disc stay legible in the Dock. -->
-    <path d="M354 466A154 154 0 0 1 662 466Z" fill="url(#sunrise)"/>
-    <g fill="none" stroke="#F69A3D" stroke-width="24" stroke-linecap="round">
-      <path d="M508 270V244"/>
-      <path d="M361 320L342 301"/>
-      <path d="M655 320L674 301"/>
-    </g>
-    <rect x="314" y="490" width="388" height="28" rx="14" fill="#174D58"/>
-
-    <!-- Bold headline and two editorial columns. -->
-    <rect x="314" y="558" width="388" height="38" rx="10" fill="#174D58"/>
-    <g fill="#70948F">
-      <rect x="314" y="630" width="168" height="22" rx="8"/>
-      <rect x="534" y="630" width="168" height="22" rx="8"/>
-      <rect x="314" y="682" width="168" height="22" rx="8"/>
-      <rect x="534" y="682" width="126" height="22" rx="8"/>
-    </g>
-    <!-- A folded foot distinguishes a newspaper from a generic document. -->
-    <path d="M282 760H714V748Q714 790 758 790H790Q773 822 730 822H282Q230 822 230 770V708Q230 760 282 760Z"
-          fill="#C8DCD4"/>
-    <path d="M714 748H804Q804 790 758 790Q714 790 714 748Z" fill="#F9FCF4"/>
+  <g id="day:composite" fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" opacity=".5">
+    <path d="M230 880Q310 858 390 880T550 880T710 880T870 880"/>
   </g>
 
-  <!-- Themed/tinted silhouette with sunrise and editorial cutouts. Solid geometry
-       stays in the VectorDrawable subset; the normal composite hides this layer. -->
+  <g id="day:foreground" fill="#FFFFFF">
+    <path d="M358 220H374Q384 220 384 230V700H348V230Q348 220 358 220Z"/>
+    <path d="M392 580A54 54 0 1 0 500 580A54 54 0 1 0 392 580Z"/>
+    <path d="M384 399A241 241 0 0 1 625 640H559A175 175 0 0 0 384 465ZM384 399A33 33 0 0 1 384 465A33 33 0 0 1 384 399ZM559 640A33 33 0 0 1 625 640A33 33 0 0 1 559 640Z"/>
+    <path d="M384 263A377 377 0 0 1 761 640H695A311 311 0 0 0 384 329ZM384 263A33 33 0 0 1 384 329A33 33 0 0 1 384 263ZM695 640A33 33 0 0 1 761 640A33 33 0 0 1 695 640Z"/>
+    <path d="M260 696H776Q744 794 660 806H344Q282 794 260 696Z"/>
+  </g>
+
+  <!-- Themed and tinted icon modes: the same boat as one black silhouette. -->
   <g id="day:monochrome" display="none" fill="#000000">
-    <path fill-rule="evenodd"
-          d="M282 204H710L804 298V748Q804 822 730 822H282Q230 822 230 770V256Q230 204 282 204Z
-             M354 466H662A154 154 0 0 0 354 466Z
-             M328 490Q314 490 314 504Q314 518 328 518H688Q702 518 702 504Q702 490 688 490Z
-             M324 558Q314 558 314 568V586Q314 596 324 596H692Q702 596 702 586V568Q702 558 692 558Z
-             M322 630Q314 630 314 638V644Q314 652 322 652H474Q482 652 482 644V638Q482 630 474 630Z
-             M542 630Q534 630 534 638V644Q534 652 542 652H694Q702 652 702 644V638Q702 630 694 630Z
-             M322 682Q314 682 314 690V696Q314 704 322 704H474Q482 704 482 696V690Q482 682 474 682Z
-             M542 682Q534 682 534 690V696Q534 704 542 704H652Q660 704 660 696V690Q660 682 652 682Z"/>
+    <path d="M358 220H374Q384 220 384 230V700H348V230Q348 220 358 220Z M392 580A54 54 0 1 0 500 580A54 54 0 1 0 392 580Z M384 399A241 241 0 0 1 625 640H559A175 175 0 0 0 384 465ZM384 399A33 33 0 0 1 384 465A33 33 0 0 1 384 399ZM559 640A33 33 0 0 1 625 640A33 33 0 0 1 559 640Z M384 263A377 377 0 0 1 761 640H695A311 311 0 0 0 384 329ZM384 263A33 33 0 0 1 384 329A33 33 0 0 1 384 263ZM695 640A33 33 0 0 1 761 640A33 33 0 0 1 695 640Z M260 696H776Q744 794 660 806H344Q282 794 260 696Z"/>
   </g>
 </svg>

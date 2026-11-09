@@ -35,8 +35,7 @@ host = "https://fleet-reader.github.io/Fleet-Reader"
 # harmony, web) — defaults to the first one the app builds.
 # default-platform = "web"
 
-# A fan of stacked sheets. The top one lifting off the pile is the motion the
-# artwork already implies.
+# The boat lifts off the orange backdrop and casts a shadow onto it.
 icon-effect = "raise"
 
 # Locale tags the site is kept in sync with — maintained by `day localize add/remove`, not by hand.

@@ -22,3 +22,6 @@ day-build = "0.*"
 [target.'cfg(target_os = "android")'.dependencies]
 day-toolkit-material = "0.*"
 day-platform-android = "0.*"
+
+[lints]
+workspace = true

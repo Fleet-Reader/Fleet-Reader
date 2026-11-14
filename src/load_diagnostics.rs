@@ -128,11 +128,8 @@ impl ArticleLoad {
 
     pub fn finish(&self, id: u64, outcome: &str) {
         let mut pending = self.0.borrow_mut();
-        if pending.as_ref().is_some_and(|load| load.article() == id) {
-            pending
-                .take()
-                .unwrap()
-                .finish(outcome, serde_json::json!({}));
+        if let Some(load) = pending.take_if(|load| load.article() == id) {
+            load.finish(outcome, serde_json::json!({}));
         }
     }
 }

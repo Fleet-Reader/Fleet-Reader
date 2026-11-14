@@ -36,12 +36,12 @@ struct Replica {
 }
 impl Replica {
     fn new() -> Self {
-        Self::from_db(Db::open_in_memory().unwrap())
+        Self::from_db(Db::open_in_memory().expect("open an in-memory library"))
     }
     fn from_db(db: Db) -> Self {
         let account = db
             .sync_connect("feedbin", "fixture@example.invalid")
-            .unwrap();
+            .expect("connect the fixture account");
         Self { db, account }
     }
     fn article(&self, remote: &str) -> u64 {
@@ -50,10 +50,10 @@ impl Replica {
             .query::<EntryLink>()
             .live()
             .try_collect()
-            .unwrap()
+            .expect("query the entry links")
             .into_iter()
             .find(|e| e.remote == remote)
-            .unwrap()
+            .expect("the remote entry was imported")
             .article
     }
     fn read(&self, remote: &str) -> bool {
@@ -61,13 +61,15 @@ impl Replica {
         self.db
             .container
             .get::<Article>(self.article(remote))
-            .unwrap()
+            .expect("the linked article exists")
             .is_read()
             .peek()
     }
     fn set_read(&self, remote: &str, read: bool) {
-        self.db.set_read(self.article(remote), read).unwrap();
-        self.db.container.save().unwrap();
+        self.db
+            .set_read(self.article(remote), read)
+            .expect("set the read state");
+        self.db.container.save().expect("save the library");
     }
     fn saved<T>(&self, result: std::result::Result<T, day_persistence::DbError>) -> Result<T> {
         let v = result.map_err(|_| Error::Storage)?;
@@ -117,7 +119,11 @@ impl Storage for Replica {
         async move {
             use day_reactive::Binding;
             use daynews_db::sync::AccountFields;
-            let a = self.db.container.get::<Account>(self.account).unwrap();
+            let a = self
+                .db
+                .container
+                .get::<Account>(self.account)
+                .expect("the replica's account exists");
             a.last_sync().write(Some(daynews_time::now_unix()));
             a.checkpoint().write(checkpoint);
             a.importing().write(false);
@@ -1064,7 +1070,7 @@ impl Replica {
             .db
             .container
             .get::<daynews_db::Feed>(feed)
-            .unwrap()
+            .expect("the feed exists")
             .folder()
             .peek()?
             .id()?;
@@ -1072,15 +1078,17 @@ impl Replica {
             self.db
                 .container
                 .get::<Folder>(folder.handle())
-                .unwrap()
+                .expect("the feed's folder exists")
                 .name()
                 .peek(),
         )
     }
     fn file(&self, feed: u64, folder: Option<&str>) {
         let folder = folder.map(|name| self.db.add_folder(name));
-        self.db.set_feed_folder(feed, folder, None).unwrap();
-        self.db.container.save().unwrap();
+        self.db
+            .set_feed_folder(feed, folder, None)
+            .expect("file the feed");
+        self.db.container.save().expect("save the library");
     }
     fn posts(server: &Server, path: &str) -> u64 {
         server

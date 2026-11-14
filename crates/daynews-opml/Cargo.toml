@@ -10,3 +10,6 @@ license = "Apache-2.0"
 # is a small pull parser with no transitive weight, and it also writes, so one dependency covers
 # both directions.
 quick-xml = "0.37"
+
+[lints]
+workspace = true

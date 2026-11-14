@@ -95,7 +95,10 @@ impl Db {
         clear!(Folder);
         clear!(Tag);
         for account in self.container.query::<Account>().live().try_collect()? {
-            let record = self.container.try_get::<Account>(account.id)?.unwrap();
+            let record = self
+                .container
+                .try_get::<Account>(account.id)?
+                .ok_or_else(|| DbError::driver("sync account missing"))?;
             record.last_sync().write(None);
             record.checkpoint().write(None);
             record.importing().write(false);

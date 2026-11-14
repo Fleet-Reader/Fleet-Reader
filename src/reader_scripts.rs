@@ -65,7 +65,9 @@ pub fn for_url(url: &str) -> Option<String> {
 fn save(site: Option<&str>, source: Option<String>) {
     let mut scripts = read();
     scripts.put(site, source);
-    day::prefs::set(KEY, &serde_json::to_string(&scripts).unwrap());
+    let json = serde_json::to_string(&scripts)
+        .expect("scripts are strings keyed by strings, which always serialize");
+    day::prefs::set(KEY, &json);
     revision_signal().update(|value| *value = value.wrapping_add(1));
 }
 fn valid_source(source: &str) -> bool {

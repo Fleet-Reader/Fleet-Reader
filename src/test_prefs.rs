@@ -29,7 +29,8 @@ impl PreferenceTest {
     }
 
     pub(crate) fn child(&self, test: &str) -> Command {
-        let mut command = Command::new(std::env::current_exe().unwrap());
+        let mut command =
+            Command::new(std::env::current_exe().expect("the test binary knows its own path"));
         command.args(["--exact", test]);
         // Override only child environments, never the multithreaded test runner's.
         // All restarts in one test retain the same private store.

@@ -8,6 +8,9 @@ use day::prelude::*;
 use day_piece_webview::{ResourceProvider, ResourceResponse, web_view_resources};
 use daynews_core::StoredArticle;
 
+/// Why quoting a string for a script cannot fail.
+const STRING_JSON: &str = "a string always serializes to JSON";
+
 fn document(a: &StoredArticle, control_above: bool) -> String {
     let mut document = document_with_style(
         a,
@@ -300,12 +303,12 @@ fn reader_body(
                 } else {
                     crate::res::str::reader_load_full().format()
                 };
-                let text = serde_json::to_string(&text).unwrap();
+                let text = serde_json::to_string(&text).expect(STRING_JSON);
                 // Format localized UI text before entering asynchronous web evaluation.
                 let failed = error.is_some();
                 let message =
                     serde_json::to_string(&if failed { view.status() } else { String::new() })
-                        .unwrap();
+                        .expect(STRING_JSON);
                 // The way out of a paywall or a page extraction cannot read: open it here, where
                 // a sign-in lands in the profile the next load reads cookies from.
                 let browse = !*loading && (failed || *short) && crate::site_browser::can_browse();
@@ -314,7 +317,7 @@ fn reader_body(
                 } else {
                     crate::res::str::reader_browse_short().format()
                 })
-                .unwrap();
+                .expect(STRING_JSON);
                 let reason = if failed { "'failed'" } else { "'short'" };
                 let script = format!(
                     "(() => {{ const button = document.getElementById('reader-load-full'); if (button) {{ button.disabled = {loading}; button.setAttribute('aria-busy', String({loading})); button.setAttribute('aria-expanded', String({active})); button.querySelector('.reader-load-label').textContent = {text}; }} const control = document.getElementById('reader-load-control'); const warning = document.getElementById('reader-load-error'); if (control && warning) {{ control.dataset.error = String({failed}); warning.hidden = !{failed}; warning.title = {message}; document.getElementById('reader-error-status').textContent = {message}; }} const browse = document.getElementById('reader-browse'); if (browse) {{ browse.hidden = !{browse}; browse.dataset.reason = {reason}; document.getElementById('reader-browse-note').textContent = {note}; }} }})()"
@@ -360,11 +363,10 @@ fn reader_body(
                             .map(|load| load.id())
                     };
                     let mut pending = pending.borrow_mut();
-                    if pending.as_ref().is_some_and(|load| {
+                    if let Some(load) = pending.take_if(|load| {
                         Some(load.id()) == observed
                             && selected.try_get() == Some(Some(load.article()))
                     }) {
-                        let load = pending.take().unwrap();
                         article_load.finish(load.article(), "loaded");
                         load.finish("loaded", serde_json::json!({}));
                     }
@@ -702,7 +704,7 @@ pub(crate) fn reader_document(chrome: bool) -> impl Piece {
                     crate::dashboard::dashboard().any()
                 } else {
                     let load = day_core::environment::<crate::reader_pager::PageSlot>()
-                        .unwrap()
+                        .expect("only the pager builds a chrome-less document, inside its PageSlot")
                         .1;
                     column((
                         when(

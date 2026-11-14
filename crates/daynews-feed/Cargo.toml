@@ -30,3 +30,6 @@ day-async = "0.*"
 # backend `day build` selects for every web app; day-toolkit-dom answers it with browser entropy.
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 uuid = { version = "1", default-features = false, features = ["rng-getrandom"] }
+
+[lints]
+workspace = true

@@ -392,7 +392,7 @@ impl ReaderView {
             .filter(|(id, _)| *id == article.id)
             .map(|(_, content)| content.content)
             .unwrap_or_default();
-        let html = serde_json::to_string(&html).unwrap();
+        let html = serde_json::to_string(&html).expect("a string always serializes to JSON");
         let task = day::task(async move {
             let load = Load::start(
                 "reader_inline",

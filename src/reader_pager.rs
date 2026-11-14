@@ -46,15 +46,22 @@ impl Window {
         let mut slots = self.slots.map(|id| id.filter(|id| desired.contains(id)));
         for id in &desired {
             if !slots.contains(&Some(*id)) {
-                let vacant = slots.iter().position(Option::is_none).unwrap();
+                let vacant = slots
+                    .iter()
+                    .position(Option::is_none)
+                    .expect("three slots keep at most three desired articles, so one is vacant");
                 slots[vacant] = Some(*id);
             }
         }
+        let placed = "every desired article was given a slot above";
         let order = desired
             .iter()
-            .map(|id| slots.iter().position(|s| *s == Some(*id)).unwrap())
+            .map(|id| slots.iter().position(|s| *s == Some(*id)).expect(placed))
             .collect();
-        let current = slots.iter().position(|id| *id == Some(selected)).unwrap();
+        let current = slots
+            .iter()
+            .position(|id| *id == Some(selected))
+            .expect(placed);
         Self {
             slots,
             order,

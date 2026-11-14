@@ -81,7 +81,7 @@ impl Server {
                     }
                     _ => Value::Null,
                 };
-                let mut s = captured.lock().unwrap();
+                let mut s = captured.lock().expect("fixture state");
                 let (status, value) = match (method, path) {
                     ("GET", "/v2/authentication.json") => return Ok(Reply::new(200, vec![])),
                     ("GET", "/v2/subscriptions.json") => {
@@ -153,7 +153,7 @@ impl Server {
                                 return row["id"].as_u64().is_some_and(|id| ids.contains(&id));
                             }
                             since.is_none_or(|since| {
-                                chrono::DateTime::parse_from_rfc3339(row["created_at"].as_str().unwrap()).unwrap() > since
+                                chrono::DateTime::parse_from_rfc3339(row["created_at"].as_str().expect("fixture created_at")).expect("fixture RFC 3339 date") > since
                             })
                         }).cloned().collect();
                         // Deliberately one article per fixture page to exercise pagination.
@@ -161,7 +161,7 @@ impl Server {
                         let rows = if ids.is_some() { filtered } else {
                             filtered.into_iter().skip(page.saturating_sub(1)).take(1).collect()
                         };
-                        let mut reply = Reply::new(200, serde_json::to_vec(&rows).unwrap())
+                        let mut reply = Reply::new(200, serde_json::to_vec(&rows).expect("fixture JSON"))
                             .header("Content-Type", "application/json")
                             .header("ETag", etag);
                         if ids.is_none() && page < total {
@@ -193,7 +193,7 @@ impl Server {
                         };
                         let location =
                             format!("https://api.feedbin.com/v2/taggings/{}.json", row["id"]);
-                        return Ok(Reply::new(status, serde_json::to_vec(&row).unwrap())
+                        return Ok(Reply::new(status, serde_json::to_vec(&row).expect("fixture JSON"))
                             .header("Content-Type", "application/json")
                             .header("Location", location));
                     }
@@ -254,7 +254,7 @@ impl Server {
                     }
                     _ => (404, Value::Null),
                 };
-                Ok(Reply::new(status, serde_json::to_vec(&value).unwrap())
+                Ok(Reply::new(status, serde_json::to_vec(&value).expect("fixture JSON"))
                     .header("Content-Type", "application/json"))
             },
         );
@@ -277,20 +277,20 @@ impl Server {
     }
     /// Synthetic wire records, newest arrival first; lets tests model historical backfills.
     pub fn replace_entries(&self, entries: Vec<Value>) {
-        let mut state = self.state.lock().unwrap();
+        let mut state = self.state.lock().expect("fixture state");
         state.entries = entries;
         state.entries_version += 1;
     }
     pub fn set_response_date(&self, timestamp: u64) {
-        self.state.lock().unwrap().response_date = Some(httpdate::fmt_http_date(
+        self.state.lock().expect("fixture state").response_date = Some(httpdate::fmt_http_date(
             std::time::UNIX_EPOCH + std::time::Duration::from_secs(timestamp),
         ));
     }
     pub fn unread(&self) -> BTreeSet<u64> {
-        self.state.lock().unwrap().unread.clone()
+        self.state.lock().expect("fixture state").unread.clone()
     }
     pub fn set_read(&self, id: u64, read: bool) {
-        let mut s = self.state.lock().unwrap();
+        let mut s = self.state.lock().expect("fixture state");
         if read {
             s.unread.remove(&id);
         } else {
@@ -301,7 +301,7 @@ impl Server {
     pub fn taggings(&self) -> Vec<(u64, String)> {
         self.state
             .lock()
-            .unwrap()
+            .expect("fixture state")
             .taggings
             .iter()
             .filter_map(|t| Some((t["feed_id"].as_u64()?, t["name"].as_str()?.to_string())))
@@ -309,7 +309,7 @@ impl Server {
     }
     /// File a feed under a tag, as another client would.
     pub fn tag(&self, feed: u64, name: &str) {
-        let mut s = self.state.lock().unwrap();
+        let mut s = self.state.lock().expect("fixture state");
         let id = s.next_tagging;
         s.next_tagging += 1;
         s.taggings.push(json!({"id":id,"feed_id":feed,"name":name}));
@@ -318,12 +318,12 @@ impl Server {
     pub fn untag(&self, feed: u64) {
         self.state
             .lock()
-            .unwrap()
+            .expect("fixture state")
             .taggings
             .retain(|t| t["feed_id"] != feed);
     }
     pub fn reject(&self, id: u64) {
-        self.state.lock().unwrap().reject.insert(id);
+        self.state.lock().expect("fixture state").reject.insert(id);
     }
 }
 fn subscription(id: u64, feed: u64, url: &str, title: &str) -> Value {

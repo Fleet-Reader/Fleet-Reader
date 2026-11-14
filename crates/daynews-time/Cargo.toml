@@ -21,3 +21,6 @@ libc = "0.2"
 # all anywhere else.
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 day-toolkit-dom = "0.*"
+
+[lints]
+workspace = true

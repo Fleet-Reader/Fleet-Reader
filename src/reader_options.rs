@@ -28,7 +28,7 @@ fn inherit(default: bool, stored: Option<&str>) -> bool {
 }
 /// The effective options: the app defaults, with `feed`'s overrides applied. Tracked.
 pub fn options(feed: Option<u64>) -> Options {
-    revision().get();
+    revision().track();
     let defaults = Options {
         inline: READER_INLINE.get(),
         auto: READER_AUTO.get(),

@@ -4,6 +4,7 @@ use day_part_http::{
     simulation::{Reply, Simulation},
 };
 use daynews_sync::{feedbin::Feedbin, fixture::Server, *};
+use std::assert_matches;
 use std::{
     future::Future,
     sync::Arc,
@@ -70,10 +71,10 @@ fn redirect_does_not_forward_credentials_to_another_origin() {
 fn malformed_unread_snapshot_is_never_interpreted_as_everything_read() {
     let sim = Simulation::new();
     sim.handle(|_, _| true, |_| Ok(Reply::new(200, b"[1,".to_vec())));
-    assert!(matches!(
+    assert_matches!(
         wait(provider(sim).read_state()),
         Err(Error::InvalidResponse)
-    ));
+    );
 }
 #[test]
 fn bulk_read_upload_is_batched_and_acknowledged_per_id() {
@@ -107,10 +108,10 @@ fn bulk_read_upload_is_batched_and_acknowledged_per_id() {
 fn cursor_is_not_a_url_or_an_injection_surface() {
     let s = Server::new();
     let p = s.provider();
-    assert!(matches!(
+    assert_matches!(
         wait(p.entries(Some("https://other.invalid".into()))),
         Err(Error::InvalidResponse)
-    ));
+    );
     assert!(s.simulation.requests().is_empty());
 }
 
@@ -120,7 +121,7 @@ fn state_requests_bypass_platform_caches_after_a_mutation() {
     sim.handle(
         |_, _| true,
         |request| {
-            assert!(matches!(request.cache, day_part_http::CachePolicy::Reload));
+            assert_matches!(request.cache, day_part_http::CachePolicy::Reload);
             assert!(
                 request
                     .headers
@@ -130,7 +131,7 @@ fn state_requests_bypass_platform_caches_after_a_mutation() {
             Ok(Reply::new(200, b"[]".to_vec()))
         },
     );
-    assert!(matches!(wait(provider(sim).subscriptions()),Ok(Changes::Snapshot(v)) if v.is_empty()));
+    assert_matches!(wait(provider(sim).subscriptions()),Ok(Changes::Snapshot(v)) if v.is_empty());
 }
 
 #[test]
@@ -179,10 +180,10 @@ fn aborting_during_a_delayed_http_response_does_not_wait_for_the_network_timeout
             .is_pending()
     );
     abort.abort();
-    assert!(matches!(
+    assert_matches!(
         future.as_mut().poll(&mut Context::from_waker(&waker)),
         Poll::Ready(Err(_))
-    ));
+    );
     drop(future);
     clock.advance(std::time::Duration::from_secs(60));
     assert_eq!(sim.requests().len(), 1);
@@ -206,10 +207,7 @@ fn folder_writes_follow_the_tagging_api() {
         },
     )]))
     .unwrap();
-    assert!(matches!(
-        outcomes[..],
-        [Outcome::Applied { revision: 1, .. }]
-    ));
+    assert_matches!(outcomes[..], [Outcome::Applied { revision: 1, .. }]);
     assert_eq!(s.taggings(), [(12, "B".into()), (11, "C".into())]);
     // Already filed there: only the other taggings go, with no new POST.
     s.tag(11, "D");
@@ -255,7 +253,7 @@ fn folder_writes_follow_the_tagging_api() {
     assert_eq!(s.taggings(), [(12, "E".into())]);
     wait(p.apply(vec![op(5, Mutation::DeleteFolder { name: "E".into() })])).unwrap();
     assert!(s.taggings().is_empty());
-    assert!(matches!(wait(p.subscriptions()), Ok(Changes::Snapshot(v)) if v.len() == 1));
+    assert_matches!(wait(p.subscriptions()), Ok(Changes::Snapshot(v)) if v.len() == 1);
     let deletes = s
         .simulation
         .requests()
@@ -313,13 +311,13 @@ fn non_numeric_tagging_feed_is_refused_before_any_request() {
         },
     )]))
     .unwrap();
-    assert!(matches!(
+    assert_matches!(
         outcomes[..],
         [Outcome::Failed {
             error: Error::InvalidResponse,
             ..
         }]
-    ));
+    );
     assert_eq!(s.taggings(), [(11, "A".into())]);
     assert!(s.simulation.requests().is_empty());
 }

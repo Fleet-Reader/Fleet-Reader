@@ -9,6 +9,7 @@ use daynews_sync::{
     *,
 };
 use futures_util::FutureExt;
+use std::assert_matches;
 use std::{
     future::Future,
     sync::Arc,
@@ -342,7 +343,7 @@ fn removal_does_not_resurrect_from_an_offline_replica() {
     a.db.delete_feed(feed).unwrap();
     wait(synchronize(&p, &a)).unwrap();
     wait(synchronize(&p, &b)).unwrap();
-    assert!(matches!(wait(p.subscriptions()).unwrap(),Changes::Snapshot(v) if v.is_empty()));
+    assert_matches!(wait(p.subscriptions()).unwrap(),Changes::Snapshot(v) if v.is_empty());
     use daynews_db::FeedFields;
     assert!(
         b.db.container
@@ -394,18 +395,14 @@ fn delete_and_rename_before_subscription_ack_are_not_lost() {
     a.db.rename_feed(feed, "Renamed while offline").unwrap();
     wait(synchronize(&p, &a)).unwrap();
     wait(synchronize(&p, &a)).unwrap();
-    assert!(
-        matches!(wait(p.subscriptions()).unwrap(),Changes::Snapshot(v) if v.iter().any(|s|s.title=="Renamed while offline"))
-    );
+    assert_matches!(wait(p.subscriptions()).unwrap(),Changes::Snapshot(v) if v.iter().any(|s|s.title=="Renamed while offline"));
     let other =
         a.db.add_feed("https://fixture.invalid/deleted.xml", "Deleted", None);
     a.db.sync_adopt_local(other).unwrap();
     a.db.delete_feed(other).unwrap();
     wait(synchronize(&p, &a)).unwrap();
     wait(synchronize(&p, &a)).unwrap();
-    assert!(
-        matches!(wait(p.subscriptions()).unwrap(),Changes::Snapshot(v) if !v.iter().any(|s|s.url.ends_with("deleted.xml")))
-    );
+    assert_matches!(wait(p.subscriptions()).unwrap(),Changes::Snapshot(v) if !v.iter().any(|s|s.url.ends_with("deleted.xml")));
 }
 
 #[test]
@@ -554,7 +551,7 @@ fn real_undo_stack_preserves_acknowledgements_and_reconciles_unsubscribe() {
             .unsubscribed()
             .peek()
     );
-    assert!(matches!(wait(p.subscriptions()).unwrap(),Changes::Snapshot(v) if !v.is_empty()));
+    assert_matches!(wait(p.subscriptions()).unwrap(),Changes::Snapshot(v) if !v.is_empty());
 }
 
 /// A deliberately non-Feedbin protocol with string IDs, read deltas and opaque checkpoints.
@@ -656,7 +653,7 @@ fn alternate_protocol_checkpoints_advance_only_after_complete_import() {
         restored: Default::default(),
         fail: std::cell::Cell::new(true),
     };
-    assert!(matches!(wait(synchronize(&p, &a)), Err(Error::Network)));
+    assert_matches!(wait(synchronize(&p, &a)), Err(Error::Network));
     assert_eq!(wait(a.checkpoint()).unwrap(), None);
     wait(synchronize(&p, &a)).unwrap();
     assert!(a.read("entry:other"));
@@ -705,7 +702,7 @@ fn cancelled_import_reports_progress_and_resumes_without_advancing_checkpoint() 
             Ok(())
         }
     }));
-    assert!(matches!(result, Err(Error::Cancelled)));
+    assert_matches!(result, Err(Error::Cancelled));
     assert_eq!(wait(a.checkpoint()).unwrap(), None);
     assert_eq!(a.db.container.query::<Article>().live().ids().len(), 1);
     let events = events.into_inner();
@@ -880,7 +877,7 @@ fn widening_retention_backfills_past_known_pages_and_cancelled_backfills_resume(
             Ok(())
         }
     }));
-    assert!(matches!(result, Err(Error::Cancelled)));
+    assert_matches!(result, Err(Error::Cancelled));
     assert_eq!(wait(a.checkpoint()).unwrap(), checkpoint);
     let report = wait(synchronize_with_history(&p, &a, None, |_| Ok(()))).unwrap();
     assert_eq!(report.entries, 3); // First two are known; third must still download.
@@ -1162,7 +1159,7 @@ fn folder_rename_and_delete_upload_as_tag_edits_keeping_feeds_subscribed() {
     a.db.container.save().unwrap();
     wait(synchronize(&p, &a)).unwrap();
     assert!(server.taggings().is_empty());
-    assert!(matches!(wait(p.subscriptions()).unwrap(), Changes::Snapshot(v) if v.len() == 1));
+    assert_matches!(wait(p.subscriptions()).unwrap(), Changes::Snapshot(v) if v.len() == 1);
     let row = a.db.container.get::<daynews_db::Feed>(feed).unwrap();
     assert!(!row.unsubscribed().peek());
     assert_eq!(a.folder(feed), None);

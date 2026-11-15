@@ -632,7 +632,7 @@ mod refresh_tests {
             last_modified: Some("Wed, 30 Sep 2026 10:00:00 GMT".into()),
         };
         let response = || Response::new(304, vec![], b"not a feed".to_vec());
-        assert!(matches!(
+        std::assert_matches!(
             process_response(
                 response(),
                 "https://fixture.example/feed",
@@ -640,7 +640,7 @@ mod refresh_tests {
                 None
             ),
             Err(FeedError::Status(304))
-        ));
+        );
         match process_response(
             response(),
             "https://fixture.example/feed",
@@ -674,7 +674,7 @@ mod refresh_tests {
             None,
         )
         .unwrap_err();
-        assert!(matches!(error, FeedError::RetryAfter { status: 429, .. }));
+        std::assert_matches!(error, FeedError::RetryAfter { status: 429, .. });
     }
 
     #[test]
@@ -731,7 +731,7 @@ mod refresh_tests {
         assert!(cleared.is_empty());
         // Content changes must import even when the origin incorrectly reuses its ETag.
         let changed = br#"{"version":"https://jsonfeed.org/version/1.1","title":"Changed fixture","items":[]}"#;
-        assert!(matches!(
+        std::assert_matches!(
             process_response(
                 Response::new(200, vec![], changed.to_vec()),
                 url,
@@ -740,7 +740,7 @@ mod refresh_tests {
             )
             .unwrap(),
             FeedUpdate::Modified(_, _, Some(_))
-        ));
+        );
     }
 
     #[test]
@@ -768,7 +768,7 @@ mod refresh_tests {
             )
             .is_err()
         );
-        assert!(matches!(
+        std::assert_matches!(
             process_response(
                 Response::new(503, vec![], vec![]),
                 "https://fixture.example/feed",
@@ -776,6 +776,6 @@ mod refresh_tests {
                 None
             ),
             Err(FeedError::Status(503))
-        ));
+        );
     }
 }

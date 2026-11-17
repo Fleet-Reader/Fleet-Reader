@@ -1276,7 +1276,7 @@ pub fn store_dir() -> PathBuf {
 
 #[cfg(not(target_arch = "wasm32"))]
 pub fn store_dir() -> PathBuf {
-    day_spec::storage::data_dir().unwrap_or_else(std::env::temp_dir)
+    day_process::storage::data_dir().unwrap_or_else(std::env::temp_dir)
 }
 
 /// Where re-fetchable files go (feed icons). The web has no directory for them: its file reads
@@ -1288,7 +1288,7 @@ pub fn cache_dir() -> PathBuf {
 
 #[cfg(not(target_arch = "wasm32"))]
 pub fn cache_dir() -> PathBuf {
-    day_spec::storage::cache_dir().unwrap_or_else(std::env::temp_dir)
+    day_process::storage::cache_dir().unwrap_or_else(std::env::temp_dir)
 }
 
 /// Run `f` against the process store, the shape the old `thread_local!` accessor had, so every

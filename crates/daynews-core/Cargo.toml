@@ -6,15 +6,15 @@ license = "Apache-2.0"
 
 [features]
 # Optional legacy provider; existing account data remains intact when disabled.
-feedbin = []
-experimental-webdav = ["daynews-db/experimental-webdav", "dep:serde", "dep:serde_json", "dep:zeroize"]
+feedbin = ["dep:daynews-credentials"]
+experimental-webdav = ["daynews-db/experimental-webdav", "dep:daynews-credentials", "dep:serde", "dep:serde_json", "dep:zeroize"]
 
 [dependencies]
 zeroize = { version = "1.9", features = ["serde"], optional = true }
 serde = { version = "1", features = ["derive"], optional = true }
 serde_json = { version = "1", optional = true }
 daynews-sync = { version = "0.*", path = "../daynews-sync" }
-daynews-credentials = { version = "0.*", path = "../daynews-credentials" }
+daynews-credentials = { version = "0.*", path = "../daynews-credentials", optional = true }
 day-async = "0.*"
 log = "0.4"
 futures-util = "0.3"
@@ -34,6 +34,8 @@ day-persistence = "0.*"
 # app resolved (resource/assets/demo/README.md).
 day-localization = "0.*"
 # `storage::{data_dir, cache_dir}`: where the library and the feed icons live (`store_dir`).
+day-process = "0.*"
+# `Lifecycle`, the phase the library flushes on.
 day-spec = "0.*"
 
 [dev-dependencies]

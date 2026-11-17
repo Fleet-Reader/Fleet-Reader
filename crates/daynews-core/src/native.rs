@@ -1394,17 +1394,17 @@ fn fallback_title(url: &str) -> String {
     host.strip_prefix("www.").unwrap_or(host).to_string()
 }
 
-/// The app's data directory, where the library lives: `day_spec::storage::data_dir()`, a folder
+/// The app's data directory, where the library lives: `day_process::storage::data_dir()`, a folder
 /// named for the app where its platform keeps app data, or `DAY_DATA_DIR`, which a test or a UI
 /// validation run sets so it never touches a reader's subscriptions.
 pub fn store_dir() -> PathBuf {
-    day_spec::storage::data_dir().unwrap_or_else(std::env::temp_dir)
+    day_process::storage::data_dir().unwrap_or_else(std::env::temp_dir)
 }
 
 /// The app's cache directory, for what can be fetched again (feed icons):
-/// `day_spec::storage::cache_dir()`.
+/// `day_process::storage::cache_dir()`.
 pub fn cache_dir() -> PathBuf {
-    day_spec::storage::cache_dir()
+    day_process::storage::cache_dir()
         .unwrap_or_else(|| std::env::temp_dir().join("fleet-reader-cache"))
 }
 

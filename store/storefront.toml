@@ -12,9 +12,9 @@ Fleet Reader is a feed reader: a tool for following websites through the RSS, At
 JSON feeds they publish. It has no content of its own and needs no sign-in. A new install starts
 with no subscriptions, so the article list is empty until a feed is added.
 
-To try it, open the article list and tap Add Suggested Feeds, which subscribes to five public
+To try it, open the article list and tap Add Suggested Feeds, which subscribes to four public
 feeds and loads their latest articles. Or tap New Feed…, enter a feed or website address such as
-https://daringfireball.net, tap Verify, then Subscribe. The app downloads articles directly from
+https://www.nasa.gov, tap Verify, then Subscribe. The app downloads articles directly from
 each publisher's site, and each article shows its source and publication date.
 
 Settings > Accounts can connect a WebDAV server to sync subscriptions, read status, and stars

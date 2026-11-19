@@ -36,11 +36,10 @@ impl Ambient for SubscriptionSheet {
 }
 /// Feeds offered to a reader with no subscriptions, so a first launch has something to read
 /// one tap away. Each is the publisher's own feed, fetched from the publisher like any other.
-const STARTER_FEEDS: [&str; 5] = [
+const STARTER_FEEDS: [&str; 4] = [
     "https://www.nasa.gov/feed/",
     "https://feeds.arstechnica.com/arstechnica/index",
     "https://www.quantamagazine.org/feed/",
-    "https://daringfireball.net/feeds/main",
     "https://xkcd.com/atom.xml",
 ];
 

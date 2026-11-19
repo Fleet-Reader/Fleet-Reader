@@ -34,6 +34,57 @@ impl Ambient for SubscriptionSheet {
         }
     }
 }
+/// Feeds offered to a reader with no subscriptions, so a first launch has something to read
+/// one tap away. Each is the publisher's own feed, fetched from the publisher like any other.
+const STARTER_FEEDS: [&str; 5] = [
+    "https://www.nasa.gov/feed/",
+    "https://feeds.arstechnica.com/arstechnica/index",
+    "https://www.quantamagazine.org/feed/",
+    "https://daringfireball.net/feeds/main",
+    "https://xkcd.com/atom.xml",
+];
+
+/// Whether the library has loaded and holds no subscriptions. False while it is still
+/// opening, so an established library never flashes the first-run offer.
+pub fn library_is_empty() -> bool {
+    let state = daynews_core::state();
+    state.loaded.get() && state.feeds.with(Vec::is_empty) && !crate::commands::refreshing()
+}
+
+/// The first-run offer under an empty timeline: starter feeds, a feed of the reader's own,
+/// or a subscription list from another reader.
+pub fn welcome() -> impl Piece {
+    column((
+        label(crate::res::str::welcome_title())
+            .font(Font::Headline)
+            .id(day::id!(welcome_title)),
+        label(crate::res::str::welcome_note())
+            .font(Font::Body)
+            .color(move || crate::theme::palette().text_muted)
+            .id(day::id!(welcome_note)),
+        button(crate::res::str::welcome_starter())
+            .prominent()
+            .action(|| {
+                for url in STARTER_FEEDS {
+                    daynews_core::subscribe(url);
+                }
+            })
+            .id(day::id!(welcome_starter))
+            .grow(Dimension::Width),
+        button(crate::res::str::menu_new_feed())
+            .action(begin_new_feed)
+            .id(day::id!(welcome_new_feed))
+            .grow(Dimension::Width),
+        button(crate::res::str::menu_import())
+            .action(import_opml)
+            .id(day::id!(welcome_import))
+            .grow(Dimension::Width),
+    ))
+    .spacing(Space::M)
+    .padding(Space::L)
+    .grow(Dimension::Width)
+}
+
 pub fn begin_new_feed() {
     if daynews_core::try_scene().is_none() {
         return;
@@ -206,6 +257,16 @@ pub fn subscription_sheet() -> impl Piece {
         ));
         let verify_result = verified.clone();
         let subscribe_result = verified.clone();
+        // A verdict describes the address that was checked; it goes when the address does,
+        // so an emptied or retyped field never sits under an old failure.
+        watch(
+            move || address.get(),
+            move |_, _| {
+                if !busy.get_untracked() && verified_input.get_untracked().is_none() {
+                    status.set(String::new());
+                }
+            },
+        );
         column((
             // The sheet's actions sit beside its title, where a phone's keyboard can't cover them.
             row((

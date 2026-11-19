@@ -450,3 +450,7 @@ accounts_sync_unavailable = Account synchronization is not available in this bui
 refresh_preparing = Preparing refresh…
 status_feeds_sync_pending = Refreshed { $done } of { $total } feeds — { $failed } failed; library sync pending
 library_sync_pending = Library sync pending
+
+welcome_title = Welcome to Fleet Reader
+welcome_note = Subscribe to the sites you read and their latest articles appear here. Start with a few suggested feeds, add one of your own, or bring your subscriptions from another reader.
+welcome_starter = Add Suggested Feeds

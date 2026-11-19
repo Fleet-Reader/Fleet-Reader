@@ -140,6 +140,9 @@ pub struct SheetsState {
     pub total_articles: Signal<i64>,
     /// A short transient message ("Imported 145 feeds", "3 feeds failed").
     pub status: Signal<String>,
+    /// Whether the subscriptions have been read from the store at least once, so an empty
+    /// `feeds` means a library with no subscriptions rather than one still opening.
+    pub loaded: Signal<bool>,
 }
 
 /// Everything one window is looking at (docs/state.md): its sidebar scope, its search text, the
@@ -259,6 +262,7 @@ impl Ambient for SheetsState {
             total_today: Signal::new(0),
             total_articles: Signal::new(0),
             status: Signal::new(String::new()),
+            loaded: Signal::new(false),
         }
     }
 }
@@ -461,6 +465,7 @@ pub fn init(format_status: fn(StatusMessage) -> String) {
                     let (feeds, folders, tags, unread, starred, today, articles) = snapshot.value;
                     let state = state();
                     state.feeds.set_if_changed(feeds);
+                    state.loaded.set_if_changed(true);
                     state.folders.set_if_changed(folders);
                     state.tags.set_if_changed(tags);
                     state.total_unread.set_if_changed(unread);

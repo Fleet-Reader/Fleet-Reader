@@ -25,6 +25,11 @@ title = "Fleet Reader"
 build = 10
 targets = ["macos-appkit", "macos-gtk", "macos-qt", "windows-winui", "ios-uikit", "android-material", "web-dom", "harmony-arkui"]
 
+# The live store listings; the website links its store badges to these.
+[store]
+apple-app-id = "6832401867"
+google-play-id = "org.appfair.app.FleetReader"
+
 [window]
 width = 1440
 height = 900

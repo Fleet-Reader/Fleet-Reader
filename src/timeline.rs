@@ -424,6 +424,10 @@ fn timeline_rows(
                     .grow(Dimension::Width)
                     .wrapper_id(day::id!(timeline_empty_row)),
                     divider(),
+                    when(
+                        crate::subscriptions::library_is_empty,
+                        crate::subscriptions::welcome,
+                    ),
                 ))
                 .grow(Dimension::Width)
             },

@@ -8,9 +8,14 @@ contact-first-name = "App"
 contact-last-name = "Fair"
 contact-phone = "3107337836"
 review-notes = """
-Fleet Reader reads RSS, Atom, RDF, and JSON feeds, and needs no sign-in. To try it, tap New Feed…,
-enter a feed or website address such as https://daringfireball.net, tap Verify, then Subscribe.
-The app downloads articles directly from each publisher's site.
+Fleet Reader is a feed reader: a tool for following websites through the RSS, Atom, RDF, and
+JSON feeds they publish. It has no content of its own and needs no sign-in. A new install starts
+with no subscriptions, so the article list is empty until a feed is added.
+
+To try it, open the article list and tap Add Suggested Feeds, which subscribes to five public
+feeds and loads their latest articles. Or tap New Feed…, enter a feed or website address such as
+https://daringfireball.net, tap Verify, then Subscribe. The app downloads articles directly from
+each publisher's site, and each article shows its source and publication date.
 
 Settings > Accounts can connect a WebDAV server to sync subscriptions, read status, and stars
 between devices. Sync stays off until someone connects a server.
@@ -22,9 +27,9 @@ apple-category = "NEWS"
 [storefront.metadata]
 name = "Fleet Reader"
 subtitle = "RSS, Atom, and JSON feeds"
-short = "Follow news sites and blogs through their RSS, Atom, and JSON feeds."
+short = "An RSS reader for the websites and blogs you choose to follow."
 description = """
-Fleet Reader is a feed reader for following news sites, blogs, and other publications in one place. Subscribe to the sites you read, browse their latest articles, and keep track of what you've read.
+Fleet Reader is an RSS reader: a tool for following the websites and blogs you choose, in one place. Subscribe to a site's feed, browse its latest articles, and keep track of what you've read. Fleet Reader publishes nothing itself; everything you read comes from the feeds you add.
 
 On an iPad or a computer, your subscriptions, article list, and reader sit side by side. On a phone, tap a subscription to see its articles, then tap an article to read it.
 
@@ -39,8 +44,8 @@ Fleet Reader fetches feeds directly from the sites you follow and keeps your lib
 
 Fleet Reader is open source under the Apache 2.0 license: github.com/Fleet-Reader/Fleet-Reader
 """
-keywords = ["rss", "feed", "reader", "atom", "json feed", "opml", "news", "blogs", "subscriptions", "webdav"]
-release-notes = "First release. Follow RSS, Atom, and JSON feeds, organize them into collections, search and star articles, import and export OPML, and try experimental WebDAV sync between devices."
+keywords = ["rss", "rss reader", "feed", "feed reader", "atom", "json feed", "opml", "blogs", "subscriptions", "webdav"]
+release-notes = "A new library now offers suggested feeds, a feed of your own, or an OPML import to get started. The New Feed form no longer keeps an old error after the address changes."
 promo = "Subscribe to the sites you read and catch up on their articles in one list. Bring your subscriptions from another reader with OPML."
 marketing-url = "https://fleet-reader.app/"
 support-url = "https://github.com/Fleet-Reader/Fleet-Reader/issues"

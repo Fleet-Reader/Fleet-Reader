@@ -27,3 +27,28 @@ See the [releases](https://github.com/Fleet-Reader/Fleet-Reader/releases) for do
 
 Built with [Day](https://daybrite.dev). Fleet Reader is open source under the
 [Apache 2.0 license](https://github.com/Fleet-Reader/Fleet-Reader/blob/main/LICENSE).
+
+## Recommended feeds
+
+The feeds a new reader is offered are not compiled in. They are the list in
+`website/public/recommended-feeds.json`, published at
+<https://fleet-reader.app/recommended-feeds.json> and fetched at every launch, so the list can
+change without an app release. The format is described at the top of `src/recommended.rs`: each
+feed has a stable `id`, a `url`, a `name` and `description` that are either one string or a map
+from language tags to strings, an optional `category`, an optional `starter` flag that
+preselects it, and optional `locales`, which offer the feed only to readers with a matching
+language anywhere in their device's preferred languages. A range such as `en-GB` offers a feed
+to one country's readers; a bare language such as `fr` offers it to every reader of French.
+
+`resource/assets/recommended-feeds.json` is the same file, bundled for a first launch with no
+network; a test fails when the two differ. The app keeps the last list it fetched. An entry
+the app cannot read is skipped without costing the rest of the list.
+
+To try a list before publishing it, serve `website/public/` locally and build the app against
+it:
+
+```sh
+python3 -m http.server 4324 --bind 127.0.0.1 --directory website/public
+adb reverse tcp:4324 tcp:4324   # Android only
+FLEET_RECOMMENDED_URL=http://127.0.0.1:4324/recommended-feeds.json day launch -t ios-uikit -t android-material
+```

@@ -24,6 +24,7 @@ mod reader_pager;
 mod reader_scripts;
 mod reader_styles;
 mod reader_view;
+mod recommended;
 mod refresh_schedule;
 mod settings;
 mod site_browser;
@@ -103,6 +104,7 @@ fn count(n: i64) -> String {
 
 pub fn root() -> impl Piece {
     http_fixtures::install();
+    recommended::start();
     // Start opening the store before building the views. Native database work runs on its
     // owning worker; committed snapshots populate the UI as they become available.
     #[cfg(target_arch = "wasm32")]

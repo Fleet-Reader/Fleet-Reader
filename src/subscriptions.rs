@@ -34,25 +34,50 @@ impl Ambient for SubscriptionSheet {
         }
     }
 }
-/// Feeds offered to a reader with no subscriptions, so a first launch has something to read
-/// one tap away. Each is the publisher's own feed, fetched from the publisher like any other.
-const STARTER_FEEDS: [&str; 4] = [
-    "https://www.nasa.gov/feed/",
-    "https://feeds.arstechnica.com/arstechnica/index",
-    "https://www.quantamagazine.org/feed/",
-    "https://xkcd.com/atom.xml",
-];
-
 /// Whether the library has loaded and holds no subscriptions. False while it is still
 /// opening, so an established library never flashes the first-run offer.
 pub fn library_is_empty() -> bool {
     let state = daynews_core::state();
-    state.loaded.get() && state.feeds.with(Vec::is_empty) && !crate::commands::refreshing()
+    state.loaded.get() && state.feeds.with(Vec::is_empty)
 }
 
-/// The first-run offer under an empty timeline: starter feeds, a feed of the reader's own,
-/// or a subscription list from another reader.
+/// One recommended feed's switch in the first-run offer: on when the reader turned it on, or
+/// when the reader has not touched it and the list marks it a starter.
+#[derive(Clone)]
+struct Picked {
+    id: String,
+    starter: bool,
+    choices: Signal<std::collections::BTreeMap<String, bool>>,
+}
+impl day::reactive::Binding<bool> for Picked {
+    fn read(&self) -> bool {
+        self.choices
+            .with(|c| c.get(&self.id).copied())
+            .unwrap_or(self.starter)
+    }
+    fn peek(&self) -> bool {
+        self.choices
+            .with_untracked(|c| c.get(&self.id).copied())
+            .unwrap_or(self.starter)
+    }
+    fn write(&self, on: bool) {
+        self.choices.update(|c| {
+            c.insert(self.id.clone(), on);
+        });
+    }
+}
+
+/// The first-run offer under an empty timeline: the feeds recommended for the reader's
+/// languages, a feed of the reader's own, or a subscription list from another reader.
 pub fn welcome() -> impl Piece {
+    use day::reactive::Binding;
+    let recommended = crate::recommended::Recommendations::app().feeds;
+    let choices = Signal::new(std::collections::BTreeMap::<String, bool>::new());
+    let picked = move |feed: &crate::recommended::Recommended| Picked {
+        id: feed.id.clone(),
+        starter: feed.starter,
+        choices,
+    };
     column((
         label(crate::res::str::welcome_title())
             .font(Font::Headline)
@@ -61,11 +86,44 @@ pub fn welcome() -> impl Piece {
             .font(Font::Body)
             .color(move || crate::theme::palette().text_muted)
             .id(day::id!(welcome_note)),
+        each(
+            items(
+                move || recommended.get(),
+                |feed: &crate::recommended::Recommended| feed.id.clone(),
+            ),
+            move |slot| {
+                let feed = slot.get();
+                let id = feed.id.clone();
+                let note = match &feed.category {
+                    Some(category) if feed.description.is_empty() => category.clone(),
+                    Some(category) => format!("{category} · {}", feed.description),
+                    None => feed.description.clone(),
+                };
+                row((
+                    column((
+                        label(feed.title.clone()).font(Font::Headline).max_lines(1),
+                        label(note)
+                            .font(Font::Footnote)
+                            .color(move || crate::theme::palette().text_muted)
+                            .max_lines(2),
+                    ))
+                    .spacing(2.0)
+                    .align(HAlign::Leading)
+                    .grow(Dimension::Width),
+                    toggle(picked(&feed)).id(day::id!(welcome_feed, id)),
+                ))
+                .spacing(Space::S)
+                .grow(Dimension::Width)
+            },
+        ),
         button(crate::res::str::welcome_starter())
             .prominent()
-            .action(|| {
-                for url in STARTER_FEEDS {
-                    daynews_core::subscribe(url);
+            .enabled(move || recommended.with(|feeds| feeds.iter().any(|f| picked(f).read())))
+            .action(move || {
+                for feed in recommended.get_untracked() {
+                    if picked(&feed).peek() {
+                        daynews_core::subscribe(&feed.url);
+                    }
                 }
             })
             .id(day::id!(welcome_starter))

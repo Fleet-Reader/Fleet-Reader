@@ -378,10 +378,25 @@ pub fn timeline_pane() -> impl Piece {
                     crate::settings::PREVIEW_LINES.get() as usize,
                     crate::settings::LIST_SCALE.get().round() as usize,
                     st.group_by_feed.get(),
+                    crate::subscriptions::library_is_empty(),
                 ))
             },
-            move |&(lines, percent, grouped)| {
-                timeline_rows(lines, percent as f64 / 100.0, sc, grouped)
+            move |&(lines, percent, grouped, first_run)| {
+                let scale = percent as f64 / 100.0;
+                if first_run {
+                    // No list to show yet: the offer is longer than a phone's screen, so it
+                    // scrolls in the space the list would take.
+                    column((
+                        empty_row(lines, scale, sc),
+                        scroll(crate::subscriptions::welcome())
+                            .id(day::id!(welcome))
+                            .grow(Dimension::Both),
+                    ))
+                    .grow(Dimension::Both)
+                    .any()
+                } else {
+                    timeline_rows(lines, scale, sc, grouped).any()
+                }
             },
         ),
         #[cfg(not(target_arch = "wasm32"))]
@@ -395,6 +410,31 @@ pub fn timeline_pane() -> impl Piece {
     .grow(Dimension::Both)
 }
 
+/// The row an empty timeline shows in place of its first article.
+fn empty_row(preview_lines: usize, scale: f64, sc: daynews_core::NewsScene) -> impl Piece {
+    column((
+        label(move || {
+            if crate::commands::refreshing() {
+                crate::res::str::timeline_synchronizing().format()
+            } else if sc.scope.get() == Scope::Unread {
+                crate::res::str::timeline_empty_unread().format()
+            } else {
+                crate::res::str::timeline_empty().format()
+            }
+        })
+        .font(Font::Body)
+        .font_scale(scale)
+        .color(move || palette().text_muted)
+        .id(day::id!(timeline_empty))
+        .aligned(Alignment::Center)
+        .height(row_height(preview_lines, scale))
+        .grow(Dimension::Width)
+        .wrapper_id(day::id!(timeline_empty_row)),
+        divider(),
+    ))
+    .grow(Dimension::Width)
+}
+
 fn timeline_rows(
     preview_lines: usize,
     scale: f64,
@@ -404,33 +444,7 @@ fn timeline_rows(
     column((
         when(
             move || sc.articles.with(|a| a.is_empty()),
-            move || {
-                column((
-                    label(move || {
-                        if crate::commands::refreshing() {
-                            crate::res::str::timeline_synchronizing().format()
-                        } else if sc.scope.get() == Scope::Unread {
-                            crate::res::str::timeline_empty_unread().format()
-                        } else {
-                            crate::res::str::timeline_empty().format()
-                        }
-                    })
-                    .font(Font::Body)
-                    .font_scale(scale)
-                    .color(move || palette().text_muted)
-                    .id(day::id!(timeline_empty))
-                    .aligned(Alignment::Center)
-                    .height(row_height(preview_lines, scale))
-                    .grow(Dimension::Width)
-                    .wrapper_id(day::id!(timeline_empty_row)),
-                    divider(),
-                    when(
-                        crate::subscriptions::library_is_empty,
-                        crate::subscriptions::welcome,
-                    ),
-                ))
-                .grow(Dimension::Width)
-            },
+            move || empty_row(preview_lines, scale, sc),
         ),
         {
             // Programmatic selection moves (Next Unread, a scripted `select:`) can land

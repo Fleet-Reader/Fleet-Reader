@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //! User-authored extraction hooks. Preferences store copies, never paths to mutable files.
 use crate::res;
+use crate::theme;
 use day::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -117,7 +118,7 @@ fn controls(feed: Option<u64>) -> impl Piece {
         .spacing(Space::S),
         cover(open, move |target: &String| editor(open, target))
             .sheet()
-            .background(|_| crate::theme::palette().bg)
+            .background(|_| theme::BG)
             .unrouted(),
     ))
     .spacing(Space::XS)
@@ -306,7 +307,7 @@ fn editor(open: Signal<Option<String>>, target: &str) -> impl Piece + use<> {
     ))
     .spacing(Space::S)
     .padding(Space::L)
-    .background(|| crate::theme::palette().bg)
+    .background(theme::BG)
     .grow(Dimension::Both)
     .id(day::id!(reader_script_editor));
     if cfg!(any(feature = "appkit", feature = "uikit")) {

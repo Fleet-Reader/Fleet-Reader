@@ -2,6 +2,7 @@
 //! Mobile reader paging. Three stable page slots retain their webviews while the
 //! reading order rotates. Preparing a page never calls open_article/set_read.
 use crate::reader_view::{ReaderView, ReaderVisibility};
+use crate::theme;
 use day::pager::{PagerState, pager};
 use day::prelude::*;
 
@@ -185,7 +186,7 @@ pub(crate) fn reader_pager() -> impl Piece {
         }
     })
     .id(day::id!(reader_pager))
-    .background(move || crate::theme::palette().bg)
+    .background(theme::BG)
     .grow(Dimension::Both)
     .toolbar(move || {
         scene

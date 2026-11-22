@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 //! A viewport-sized native dashboard. Chart data is a worker-owned metadata projection;
 //! only the visible countdown changes each second, never the database or the chart marks.
-use crate::{res, theme::palette};
+use crate::res;
+use crate::theme;
 use day::prelude::*;
 use day_core::{Boundary, Flex, Layout, LayoutOps};
 use day_piece_charts::{
@@ -48,24 +49,23 @@ fn title(scope: Scope, data: Data) -> String {
         }),
     }
 }
-fn accent(scope: Scope) -> Color {
+fn accent(scope: Scope) -> Ink {
     match scope {
-        Scope::Starred => palette().star,
-        Scope::Today => Color::hex(if day::dark_mode() { 0x65D7BF } else { 0x168A76 }),
-        Scope::Unread => Color::hex(if day::dark_mode() { 0xB49BFF } else { 0x7751C8 }),
-        _ => palette().accent,
+        Scope::Starred => theme::STAR,
+        Scope::Today => Ink::adaptive(Color::hex(0x168A76), Color::hex(0x65D7BF)),
+        Scope::Unread => Ink::adaptive(Color::hex(0x7751C8), Color::hex(0xB49BFF)),
+        _ => theme::ACCENT,
     }
 }
 fn card<P: Piece>(content: P) -> impl Piece {
-    // Keep decoration behind the card's controls. A canvas overlay covers native hit
-    // testing even when it paints only a thin border.
-    content
-        .padding(Space::M)
-        .background(move || palette().bg_alt)
-        .corner_radius(13.0)
-        .padding(1.0)
-        .background(move || palette().rule.with_alpha(0.65))
-        .corner_radius(14.0)
+    // The fill and the hairline are one native surface under the card's controls: a canvas
+    // overlay would cover their hit testing even when it paints only a thin border.
+    content.padding(Space::M).padding(1.0).surface(
+        Surface::new()
+            .fill(theme::BG_ALT)
+            .corner_radius(14.0)
+            .border(theme::RULE.with_alpha(0.65), 1.0),
+    )
 }
 
 fn metric(
@@ -79,9 +79,7 @@ fn metric(
             .weight(FontWeight::Bold)
             .color(move || accent(scope.get()))
             .single_line(),
-        label(label_text)
-            .preset(&CAPTION)
-            .color(move || palette().text_muted),
+        label(label_text).preset(&CAPTION).color(theme::TEXT_MUTED),
     ))
     .spacing(3.0)
     .align(HAlign::Leading)
@@ -117,7 +115,7 @@ fn activity(data: Data, scope: Scope) -> Vec<Mark> {
             .zip(read(data, |d| d.ages))
             .map(|(age, n)| {
                 bar(value("", age), value(&count, n))
-                    .foreground(accent(scope))
+                    .foreground(day::resolve(accent(scope)))
                     .corner_radius(5.0)
             })
             .collect();
@@ -131,7 +129,7 @@ fn activity(data: Data, scope: Scope) -> Vec<Mark> {
                     value("", res::str::dashboard_chart_hour(hour as f64).format()),
                     value(&count, n),
                 )
-                .foreground(accent(scope))
+                .foreground(day::resolve(accent(scope)))
                 .corner_radius(3.0)
             })
             .collect();
@@ -160,10 +158,10 @@ fn activity(data: Data, scope: Scope) -> Vec<Mark> {
             let date = (start + (i as i64 * width + width / 2) * 86400) as f64;
             [
                 area(time("", date), value(&count, n))
-                    .foreground(accent(scope))
+                    .foreground(day::resolve(accent(scope)))
                     .opacity(0.18),
                 line(time("", date), value(&count, n))
-                    .foreground(accent(scope))
+                    .foreground(day::resolve(accent(scope)))
                     .line_width(2.8),
             ]
         })
@@ -180,7 +178,7 @@ fn activity_card(data: Data, scope: Signal<Scope>) -> AnyPiece {
                 _ => res::str::dashboard_activity().format(),
             })
             .preset(&HEADLINE)
-            .color(move || palette().text),
+            .color(theme::TEXT),
             label(move || match scope.get() {
                 Scope::Today => res::str::dashboard_today_note().format(),
                 Scope::Unread => res::str::dashboard_unread_note().format(),
@@ -197,7 +195,7 @@ fn activity_card(data: Data, scope: Signal<Scope>) -> AnyPiece {
                 }
             })
             .preset(&CAPTION)
-            .color(move || palette().text_muted),
+            .color(theme::TEXT_MUTED),
             chart(move || activity(data, scope.get()))
                 .animated()
                 .animate_appearance()
@@ -269,10 +267,10 @@ fn sources_card(data: Data) -> AnyPiece {
         column((
             label(res::str::dashboard_sources())
                 .preset(&HEADLINE)
-                .color(move || palette().text),
+                .color(theme::TEXT),
             label(res::str::dashboard_sources_note())
                 .preset(&CAPTION)
-                .color(move || palette().text_muted),
+                .color(theme::TEXT_MUTED),
             PublisherPieces(vec![
                 chart(move || {
                     sources(data)
@@ -371,7 +369,7 @@ fn schedule(data: Data, clock: Signal<i64>) -> AnyPiece {
             label(res::str::dashboard_automatic())
                 .font(Font::Caption2)
                 .weight(FontWeight::Bold)
-                .color(move || palette().accent),
+                .color(theme::ACCENT),
             spacer(),
             label(move || {
                 let intervals = read(data, |d| {
@@ -391,7 +389,7 @@ fn schedule(data: Data, clock: Signal<i64>) -> AnyPiece {
             })
             .font(Font::Footnote)
             .weight(FontWeight::Semibold)
-            .color(move || palette().text)
+            .color(theme::TEXT)
             .single_line(),
         ))
         .align(VAlign::Center)
@@ -409,7 +407,7 @@ fn schedule(data: Data, clock: Signal<i64>) -> AnyPiece {
                 _ => res::str::dashboard_no_schedule().format(),
             })
             .preset(&CAPTION)
-            .color(move || palette().text_muted)
+            .color(theme::TEXT_MUTED)
             .grow(Dimension::Width),
             label(move || {
                 let now = clock.get();
@@ -436,7 +434,7 @@ fn schedule(data: Data, clock: Signal<i64>) -> AnyPiece {
             })
             .font(Font::Footnote)
             .weight(FontWeight::Semibold)
-            .color(move || palette().accent)
+            .color(theme::ACCENT)
             .tabular()
             .id(day::id!(dashboard_refresh_countdown)),
         ))
@@ -471,7 +469,7 @@ fn forecast(data: Data, clock: Signal<i64>) -> AnyPiece {
             schedule(data, clock),
             label(move || policy(data))
                 .font(Font::Caption2)
-                .color(move || palette().text_muted)
+                .color(theme::TEXT_MUTED)
                 .single_line()
                 .grow(Dimension::Width),
         ))
@@ -513,7 +511,7 @@ pub fn dashboard() -> impl Piece {
         label(move || title(scope.get(), data))
             .font(Font::Title)
             .weight(FontWeight::Bold)
-            .color(move || palette().text)
+            .color(theme::TEXT)
             .single_line()
             .id(day::id!(dashboard_title)),
         label(move || match scope.get() {
@@ -529,7 +527,7 @@ pub fn dashboard() -> impl Piece {
         // The compact hero must also fit its eyebrow, title and actionable site URL.
         // A second description line can consume the URL's entire height on ArkUI.
         .single_line()
-        .color(move || palette().text_muted),
+        .color(theme::TEXT_MUTED),
         when(
             move || matches!(scope.get(), Scope::Feed(_)) && feed_page_url(data).is_some(),
             move || {
@@ -691,7 +689,7 @@ pub fn dashboard() -> impl Piece {
         )
         .padding(18.0),
     )
-    .background(move || palette().bg)
+    .background(theme::BG)
     .id(day::id!(feed_dashboard))
     .grow(Dimension::Both)
 }
@@ -775,7 +773,7 @@ fn feed_settings(feed: u64, data: Data, scope: Signal<Scope>, clock: Signal<i64>
             schedule(data, clock),
             label(move || policy(data))
                 .font(Font::Caption2)
-                .color(move || palette().text_muted)
+                .color(theme::TEXT_MUTED)
                 .grow(Dimension::Width),
             actions,
         ))
@@ -834,16 +832,16 @@ fn words_card(
         column((
             label(res::str::dashboard_words_title())
                 .preset(&HEADLINE)
-                .color(move || palette().text),
+                .color(theme::TEXT),
             label(res::str::dashboard_words_note())
                 .preset(&CAPTION)
-                .color(move || palette().text_muted),
+                .color(theme::TEXT_MUTED),
             when(
                 move || words.with(|w| w.as_ref().is_some_and(|w| w.is_empty())),
                 move || {
                     label(res::str::dashboard_words_empty())
                         .font(Font::Footnote)
-                        .color(move || palette().text_muted)
+                        .color(theme::TEXT_MUTED)
                 },
             ),
             canvas(move |d, size| {
@@ -896,7 +894,7 @@ fn words_card(
                         // back, so the word's run along x goes up the screen.
                         let frame = word.frame;
                         d.transformed(
-                            Affine::rotate(-std::f64::consts::FRAC_PI_2)
+                            Affine::rotate(-Angle::QUARTER)
                                 .then(Affine::translate(frame.min_x(), frame.max_y())),
                             |d| d.text(text, Point::new(0.0, 0.0), text_style),
                         );
@@ -1008,16 +1006,19 @@ fn contains(frame: &Rect, point: Point) -> bool {
 /// A word's color: the scope's accent for the few largest, then a small set of hues that sit
 /// well together on the dashboard's cards, chosen by the word itself so a word keeps its color
 /// from one visit to the next. Smaller words are a little lighter, so the large ones lead.
-fn cloud_color(index: usize, word: &str, weight: f64, accent: Color) -> Color {
-    let hues: [u32; 5] = if day::dark_mode() {
-        [0x5EC4D6, 0xB49BFF, 0xF59E62, 0x7BCB8A, 0xF472B6]
-    } else {
-        [0x1F7A8C, 0x6D4AC4, 0xC2410C, 0x2F7D46, 0xB0236A]
-    };
+fn cloud_color(index: usize, word: &str, weight: f64, accent: Ink) -> Ink {
+    const HUES: [(u32, u32); 5] = [
+        (0x1F7A8C, 0x5EC4D6),
+        (0x6D4AC4, 0xB49BFF),
+        (0xC2410C, 0xF59E62),
+        (0x2F7D46, 0x7BCB8A),
+        (0xB0236A, 0xF472B6),
+    ];
     let base = if index < 3 {
         accent
     } else {
-        Color::hex(hues[(word_hash(word) % hues.len() as u64) as usize])
+        let (light, dark) = HUES[(word_hash(word) % HUES.len() as u64) as usize];
+        Ink::adaptive(Color::hex(light), Color::hex(dark))
     };
     base.with_alpha(0.7 + 0.3 * weight)
 }

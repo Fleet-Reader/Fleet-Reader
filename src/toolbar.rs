@@ -6,6 +6,7 @@
 //! is available before selection and moves into the article toolbar once reading starts.
 
 use crate::res;
+use crate::theme;
 use day::prelude::*;
 
 /// Search has one source of truth, shared by native chrome and the timeline query.
@@ -205,7 +206,7 @@ pub fn status_bar() -> impl Piece {
         || !crate::settings::TOOLBAR_SETTINGS && crate::settings::STATUS_BAR.get(),
         || {
             let st = daynews_core::state();
-            let muted = move || crate::theme::palette().text_muted;
+            let muted = theme::TEXT_MUTED;
             let refreshing = move || !sync_busy() && st.refresh_progress.get().is_some();
             let idle = move || !sync_busy() && st.refresh_progress.get().is_none();
             column((
@@ -267,7 +268,7 @@ pub fn status_bar() -> impl Piece {
                 .height(STATUS_BAR_HEIGHT)
                 .grow(Dimension::Width),
             ))
-            .background(move || crate::theme::palette().bg_alt)
+            .background(theme::BG_ALT)
             .id(day::id!(status_bar))
             .grow(Dimension::Width)
         },
@@ -287,7 +288,7 @@ fn sync_controls() -> impl Piece {
         label(move || crate::accounts::progress_timing(&status.get()))
             .font(Font::Caption)
             .single_line()
-            .color(move || crate::theme::palette().text_muted),
+            .color(theme::TEXT_MUTED),
         when(
             move || fraction().is_some(),
             move || {

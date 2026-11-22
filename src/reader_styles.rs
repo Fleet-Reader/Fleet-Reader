@@ -4,6 +4,7 @@
 use crate::settings::{
     LIST_SCALE, PREVIEW_LINES, READER_BACKGROUND, READER_FONT, READER_SCALE, READER_TEXT,
 };
+use crate::theme;
 use day::prelude::*;
 use day_piece_settings::prelude::*;
 
@@ -103,10 +104,11 @@ impl ReaderColor {
 
 impl Binding<Color> for ReaderColor {
     fn read(&self) -> Color {
-        let palette = crate::theme::palette();
-        parse_color(&self.pref().get()).unwrap_or(match self {
-            Self::Background => palette.bg,
-            Self::Text => palette.text,
+        parse_color(&self.pref().get()).unwrap_or_else(|| {
+            day::resolve(match self {
+                Self::Background => theme::BG,
+                Self::Text => theme::TEXT,
+            })
         })
     }
     fn peek(&self) -> Color {
@@ -167,7 +169,7 @@ fn css_family(family: &str) -> String {
 }
 
 pub fn stylesheet(style: &ReaderStyle, dark: bool) -> String {
-    let p = crate::theme::palette_for(dark);
+    let p = theme::palette_for(dark);
     let background = style.background.unwrap_or(p.bg);
     let text = style.text.unwrap_or(p.text);
     let family = if style.family.is_empty() {
@@ -257,7 +259,7 @@ mod tests {
         assert!(css.contains("1rem * 1.5"));
         assert!(
             stylesheet(&ReaderStyle::default(), true)
-                .contains(&css_color(crate::theme::palette_for(true).bg))
+                .contains(&css_color(theme::palette_for(true).bg))
         );
     }
     #[test]

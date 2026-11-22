@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //! Native account setup; translated presentation stays on the UI thread.
 use crate::res;
+use crate::theme;
 use day::prelude::*;
 
 #[cfg(not(feature = "feedbin"))]
@@ -229,7 +230,7 @@ pub fn sync_status_footer(id: day::ElementId) -> impl Piece {
                 sync_progress().padding(Insets::symmetric(12.0, 4.0)),
             ))
             .id(id.clone())
-            .background(move || crate::theme::palette().bg_alt)
+            .background(theme::BG_ALT)
             .grow(Dimension::Width)
         },
     )
@@ -286,7 +287,7 @@ pub fn sync_progress() -> impl Piece {
                         label(move || progress_text(&status.get().progress.unwrap_or_default()))
                             .font(Font::Caption)
                             .single_line()
-                            .color(move || crate::theme::palette().text)
+                            .color(theme::TEXT)
                             .id(day::id!(sync_progress_activity))
                             .grow(Dimension::Width),
                         label(move || {
@@ -299,7 +300,7 @@ pub fn sync_progress() -> impl Piece {
                         })
                         .font(Font::Caption)
                         .single_line()
-                        .color(move || crate::theme::palette().text_muted)
+                        .color(theme::TEXT_MUTED)
                         // Reserve a line even before the first feed arrives, using the
                         // caption's actual font metrics (including accessibility scaling).
                         .reserving(res::str::sync_progress_feed(String::new()))
@@ -308,7 +309,7 @@ pub fn sync_progress() -> impl Piece {
                         label(move || progress_timing(&status.get()))
                             .font(Font::Caption)
                             .single_line()
-                            .color(move || crate::theme::palette().text_muted)
+                            .color(theme::TEXT_MUTED)
                             .id(day::id!(sync_progress_time))
                             .grow(Dimension::Width),
                     ))

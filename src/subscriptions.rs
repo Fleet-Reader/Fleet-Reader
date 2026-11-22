@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //! Managing subscriptions: add by URL, import/export OPML, and per-feed actions.
 
+use crate::theme;
 use day::prelude::*;
 
 fn subscription_url(input: &str) -> Option<String> {
@@ -84,7 +85,7 @@ pub fn welcome() -> impl Piece {
             .id(day::id!(welcome_title)),
         label(crate::res::str::welcome_note())
             .font(Font::Body)
-            .color(move || crate::theme::palette().text_muted)
+            .color(theme::TEXT_MUTED)
             .id(day::id!(welcome_note)),
         each(
             items(
@@ -104,7 +105,7 @@ pub fn welcome() -> impl Piece {
                         label(feed.title.clone()).font(Font::Headline).max_lines(1),
                         label(note)
                             .font(Font::Footnote)
-                            .color(move || crate::theme::palette().text_muted)
+                            .color(theme::TEXT_MUTED)
                             .max_lines(2),
                     ))
                     .spacing(2.0)

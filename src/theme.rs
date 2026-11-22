@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-//! Colors, resolved per light/dark so the reader looks native on every platform.
+//! Colors for light and dark, so the reader looks native on every platform.
 
 use day::prelude::*;
 
@@ -38,12 +38,19 @@ const DARK: Palette = Palette {
     star: Color::hex(0xF0A62E),
 };
 
-/// Tracked read of the platform appearance, so color closures recolor live when the system
-/// theme flips.
-pub fn palette() -> &'static Palette {
-    palette_for(day::dark_mode())
-}
+/// The palette's colors as inks, the light palette's color in the light appearance and the dark
+/// palette's in the dark one: a view drawn in one follows the system theme with no rebuild.
+pub const BG: Ink = Ink::adaptive(LIGHT.bg, DARK.bg);
+pub const BG_ALT: Ink = Ink::adaptive(LIGHT.bg_alt, DARK.bg_alt);
+pub const TEXT: Ink = Ink::adaptive(LIGHT.text, DARK.text);
+pub const TEXT_MUTED: Ink = Ink::adaptive(LIGHT.text_muted, DARK.text_muted);
+pub const ACCENT: Ink = Ink::adaptive(LIGHT.accent, DARK.accent);
+pub const RULE: Ink = Ink::adaptive(LIGHT.rule, DARK.rule);
+pub const UNREAD_DOT: Ink = Ink::adaptive(LIGHT.unread_dot, DARK.unread_dot);
+pub const STAR: Ink = Ink::adaptive(LIGHT.star, DARK.star);
 
+/// The palette of one appearance, for content that carries its colors as values (the reader's
+/// HTML and its stylesheet).
 pub(crate) fn palette_for(dark: bool) -> &'static Palette {
     if dark { &DARK } else { &LIGHT }
 }

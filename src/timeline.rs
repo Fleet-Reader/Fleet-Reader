@@ -3,7 +3,7 @@
 //! an unread dot in the left gutter.
 
 use crate::format::{relative_time, snippet};
-use crate::theme::palette;
+use crate::theme;
 use day::prelude::*;
 use daynews_core::ArticleSummary;
 use daynews_db::Scope;
@@ -52,12 +52,12 @@ fn row_for(
     // to the native selection while preserving these colors for unselected rows.
     let title_color = move || {
         if read() {
-            palette().text_muted
+            theme::TEXT_MUTED
         } else {
-            palette().text
+            theme::TEXT
         }
     };
-    let sub_color = move || palette().text_muted;
+    let sub_color = theme::TEXT_MUTED;
 
     row((
         // The dot rides at the title's optical center rather than the row's: a three-line row
@@ -71,7 +71,7 @@ fn row_for(
                     // A drawn shape, not an empty container with a background: a childless
                     // container has no content to paint on GTK/Qt.
                     circle()
-                        .fill(move || palette().unread_dot)
+                        .fill(theme::UNREAD_DOT)
                         .frame(DOT, DOT)
                         .id_of(move || day::id!(unread_dot, id()))
                 },
@@ -91,23 +91,14 @@ fn row_for(
             when(
                 move || preview_lines > 0 && slot.field(|a| a.summary.is_some()),
                 move || {
-                    // Apple labels enforce a real line cap. Keep the previous approximate
-                    // excerpt budget on backends that do not yet support native line limits.
-                    let chars = if cfg!(any(feature = "appkit", feature = "uikit")) {
-                        2048
-                    } else if cfg!(any(target_os = "android", target_env = "ohos")) {
-                        45 * preview_lines
-                    } else {
-                        55 * preview_lines
-                    };
-                    label(move || {
-                        slot.field(|a| snippet(a.summary.as_deref().unwrap_or(""), chars))
-                    })
-                    .font(SUMMARY_FONT)
-                    .font_scale(scale)
-                    .max_lines(preview_lines as u32)
-                    .id_of(move || day::id!(article_preview, id()))
-                    .color(sub_color)
+                    // The label cuts the excerpt at `preview_lines` on every toolkit; the
+                    // snippet only bounds how much text it is handed.
+                    label(move || slot.field(|a| snippet(a.summary.as_deref().unwrap_or(""), 2048)))
+                        .font(SUMMARY_FONT)
+                        .font_scale(scale)
+                        .max_lines(preview_lines as u32)
+                        .id_of(move || day::id!(article_preview, id()))
+                        .color(sub_color)
                 },
             ),
             row((
@@ -136,7 +127,7 @@ fn row_for(
                 label("\u{2605}")
                     .font(FOOTER_FONT)
                     .font_scale(scale)
-                    .color(move || palette().star)
+                    .color(theme::STAR)
             },
         ),
     ))
@@ -218,7 +209,7 @@ fn feed_header(feed: impl Fn() -> (u64, String) + Copy + 'static) -> impl Piece 
                     image(path.clone()).decorative().frame(GUTTER, GUTTER).any()
                 } else {
                     vector(crate::res::vectors::dashboard_feed)
-                        .tint(move || palette().accent)
+                        .tint(theme::ACCENT)
                         .decorative()
                         .frame(GUTTER, GUTTER)
                         .any()
@@ -293,14 +284,14 @@ pub fn timeline_pane() -> impl Piece {
                 label(move || scope_title(sc.scope.get()))
                     .font(Font::Title3)
                     .weight(FontWeight::Bold)
-                    .color(move || palette().text)
+                    .color(theme::TEXT)
                     .id(day::id!(scope_title)),
                 label(move || {
                     let n = sc.scope_unread.get();
                     crate::res::str::unread_count(n as f64).format()
                 })
                 .font(Font::Caption)
-                .color(move || palette().text_muted),
+                .color(theme::TEXT_MUTED),
             ))
             .spacing(1.0)
             .align(HAlign::Leading)
@@ -360,7 +351,7 @@ pub fn timeline_pane() -> impl Piece {
                         .format()
                     })
                     .font(Font::Caption)
-                    .color(move || palette().text_muted)
+                    .color(theme::TEXT_MUTED)
                     .id(day::id!(refresh_progress)),
                 ))
                 .spacing(Space::S)
@@ -405,7 +396,7 @@ pub fn timeline_pane() -> impl Piece {
             || crate::accounts::sync_status_footer(day::id!(sync_status_footer)),
         ),
     ))
-    .background(move || palette().bg_alt)
+    .background(theme::BG_ALT)
     .toolbar(crate::toolbar::list_items)
     .grow(Dimension::Both)
 }
@@ -424,7 +415,7 @@ fn empty_row(preview_lines: usize, scale: f64, sc: daynews_core::NewsScene) -> i
         })
         .font(Font::Body)
         .font_scale(scale)
-        .color(move || palette().text_muted)
+        .color(theme::TEXT_MUTED)
         .id(day::id!(timeline_empty))
         .aligned(Alignment::Center)
         .height(row_height(preview_lines, scale))
@@ -541,7 +532,7 @@ fn timeline_rows(
                     vec![
                         swipe_action(text)
                             .symbol(symbol)
-                            .tint(palette().accent)
+                            .tint(theme::ACCENT)
                             .action(move || daynews_core::set_read(id, !read)),
                     ]
                 })
@@ -560,7 +551,7 @@ fn timeline_rows(
                     vec![
                         swipe_action(text)
                             .symbol(Symbol::Star)
-                            .tint(palette().star)
+                            .tint(theme::STAR)
                             .action(move || daynews_core::set_starred(id, !starred)),
                     ]
                 })

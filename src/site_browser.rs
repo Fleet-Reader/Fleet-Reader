@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //! Dedicated site profiles shared by the interactive browser and inert reader extraction.
 use crate::res;
+use crate::theme;
 use day::prelude::*;
 use day_piece_webview::{JsHandle, WebProfile, web_view};
 /// Tracked read of the Incognito Mode setting (Settings ▸ Browser).
@@ -371,7 +372,7 @@ pub fn browser_cover() -> impl Piece {
                         move || {
                             label(host)
                                 .font(Font::Caption)
-                                .color(|| crate::theme::palette().text_muted)
+                                .color(theme::TEXT_MUTED)
                                 .single_line()
                                 .id(day::id!(site_browser_host))
                         },
@@ -418,6 +419,6 @@ pub fn browser_cover() -> impl Piece {
     // A large sheet on a desktop, the page needing more room than a form; the composed tiers
     // dim the window around it, and a phone shows the full-window cover.
     .large_sheet()
-    .background(|_| crate::theme::palette().bg)
+    .background(|_| theme::BG)
     .unrouted()
 }

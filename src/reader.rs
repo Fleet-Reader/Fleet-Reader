@@ -3,7 +3,7 @@
 //! document of our own so text is legible and matches the app's appearance.
 
 use crate::format::full_date;
-use crate::theme::palette;
+use crate::theme;
 use day::prelude::*;
 use day_piece_webview::{ResourceProvider, ResourceResponse, web_view_resources};
 use daynews_core::StoredArticle;
@@ -58,7 +58,7 @@ fn document_with_style(
     dark: bool,
     style: &crate::reader_styles::ReaderStyle,
 ) -> String {
-    let p = crate::theme::palette_for(dark);
+    let p = theme::palette_for(dark);
     let empty_body = format!(
         "<p><em>{}</em></p>",
         escape(&crate::res::str::reader_no_content().format())
@@ -488,17 +488,17 @@ fn article_text() -> impl Piece {
             label(b.text)
                 .font(Font::Title3)
                 .weight(FontWeight::Bold)
-                .color(move || palette().text)
+                .color(theme::TEXT)
                 .any()
         } else {
-            label(b.text).color(move || palette().text).any()
+            label(b.text).color(theme::TEXT).any()
         }
     };
     scroll(
         column((
             label(move || st.article.get().map(|a| a.feed_title).unwrap_or_default())
                 .font(Font::Footnote)
-                .color(move || palette().accent),
+                .color(theme::ACCENT),
             label(move || {
                 st.article
                     .get()
@@ -507,7 +507,7 @@ fn article_text() -> impl Piece {
             })
             .font(Font::Title2)
             .bold()
-            .color(move || palette().text),
+            .color(theme::TEXT),
             label(move || {
                 st.article
                     .get()
@@ -515,7 +515,7 @@ fn article_text() -> impl Piece {
                     .unwrap_or_default()
             })
             .font(Font::Caption)
-            .color(move || palette().text_muted),
+            .color(theme::TEXT_MUTED),
             each(
                 items(body, |(key, _): &(String, crate::format::Block)| {
                     key.clone()
@@ -755,7 +755,7 @@ pub(crate) fn reader_document(chrome: bool) -> impl Piece {
             },
         ),
     ))
-    .background(move || palette().bg)
+    .background(theme::BG)
     .grow(Dimension::Both)
     // The commands follow the open article: a new one re-derives the list with its own starred
     // and read state, and no article at all contributes nothing, so the bar carries them only

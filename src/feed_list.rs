@@ -4,6 +4,7 @@
 //! until renamed) holds the feeds in no collection; it has no folder in the store, and its
 //! name, place and sort are preferences. Article scopes and smart feeds stay independent.
 use crate::res;
+use crate::theme;
 use day::prelude::*;
 use daynews_core::{FeedRow, FeedSort, FolderRow};
 
@@ -559,9 +560,9 @@ pub fn collections_editor() -> impl Piece {
                 })
                 .tint(move || {
                     if default {
-                        crate::theme::palette().accent
+                        theme::ACCENT
                     } else {
-                        crate::theme::palette().text_muted
+                        theme::TEXT_MUTED
                     }
                 })
                 .decorative()
@@ -587,7 +588,7 @@ pub fn collections_editor() -> impl Piece {
                     res::str::feeds_count(n as f64).format()
                 })
                 .font(Font::Caption)
-                .color(move || crate::theme::palette().text_muted)
+                .color(theme::TEXT_MUTED)
                 .single_line(),
                 when(
                     move || selected.get() == Some(id),
@@ -678,10 +679,10 @@ fn default_badge() -> impl Piece {
     label(res::str::collection_default())
         .font(Font::Caption2)
         .weight(FontWeight::Semibold)
-        .color(move || crate::theme::palette().accent)
+        .color(theme::ACCENT)
         .single_line()
         .padding(Insets::symmetric(6.0, 1.0))
-        .background(move || crate::theme::palette().accent.with_alpha(0.14))
+        .background(theme::ACCENT.with_alpha(0.14))
         .corner_radius(6.0)
         .id(day::id!(collection_default_badge))
 }

@@ -9,6 +9,10 @@ flow:
   - wait_for: { id: reader_web }
   - web_eval: { id: reader_web, script: 'window.scrollTo(0, 0); true', text: 'true' }
   - pause: { secs: 1 }
+  - web_eval:
+      id: reader_web
+      script: "window.innerWidth > 480 || Math.abs(parseFloat(getComputedStyle(document.getElementById('reader-title')).fontSize) / parseFloat(getComputedStyle(document.body).fontSize) - 1.4) < 0.01"
+      text: 'true'
   - screenshot: reader-header-top
   - web_eval: { id: reader_web, script: 'window.scrollTo(0, 500); true', text: 'true' }
   - pause: { secs: 1 }

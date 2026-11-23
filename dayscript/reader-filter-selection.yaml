@@ -10,6 +10,8 @@ flow:
   - toolbar: { item: read, only_on: [ios-uikit] }
   - pause: { secs: 1 }
   - menu: { id: mark_all_read }
+  - assert_presented: {  }
+  - respond: { button: 1 }
   - pause: { secs: 1 }
   - select: { id: timeline, index: 0 }
   - pause: { secs: 1 }

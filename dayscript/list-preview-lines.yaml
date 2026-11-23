@@ -58,5 +58,7 @@ flow:
   - swipe_row: { id: timeline, row: 0, edge: leading, key: mark_unread }
   - navigate: { route: unread }
   - menu: { id: mark_all_read }
+  - assert_presented: {  }
+  - respond: { button: 1 }
   - assert_visible: { id: timeline_empty_row }
   - screenshot: { name: list-caught-up-row, only_on: [macos-appkit] }

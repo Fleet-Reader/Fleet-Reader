@@ -51,7 +51,7 @@ final class NavigationTests: XCTestCase {
         app.launchEnvironment["DAY_NEWS_SYNC_TEST"] = "1"
         app.launch()
         let back = app.navigationBars.buttons.matching(
-            NSPredicate(format: "label == 'Back' OR label == 'Fleet Reader'")).firstMatch
+            NSPredicate(format: "label == 'Back'")).firstMatch
         if back.waitForExistence(timeout: 2) && back.isHittable { back.tap() }
         let search = app.searchFields.firstMatch
         // Pull down first: the previous session may have left the list scrolled.
@@ -61,7 +61,8 @@ final class NavigationTests: XCTestCase {
         visible(search)
         let bar = app.navigationBars.firstMatch
         let expanded = bar.frame.height
-        photograph("Expanded feeds search and title")
+        XCTAssertFalse(app.navigationBars.staticTexts["Fleet Reader"].exists)
+        photograph("Expanded feeds search")
         feeds.swipeUp()
         let collapsed = XCTNSPredicateExpectation(
             predicate: NSPredicate { _, _ in bar.frame.height < expanded - 20 }, object: nil)
@@ -130,7 +131,7 @@ final class NavigationTests: XCTestCase {
         // A compact initial selection may show the list or the root. Either way,
         // a visible list must provide UIKit's Back, not just a scripted nav_back.
         let back = app.navigationBars.buttons.matching(
-            NSPredicate(format: "label == 'Back' OR label == 'Fleet Reader'")).firstMatch
+            NSPredicate(format: "label == 'Back'")).firstMatch
         if app.staticTexts["No articles"].waitForExistence(timeout: 3) {
             visible(back)
             back.tap()
@@ -141,6 +142,8 @@ final class NavigationTests: XCTestCase {
             row.tap()
             visible(app.staticTexts[title == "All Unread" ? "All caught up" : "No articles"].firstMatch)
             visible(back)
+            XCTAssertFalse(app.navigationBars.staticTexts["Fleet Reader"].exists)
+            XCTAssertFalse(app.navigationBars.buttons["Fleet Reader"].exists)
             photograph("Back from \(title)")
             back.tap()
             visible(app.staticTexts["All Articles"].firstMatch)

@@ -34,10 +34,13 @@ fn rows(c: &mut dyn SqliteConnection, sql: &str, p: &[Value]) -> Result<Vec<Vec<
 }
 impl State {
     pub fn id(&self) -> String {
-        Sha256::digest(serde_json::to_vec(&(PROFILE, &self.kind, &self.feed, &self.guid)).unwrap())
-            .iter()
-            .map(|b| format!("{b:02x}"))
-            .collect()
+        Sha256::digest(
+            serde_json::to_vec(&(PROFILE, &self.kind, &self.feed, &self.guid))
+                .expect("a tuple of strings always serializes to JSON"),
+        )
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect()
     }
     pub fn change(&self) -> Result<Change, DbError> {
         let c = Change {

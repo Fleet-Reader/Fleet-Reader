@@ -845,12 +845,19 @@ pub fn toggle_tag(article: u64, name: &str) {
 }
 pub fn mark_scope_read(read: bool) {
     let sc = scene();
-    let scope = sc.scope.get_untracked();
+    mark_read_in_scope(sc.scope.get_untracked(), read);
+}
+
+/// Mark an explicitly captured scope, even if navigation changed during confirmation.
+pub fn mark_read_in_scope(scope: Scope, read: bool) {
     edit(move |db| {
         db.set_read_all(scope, read)?;
         Ok(())
     });
-    sc.sticky_read.set(vec![]);
+    let sc = scene();
+    if sc.scope.get_untracked() == scope {
+        sc.sticky_read.set(vec![]);
+    }
 }
 pub fn mark_feed_read(feed: u64, read: bool) {
     edit(move |db| {

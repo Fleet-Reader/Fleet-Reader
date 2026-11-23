@@ -155,8 +155,15 @@ flow:
   # Mark-all-read empties the unread timeline specifically.
   - navigate: { route: unread }
   - pause: { secs: 1 }
-  # Bulk marking remains in the Article menu after its toolbar button was removed.
+  # Cancelling bulk marking must leave unread articles untouched.
   - menu: { id: mark_all_read }
+  - assert_presented: {}
+  - respond: { button: 0 }
+  - assert_missing: { id: timeline_empty }
+  # Confirming the same action empties this scope.
+  - menu: { id: mark_all_read }
+  - assert_presented: {}
+  - respond: { button: 1 }
   - pause: { secs: 1 }
   - assert_visible: { id: timeline_empty }
   - screenshot: all-read
@@ -286,6 +293,8 @@ flow:
   - menu: { key: menu_refresh_feed, path: [menu_feed], skip_on: [ios-uikit, android-material, harmony-arkui] }
   - pause: { secs: 1, skip_on: [ios-uikit, android-material, harmony-arkui] }
   - menu: { key: mark_all_read, path: [menu_feed], skip_on: [ios-uikit, android-material, harmony-arkui] }
+  - assert_presented: { skip_on: [ios-uikit, android-material, harmony-arkui] }
+  - respond: { button: 1, skip_on: [ios-uikit, android-material, harmony-arkui] }
   - pause: { secs: 1, skip_on: [ios-uikit, android-material, harmony-arkui] }
   - menu: { key: unsubscribe, path: [menu_feed], skip_on: [ios-uikit, android-material, harmony-arkui] }
   - pause: { secs: 1, skip_on: [ios-uikit, android-material, harmony-arkui] }

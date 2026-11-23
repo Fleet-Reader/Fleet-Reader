@@ -757,11 +757,18 @@ pub fn toggle_tag(article: u64, name: &str) {
 /// "Mark All as Read" for whatever the sidebar has selected.
 pub fn mark_scope_read(read: bool) {
     let sc = scene();
-    let in_scope = sc.scope.get_untracked();
+    mark_read_in_scope(sc.scope.get_untracked(), read);
+}
+
+/// Mark an explicitly captured scope, even if navigation changed during confirmation.
+pub fn mark_read_in_scope(scope: Scope, read: bool) {
+    let sc = scene();
     batch(|| {
-        with_db(|d| d.set_read_all(in_scope, read));
-        // Bulk completion clears rows retained by individual reading.
-        sc.sticky_read.set(Vec::new());
+        with_db(|d| d.set_read_all(scope, read));
+        // Bulk completion clears rows retained by individual reading in this scope.
+        if sc.scope.get_untracked() == scope {
+            sc.sticky_read.set(Vec::new());
+        }
     });
 }
 
@@ -1423,6 +1430,21 @@ mod tests {
             assert!(sc.article.get_untracked().unwrap().is_read);
             super::mark_scope_read(true);
             assert!(sc.articles.get_untracked().is_empty());
+            assert_eq!(sc.scope_unread.get_untracked(), 0);
+        });
+    }
+
+    #[test]
+    fn bulk_confirmation_keeps_its_original_scope_after_navigation() {
+        with_scene(|sc, db| {
+            let ids = seed(db, 3);
+            let confirmed_scope = sc.scope.get_untracked();
+            // Synthetic articles have no stars. Marking the new scope would do nothing.
+            super::select_scope(daynews_db::Scope::Starred);
+            super::mark_read_in_scope(confirmed_scope, true);
+            assert_eq!(sc.scope.get_untracked(), daynews_db::Scope::Starred);
+            super::select_scope(daynews_db::Scope::All);
+            assert_eq!(sc.articles.get_untracked().len(), ids.len());
             assert_eq!(sc.scope_unread.get_untracked(), 0);
         });
     }

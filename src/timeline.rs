@@ -243,7 +243,7 @@ pub(crate) fn begin_tag(article: u64) {
 }
 
 /// The heading over the list: which scope is showing, and how much of it is unread.
-fn scope_title(scope: Scope) -> String {
+pub(crate) fn scope_title(scope: Scope) -> String {
     let st = daynews_core::state();
     match scope {
         Scope::Today => crate::res::str::nav_today().format(),

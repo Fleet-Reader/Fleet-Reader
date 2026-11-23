@@ -235,7 +235,6 @@ fn shell_body(sc: daynews_core::NewsScene, prefs: day_piece_settings::Prefs) -> 
             matches!(key.as_deref().and_then(scope_for_key), Some(Scope::Feed(id))
                 if st.feeds.with_untracked(|feeds| feeds.iter().any(|feed| feed.id == id)))
         })
-        .title(res::str::app_title())
         .refreshable(commands::refreshing, commands::refresh_now)
         // Feeds drag between collections, and within the sections whose order the user sets
         // (feed_list::drag); a drop joins the collection it lands in.

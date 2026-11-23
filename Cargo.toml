@@ -37,7 +37,9 @@ name = "dayapp"
 crate-type = ["rlib"]
 
 [dependencies]
-day-piece-charts = "0.*"
+# 0.5.1 on crates.io predates Day's Ink/key/animation APIs. Use the upstream fix
+# until the compatible charts release is published; keep the revision reproducible.
+day-piece-charts = { version = "0.*", git = "https://github.com/daybrite/day-piece-charts", rev = "d8a171233529289b3a50d1c51005b3e2182172b8" }
 day-core = "0.*"
 day-spec = "0.*"
 serde_json = "1"

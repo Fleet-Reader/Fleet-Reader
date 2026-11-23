@@ -185,7 +185,7 @@ fn document_with_style(
   }}
   @media (max-width: 480px) {{
     body {{ padding: 20px 20px 48px; }}
-    h1.t {{ font-size: 1.65em; }}
+    h1.t {{ font-size: 1.4em; }}
   }}
 </style>
 <style id="reader-display">{display_style}</style></head>

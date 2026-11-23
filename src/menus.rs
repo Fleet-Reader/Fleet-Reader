@@ -99,7 +99,9 @@ pub fn install() {
                     menu_item(res::str::menu_refresh_feed())
                         .action(|| with_selected_feed(daynews_core::refresh_feed)),
                     menu_item(res::str::mark_all_read()).action(|| {
-                        with_selected_feed(|feed| daynews_core::mark_feed_read(feed, true))
+                        with_selected_feed(|feed| {
+                            crate::commands::confirm_mark_all_read(Scope::Feed(feed))
+                        })
                     }),
                     menu_separator(),
                     menu_item(res::str::unsubscribe())
@@ -140,6 +142,7 @@ pub fn install() {
                     }),
                     menu_separator(),
                     crate::commands::open_in_browser().menu_item(),
+                    crate::commands::open_in_external_browser().menu_item(),
                     crate::commands::copy_article_link().menu_item(),
                     crate::commands::reader_view().menu_item(),
                     crate::commands::find().menu_item(),
@@ -242,7 +245,7 @@ pub fn feed_context_menu(feed: u64, unread: i64, collection: Option<u64>) -> Vec
         menu_item(res::str::refresh_action()).action(move || daynews_core::refresh_feed(feed)),
         menu_item(res::str::mark_all_read())
             .enabled(unread > 0)
-            .action(move || daynews_core::mark_feed_read(feed, true)),
+            .action(move || crate::commands::confirm_mark_all_read(Scope::Feed(feed))),
         menu_separator(),
         menu_item(res::str::rename_feed())
             .id(day::id!(feed_rename))

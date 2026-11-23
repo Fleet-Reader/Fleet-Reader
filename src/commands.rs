@@ -32,13 +32,28 @@ pub(crate) fn refresh() -> Command {
 
 pub(crate) fn mark_all_read() -> Command {
     Command::new(day::id!(mark_all_read), res::str::mark_all_read(), || {
-        if daynews_core::try_scene().is_some() {
-            daynews_core::mark_scope_read(true);
+        if let Some(scene) = daynews_core::try_scene() {
+            confirm_mark_all_read(scene.scope.get_untracked());
         }
     })
     .icon(Symbol::Check)
     .shortcut(Shortcut::primary("k"))
     .enabled(|| daynews_core::try_scene().is_some_and(|sc| sc.scope_unread.get() > 0))
+}
+
+/// Capture the target before presenting: switching windows or scopes must never redirect
+/// a pending bulk operation to a different set of articles.
+pub(crate) fn confirm_mark_all_read(scope: daynews_db::Scope) {
+    let name = crate::timeline::scope_title(scope);
+    let dialog = confirm(res::str::mark_all_read_title())
+        .message(res::str::mark_all_read_message(name.as_str()))
+        .confirm_label(res::str::mark_all_read())
+        .cancel_label(res::str::cancel_action());
+    day::task(async move {
+        if dialog.present().await {
+            daynews_core::mark_read_in_scope(scope, true);
+        }
+    });
 }
 
 /// Shared by the menu and native toolbars, including before any article is open.
@@ -79,6 +94,21 @@ pub(crate) fn open_in_browser() -> Command {
     )
     .image(res::vectors::open_browser)
     .shortcut(Shortcut::plain("Return"))
+    .enabled(|| displayed_link().is_some())
+}
+
+pub(crate) fn open_in_external_browser() -> Command {
+    Command::new(
+        day::id!(open_in_external_browser),
+        res::str::menu_open_in_external_browser(),
+        || {
+            if let Some(url) = displayed_link() {
+                crate::settings::open_link(&url);
+            }
+        },
+    )
+    .image(res::vectors::open_browser)
+    .shortcut(Shortcut::primary("Return"))
     .enabled(|| displayed_link().is_some())
 }
 
@@ -266,6 +296,7 @@ mod tests {
     #[test]
     fn article_commands_are_disabled_before_a_window_exists() {
         assert!(!super::open_in_browser().is_enabled());
+        assert!(!super::open_in_external_browser().is_enabled());
         assert!(!super::mark_all_read().is_enabled());
         assert!(!super::next_unread().is_enabled());
         assert!(!super::reader_view().is_enabled());

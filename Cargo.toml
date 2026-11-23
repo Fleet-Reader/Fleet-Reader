@@ -97,7 +97,7 @@ undocumented_unsafe_blocks = "warn"
 unwrap_used = "warn"
 
 [workspace.package]
-version = "0.3.2"
+version = "0.3.3"
 
 # The bundled SQLite is C compiled by its build script at the profile's optimization level, and
 # unoptimized it runs the dashboard's word count and full-text searches about seven times slower

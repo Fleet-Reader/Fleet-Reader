@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 //! Experimental DAV session. Configuration and device identity are public; the WebDAV password stays in native credentials.
 use super::*;
+#[path = "webdav_diagnostics.rs"]
+mod diagnostics;
 use daynews_db::webdav::{
     self as adapter,
     day_sync::{Identity, Replica, Space},
@@ -301,10 +303,7 @@ pub fn update_credentials(username: String, password: String, reqwest: bool) {
             )?;
             client
                 .client()
-                .propfind(
-                    &adapter::day_sync_webdav::webdav::ResourcePath::root(),
-                    adapter::day_sync_webdav::webdav::Depth::Zero,
-                )
+                .check_writable_collection()
                 .await
                 .map_err(|_| failure())?;
             config.username = username;
@@ -342,10 +341,7 @@ pub fn prepare(
             let client = make_client(&url, username.clone(), password.to_string(), reqwest)?;
             client
                 .client()
-                .propfind(
-                    &adapter::day_sync_webdav::webdav::ResourcePath::root(),
-                    adapter::day_sync_webdav::webdav::Depth::Zero,
-                )
+                .check_writable_collection()
                 .await
                 .map_err(|_| failure())?;
             let seed = space_id.is_none();
@@ -443,9 +439,13 @@ fn start_sync(manual: bool) -> Option<Shared<LocalBoxFuture<'static, bool>>> {
     };
     status().update(|s| s.phase = Phase::Working);
     let generation = REQUEST.with(Cell::get);
+    let diagnostic_path = store_dir().join("webdav-diagnostics.json");
+    let reqwest = status().get_untracked().reqwest;
     let pass = async move {
+        let journal = diagnostics::Journal::begin(diagnostic_path, manual, reqwest).await;
+        let recording = diagnostics::RecordingStore::new(&c);
         let before = refresh::active_feeds(&r.worker()).await;
-        let result = r.sync(&c).await;
+        let result = r.sync(&recording).await;
         let after = refresh::active_feeds(&r.worker()).await;
         let deferred = result.as_ref().is_ok_and(|report| {
             report.downloads_deferred || report.uploads_deferred || report.pending_deletions > 0
@@ -468,7 +468,7 @@ fn start_sync(manual: bool) -> Option<Shared<LocalBoxFuture<'static, bool>>> {
         let delay = retry_delay(result.as_ref().err(), failures);
         let snapshot = r.snapshot().await;
         status().update(|s| {
-            if let Ok(v) = snapshot {
+            if let Ok(v) = &snapshot {
                 s.pending = v.pending_uploads;
             }
             s.phase = if result.is_ok() {
@@ -486,6 +486,16 @@ fn start_sync(manual: bool) -> Option<Shared<LocalBoxFuture<'static, bool>>> {
             .unwrap_or(i64::MAX);
         BACKOFF.with(|n| n.set(if result.is_ok() { 0 } else { next }));
         NEXT.with(|n| n.set(next));
+        if let Some(journal) = journal {
+            journal
+                .finish(
+                    &result,
+                    snapshot.as_ref().ok(),
+                    delay.map(|_| next),
+                    &recording,
+                )
+                .await;
+        }
         IN_FLIGHT.with(|slot| slot.borrow_mut().take());
         refresh::set_sync_pending(!complete);
         if let (Ok(before), Ok(after)) = (before, after) {

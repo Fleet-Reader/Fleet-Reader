@@ -52,3 +52,30 @@ python3 -m http.server 4324 --bind 127.0.0.1 --directory website/public
 adb reverse tcp:4324 tcp:4324   # Android only
 FLEET_RECOMMENDED_URL=http://127.0.0.1:4324/recommended-feeds.json day launch -t ios-uikit -t android-material
 ```
+
+## Sync diagnostics for developers
+
+WebDAV sync records bounded, local diagnostics in `webdav-diagnostics.json` alongside
+`library.db`. The file retains the last 16 attempts and the last failed attempt separately,
+so successful polling and app restarts do not immediately erase the evidence. Each completed
+attempt records the app version/platform, HTTP provider, manual/automatic trigger, duration,
+error category, HTTP status when available, transport category, ambiguous-write outcome,
+server retry delay, next scheduled attempt, replica frontiers, pending uploads, report counters
+and the last 16 completed storage operations. Raw platform error messages, credentials,
+server URLs, resource names and article content are omitted. The file is capped at 512 KiB;
+file reads and atomic replacement writes run off the UI thread. Diagnostic I/O failure does
+not turn a successful sync into a failure.
+
+The start of an attempt is persisted before sync begins. A previous start without a recorded
+completion is labelled `completion_not_recorded` on the next attempt; this can mean process
+termination or failure to save the completion, and is not proof of a network error. Operations
+are retained in memory until completion, so a killed or permanently stalled attempt does not
+have a persisted per-request trace. Credential/setup failures before a replica starts syncing
+are also outside this recorder. These limitations need separate lifecycle/network tracing.
+
+When investigating a failure, preserve this file before resetting an account, together with
+the visible status, app build, network type and approximate incident time. Compare frontiers
+between devices to distinguish unpublished changes from a stalled download or display update.
+Use disposable synthetic data for fault injection; never damage a real reading library.
+The day-sync repository's `scripts/stress.py` and reliability section in
+`docs/protocol-reference.md` describe deterministic replay and the broader device/server gates.

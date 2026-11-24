@@ -1,12 +1,13 @@
 # Native WebDAV feature. Read-only UI checks for fresh or configured libraries.
 name: webdav-settings
-description: Normal builds expose WebDAV settings without Feedbin account controls.
+description: Test the shared WebDAV credentials form and the advanced Fleet Reader controls.
 flow:
   - navigate: { route: settings/accounts, only_on: [macos-appkit] }
   - toolbar: { item: settings, only_on: [ios-uikit, android-material] }
   - tap: { id: prefs_group:accounts, only_on: [ios-uikit, android-material] }
-  - assert_missing: { id: sync_username }
   - wait_for: { id: dav_endpoint }
+  - assert_visible: { id: dav_username }
+  - assert_visible: { id: dav_password }
   - assert_missing: { id: dav_space_id }
   - tap: { id: dav_advanced }
   - scroll_to: { id: dav_space_id }

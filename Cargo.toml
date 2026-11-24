@@ -24,7 +24,7 @@ dom = ["day/dom", "day-piece-webview/dom", "experimental-webdav"]
 # day-piece-webview ships no mock renderer, so the headless default omits it.
 mock = ["day/mock"]
 feedbin = ["daynews-core/feedbin"]
-experimental-webdav = ["daynews-core/experimental-webdav", "daynews-db/experimental-webdav"]
+experimental-webdav = ["dep:day-piece-webdav-settings", "daynews-core/experimental-webdav", "daynews-db/experimental-webdav"]
 
 # rlib for the desktop bin; the mobile pipeline requests the iOS staticlib / Android cdylib
 # explicitly via `cargo rustc --crate-type`.
@@ -60,6 +60,9 @@ daynews-sync = { version = "0.*", path = "crates/daynews-sync" }
 daynews-time = { version = "0.*", path = "crates/daynews-time" }
 daynews-db = { version = "0.*", path = "crates/daynews-db" }
 daynews-opml = { version = "0.*", path = "crates/daynews-opml" }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+day-piece-webdav-settings = { version = "0.*", git = "https://github.com/daybrite/day-webdav.git", optional = true }
 
 [build-dependencies]
 day-build = "0.*"

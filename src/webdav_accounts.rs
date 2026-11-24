@@ -7,9 +7,6 @@ use daynews_core::webdav::{self, Phase};
 pub fn page() -> impl Piece {
     let status = webdav::status();
     let current = status.get_untracked();
-    let url = Signal::new(current.endpoint);
-    let username = Signal::new(current.username);
-    let password = Signal::new(String::new());
     let reqwest = Signal::new(current.reqwest);
     let space_id = Signal::new(current.space_id);
     let advanced = Signal::new(false);
@@ -41,72 +38,31 @@ pub fn page() -> impl Piece {
                 .frame(44.0, 44.0),
         ))
         .grow(Dimension::Width),
-        form((section((
-            labeled(
-                res::str::dav_endpoint(),
-                text_field(url)
-                    .input_purpose(InputPurpose::Url)
-                    .read_only(configured)
-                    .id(day::id!(dav_endpoint))
-                    .grow(Dimension::Width),
-            ),
-            labeled(
-                res::str::dav_username(),
-                text_field(username)
-                    .id(day::id!(dav_username))
-                    .grow(Dimension::Width),
-            ),
-            labeled(
-                res::str::dav_password(),
-                secure_field(password)
-                    .id(day::id!(dav_password))
-                    .grow(Dimension::Width),
-            ),
-        )),))
-        .grow(Dimension::Width),
-        when(configured, move || {
-            button(res::str::dav_update_credentials())
-                .prominent()
-                .enabled(move || {
-                    !busy() && !password.get().is_empty() && !username.get().trim().is_empty()
-                })
-                .action(move || {
-                    let p = password.get_untracked();
-                    password.set(String::new());
-                    webdav::update_credentials(
-                        username.get_untracked(),
-                        p,
+        day_piece_webdav_settings::account_form(
+            current.endpoint,
+            current.username,
+            configured,
+            busy,
+            day_piece_webdav_settings::Labels {
+                endpoint: res::str::dav_endpoint(),
+                username: res::str::dav_username(),
+                password: res::str::dav_password(),
+                connect: res::str::dav_connect(),
+                update: res::str::dav_update_credentials(),
+            },
+            move |url, username, password| {
+                if configured() {
+                    webdav::update_credentials(username, password, reqwest.get_untracked());
+                } else {
+                    let space = space_id.get_untracked().trim().to_owned();
+                    webdav::prepare(
+                        url,
+                        username,
+                        password,
                         reqwest.get_untracked(),
+                        (!space.is_empty()).then_some(space),
                     );
-                })
-                .id(day::id!(dav_update_credentials))
-                .grow(Dimension::Width)
-        }),
-        when(
-            move || !configured(),
-            move || {
-                button(res::str::dav_connect())
-                    .prominent()
-                    .enabled(move || {
-                        !busy()
-                            && !password.get().is_empty()
-                            && !username.get().trim().is_empty()
-                            && !url.get().trim().is_empty()
-                    })
-                    .action(move || {
-                        let p = password.get_untracked();
-                        password.set(String::new());
-                        let space = space_id.get_untracked().trim().to_owned();
-                        webdav::prepare(
-                            url.get_untracked().trim().to_owned(),
-                            username.get_untracked(),
-                            p,
-                            reqwest.get_untracked(),
-                            if space.is_empty() { None } else { Some(space) },
-                        );
-                    })
-                    .id(day::id!(dav_connect))
-                    .grow(Dimension::Width)
+                }
             },
         ),
         label(move || match status.get().phase {

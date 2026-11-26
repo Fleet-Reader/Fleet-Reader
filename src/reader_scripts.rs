@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! User-authored extraction hooks. Preferences store copies, never paths to mutable files.
 use crate::res;
 use crate::theme;

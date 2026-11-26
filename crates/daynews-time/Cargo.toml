@@ -2,7 +2,7 @@
 name = "daynews-time"
 version.workspace = true
 edition = "2024"
-license = "Apache-2.0"
+license = "GPL-2.0-or-later"
 
 # No time-zone database of its own. Every machine this app runs on already carries one
 # (/usr/share/zoneinfo behind POSIX `localtime_r`, the registry behind Win32's converters, the

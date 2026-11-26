@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Separate processes keep environment changes isolated from concurrent database tests.
 use std::process::Command;
 

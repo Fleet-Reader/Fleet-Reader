@@ -26,7 +26,7 @@ Fleet Reader runs on Mac, Windows, Linux, iPhone, iPad, Android, HarmonyOS, and 
 See the [releases](https://github.com/Fleet-Reader/Fleet-Reader/releases) for downloads.
 
 Built with [Day](https://daybrite.dev). Fleet Reader is open source under the
-[Apache 2.0 license](https://github.com/Fleet-Reader/Fleet-Reader/blob/main/LICENSE).
+[GNU General Public License, version 2 or later](LICENSE.txt).
 
 ## Recommended feeds
 

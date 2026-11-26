@@ -457,3 +457,8 @@ library_sync_pending = Library sync pending
 welcome_title = Welcome to Fleet Reader
 welcome_note = Subscribe to the sites you read and their latest articles appear here. Choose from the suggestions below, add a feed of your own, or bring your subscriptions from another reader.
 welcome_starter = Add Selected Feeds
+
+dav_app_folder = App folder
+dav_invalid_address = Enter a valid HTTPS server URL and a relative folder path. Leave the folder empty to use the server URL directly.
+dav_more_info = More info
+dav_diagnostic = Connection details: { $detail }

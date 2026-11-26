@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Experimental DAV session. Configuration and device identity are public; the WebDAV password stays in native credentials.
 use super::*;
 #[path = "webdav_diagnostics.rs"]
@@ -8,7 +8,7 @@ use daynews_db::webdav::{
     day_sync::{Identity, Replica, Space},
     day_sync_webdav::{
         WebDavStore,
-        webdav::{Authentication, Client, Endpoint, http},
+        webdav::{Authentication, Client, Endpoint, Policy, http},
     },
 };
 use serde::{Deserialize, Serialize};
@@ -29,6 +29,8 @@ pub enum Phase {
 }
 #[derive(Clone, Default)]
 pub struct Status {
+    pub detail: Option<String>,
+    pub folder: Option<String>,
     pub phase: Phase,
     pub endpoint: String,
     pub username: String,
@@ -40,6 +42,8 @@ pub struct Status {
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(deny_unknown_fields)]
 struct Config {
+    #[serde(default)]
+    folder: Option<String>,
     #[serde(default)]
     identity: Option<Identity>,
     endpoint: String,
@@ -103,6 +107,7 @@ fn make_client(
     username: String,
     password: String,
     reqwest: bool,
+    policy: Policy,
 ) -> Result<WebDavStore, DbError> {
     let session = http::Session::new();
     session.set_provider(if reqwest {
@@ -112,10 +117,36 @@ fn make_client(
     });
     Ok(WebDavStore::new(
         Client::builder(endpoint(url)?)
+            .policy(policy)
             .session(session)
             .authentication(Authentication::Basic { username, password })
             .build(),
     ))
+}
+fn enrollment_policy() -> Policy {
+    Policy {
+        allow_expensive: true,
+        allow_constrained: true,
+        ..Policy::default()
+    }
+}
+
+async fn check_setup(client: &WebDavStore, create: bool) -> Result<(), DbError> {
+    client
+        .client()
+        .check_app_folder(create)
+        .await
+        .map_err(|error| {
+            use daynews_db::webdav::day_sync_webdav::webdav::Error;
+            let reason = match &error.source {
+                Error::Status { status, .. } | Error::Redirect { status, .. } => {
+                    format!("HTTP {status}")
+                }
+                source => source.diagnostic_code(),
+            };
+            status().update(|s| s.detail = Some(format!("{} · {reason}", error.step.method())));
+            failure()
+        })
 }
 async fn secret() -> Result<Secret, DbError> {
     let key = key()?;
@@ -237,6 +268,7 @@ async fn open_worker_inner(path: PathBuf) -> Result<DatabaseWorker, DbError> {
     // expired, so the recovery UI can repair the existing enrollment.
     status().update(|s| {
         s.endpoint = config.endpoint.clone();
+        s.folder.clone_from(&config.folder);
         s.username = config.username.clone();
         s.reqwest = config.reqwest;
         s.space_id = config
@@ -259,6 +291,7 @@ async fn open_worker_inner(path: PathBuf) -> Result<DatabaseWorker, DbError> {
         config.username,
         secret.password.to_string(),
         config.reqwest,
+        Policy::default(),
     )?;
     let replica = adapter::open(&path, identity.clone(), Arc::new(|_| Ok(())))
         .await
@@ -289,7 +322,10 @@ pub fn update_credentials(username: String, password: String, reqwest: bool) {
     ) {
         return;
     }
-    status().update(|s| s.phase = Phase::Working);
+    status().update(|s| {
+        s.detail = None;
+        s.phase = Phase::Working;
+    });
     day_core::task(async move {
         let result = async {
             let mut config: Config =
@@ -300,19 +336,24 @@ pub fn update_credentials(username: String, password: String, reqwest: bool) {
                 username.clone(),
                 password.to_string(),
                 reqwest,
+                enrollment_policy(),
             )?;
-            client
-                .client()
-                .check_writable_collection()
-                .await
-                .map_err(|_| failure())?;
+            check_setup(&client, false).await?;
             config.username = username;
             config.reqwest = reqwest;
             save_secret(Secret { password }).await?;
-            save_config(&config)
+            save_config(&config)?;
+            status().update(|s| {
+                s.username = config.username;
+                s.reqwest = config.reqwest;
+            });
+            Ok::<_, DbError>(())
         }
         .await;
         status().update(|s| {
+            if result.is_err() && s.detail.is_none() {
+                s.detail = Some("news.webdav.setup_or_sync_failed".into());
+            }
             s.phase = if result.is_ok() {
                 Phase::Restart
             } else {
@@ -323,6 +364,7 @@ pub fn update_credentials(username: String, password: String, reqwest: bool) {
 }
 pub fn prepare(
     url: String,
+    folder: String,
     username: String,
     password: String,
     reqwest: bool,
@@ -332,24 +374,30 @@ pub fn prepare(
     if status().get_untracked().phase == Phase::Working {
         return;
     }
-    status().update(|s| s.phase = Phase::Working);
+    status().update(|s| {
+        s.detail = None;
+        s.phase = Phase::Working;
+    });
     day_core::task(async move {
         let result = async {
             if config_path().exists() {
                 return Err(failure());
             }
-            let client = make_client(&url, username.clone(), password.to_string(), reqwest)?;
-            client
-                .client()
-                .check_writable_collection()
-                .await
-                .map_err(|_| failure())?;
+            let client = make_client(
+                &url,
+                username.clone(),
+                password.to_string(),
+                reqwest,
+                enrollment_policy(),
+            )?;
+            check_setup(&client, !folder.is_empty()).await?;
             let seed = space_id.is_none();
             let identity = match space_id {
                 Some(id) => {
-                    let space = Space::fetch(&client, id.trim())
-                        .await
-                        .map_err(|_| failure())?;
+                    let space = Space::fetch(&client, id.trim()).await.map_err(|e| {
+                        status().update(|s| s.detail = Some(diagnostics::sync_detail(&e)));
+                        failure()
+                    })?;
                     if space.profile != adapter::PROFILE {
                         return Err(failure());
                     }
@@ -361,6 +409,7 @@ pub fn prepare(
             let config = Config {
                 identity: Some(identity.clone()),
                 endpoint: url,
+                folder: Some(folder),
                 username,
                 reqwest,
                 seed,
@@ -370,11 +419,20 @@ pub fn prepare(
             };
             save_secret_at(Secret { password }, account).await?;
             save_config(&config)?;
-            status().update(|s| s.space_id = identity.space().to_owned());
+            status().update(|s| {
+                s.space_id = identity.space().to_owned();
+                s.endpoint = config.endpoint;
+                s.folder = config.folder;
+                s.username = config.username;
+                s.reqwest = config.reqwest;
+            });
             Ok::<_, DbError>(())
         }
         .await;
         status().update(|s| {
+            if result.is_err() && s.detail.is_none() {
+                s.detail = Some("news.webdav.setup_or_sync_failed".into());
+            }
             s.phase = if result.is_ok() {
                 Phase::Restart
             } else {
@@ -437,7 +495,10 @@ fn start_sync(manual: bool) -> Option<Shared<LocalBoxFuture<'static, bool>>> {
     let (Some(r), Some(c)) = (r, c) else {
         return None;
     };
-    status().update(|s| s.phase = Phase::Working);
+    status().update(|s| {
+        s.detail = None;
+        s.phase = Phase::Working;
+    });
     let generation = REQUEST.with(Cell::get);
     let diagnostic_path = store_dir().join("webdav-diagnostics.json");
     let reqwest = status().get_untracked().reqwest;
@@ -468,6 +529,7 @@ fn start_sync(manual: bool) -> Option<Shared<LocalBoxFuture<'static, bool>>> {
         let delay = retry_delay(result.as_ref().err(), failures);
         let snapshot = r.snapshot().await;
         status().update(|s| {
+            s.detail = result.as_ref().err().map(diagnostics::sync_detail);
             if let Ok(v) = &snapshot {
                 s.pending = v.pending_uploads;
             }
@@ -657,6 +719,7 @@ fn disconnect_config(bytes: Option<&[u8]>) -> Config {
         .unwrap_or(Config {
             identity: None,
             endpoint: String::new(),
+            folder: None,
             username: String::new(),
             reqwest: false,
             seed: false,
@@ -704,7 +767,10 @@ mod retry_tests {
         .shared();
         IN_FLIGHT.with(|slot| *slot.borrow_mut() = driver.downgrade());
         // Joining must also work while the phase is Working and retry backoff is set.
-        status().update(|s| s.phase = Phase::Working);
+        status().update(|s| {
+            s.detail = None;
+            s.phase = Phase::Working;
+        });
         BACKOFF.with(|n| n.set(i64::MAX));
         let manual = start_sync(true).unwrap();
         let automatic = start_sync(false).unwrap();
@@ -770,6 +836,7 @@ mod retry_tests {
         let config = Config {
             identity: Some(id.clone()),
             endpoint: "https://fixture.invalid/".into(),
+            folder: None,
             username: "fixture".into(),
             reqwest: false,
             seed: true,

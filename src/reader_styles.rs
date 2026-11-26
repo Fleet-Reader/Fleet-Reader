@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! App-wide reader presentation: the stylesheet built from the reader prefs in `settings`, the
 //! color bindings the settings rows edit, and the reset every "Reset Styles" goes through.
 use crate::settings::{

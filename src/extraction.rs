@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Replaceable full-article extraction. Providers return publication data, never UI strings.
 //! The default fetches HTML with native networking and runs bundled Mozilla Readability in
 //! an inert DOM in the reader's JS engine. It never navigates to or runs the publisher page.

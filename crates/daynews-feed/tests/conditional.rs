@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Synthetic loopback HTTP fixtures: no publisher traffic.
 #![cfg(any(target_os = "macos", target_os = "linux"))]
 use daynews_feed::{CacheValidators, FeedUpdate, fetch_cached_with_progress};

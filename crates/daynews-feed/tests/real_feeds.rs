@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Parsing checks against feeds captured from the wire: plain RSS 2.0, WordPress,
 //! Discourse, Atom and Mastodon variants. Fixtures are bytes, so these run offline and
 //! deterministically.

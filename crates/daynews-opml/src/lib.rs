@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! OPML subscription lists: the interchange format every feed reader speaks.
 //!
 //! Import and export are lossy in one direction only: we read every `<outline>`

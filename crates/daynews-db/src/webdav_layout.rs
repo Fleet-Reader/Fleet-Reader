@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Revision-two collection registers. Projection is independent of delivery order.
 use super::{State, err, rows, text};
 use day_persistence::{DbError, SqliteConnection, Value};

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Native credential storage. Failure is explicit; there is no plaintext or mock fallback.
 #[derive(Debug, Clone, Copy)]
 pub struct Unavailable;

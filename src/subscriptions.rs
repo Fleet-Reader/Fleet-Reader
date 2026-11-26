@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Managing subscriptions: add by URL, import/export OPML, and per-feed actions.
 
 use crate::theme;

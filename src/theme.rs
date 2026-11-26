@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Colors for light and dark, so the reader looks native on every platform.
 
 use day::prelude::*;

@@ -1,5 +1,5 @@
 # Copyright © The Daybrite Project
-# SPDX-License-Identifier: MPL-2.0
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Phones only. Requires seed-demo.yaml and an isolated DAY_DATA_DIR.
 name: fleet-reader-unread-return
 description: An article read in All Unread stays while its list is open and is gone after Back and returning.

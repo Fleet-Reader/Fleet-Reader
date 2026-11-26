@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! The local article store, on day-persistence's lazy engine.
 //!
 //! The schema is relational and declared: folders own feeds (ordered, cascade), feeds own

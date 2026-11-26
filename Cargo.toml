@@ -2,7 +2,7 @@
 name = "fleet-reader"
 version.workspace = true
 edition = "2024"
-license = "Apache-2.0"
+license = "GPL-2.0-or-later"
 # Generates typed resource constants (`res::images::…`, `res::assets::…`, `res::fonts::…`) from the
 # files under `resource/` on every build; see build.rs and src/lib.rs (§18.5).
 build = "build.rs"
@@ -37,9 +37,7 @@ name = "dayapp"
 crate-type = ["rlib"]
 
 [dependencies]
-# 0.5.1 on crates.io predates Day's Ink/key/animation APIs. Use the upstream fix
-# until the compatible charts release is published; keep the revision reproducible.
-day-piece-charts = { version = "0.*", git = "https://github.com/daybrite/day-piece-charts", rev = "d8a171233529289b3a50d1c51005b3e2182172b8" }
+day-piece-charts = "0.*"
 day-core = "0.*"
 day-spec = "0.*"
 serde_json = "1"

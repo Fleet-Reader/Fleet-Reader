@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Developer diagnostics, not UI text. Memory is process-wide, not an article allocation
 //! count, and samples do not include a separate WebKit/browser renderer process.
 use std::{

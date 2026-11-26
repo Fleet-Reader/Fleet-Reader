@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Fetching and parsing syndication feeds, normalized to the shape the store keeps.
 //!
 //! [`parse`] is pure and offline-testable; [`fetch`] adds the network on top of it. Policy that

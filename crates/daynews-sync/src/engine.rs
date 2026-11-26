@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Scheduling-independent sync cycle, shared by production and two-installation tests.
 use crate::*;
 

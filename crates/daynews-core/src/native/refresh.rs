@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Publisher refresh follows a bounded library sync. This coordinator runs on the UI thread;
 //! feed selection always reads the worker after sync, never an observer's stale projection.
 use super::*;

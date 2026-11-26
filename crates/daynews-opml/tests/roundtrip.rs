@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 use daynews_opml::{FeedRef, Opml, Outline, parse, write};
 
 // Real-world OPML, vendored so these tests run on any host (tests/data/README.md records where

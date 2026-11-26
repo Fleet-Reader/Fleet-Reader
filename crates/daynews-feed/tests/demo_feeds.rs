@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! The demo feeds the app bundles for its screenshots and walkthrough
 //! (resource/assets/demo/README.md): one set per locale the app ships, the same feeds in each,
 //! and every feed parsing into articles the timeline and the reader can show.

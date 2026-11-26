@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Synthetic downloaded Atom document: self links retain the subscribable source address.
 #[test]
 fn downloaded_atom_retains_its_self_link_and_publication_site() {

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Feedbin v2 adapter. All real and simulated requests use day-part-http's Client.
 use crate::*;
 use day_part_http::{Client, Method, Redirects, Request, Response};

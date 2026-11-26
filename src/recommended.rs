@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Recommended feeds: a static JSON document published with the website, so the feeds a new
 //! reader is offered can change without an app release and can differ by language.
 //!

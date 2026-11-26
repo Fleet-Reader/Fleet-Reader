@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Generates typed resource constants from this app's `resource/` directory (§18.5).
 //!
 //! `day-build` scans `resource/{images,assets,fonts}` and writes `$OUT_DIR/day_resources.rs`, which

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Bounded developer diagnostics, never UI text. No URLs, credentials, object names,
 //! article content, SQL or platform error strings are serialized.
 use daynews_db::webdav::{day_sync as sync, day_sync_webdav::webdav as dav};
@@ -68,6 +68,15 @@ impl Failure {
                             H::Timeout => "timeout",
                             H::Dns => "dns",
                             H::Connect => "connect",
+                            H::NetworkRestricted(dav::http::NetworkRestriction::Expensive) => {
+                                "network.expensive"
+                            }
+                            H::NetworkRestricted(dav::http::NetworkRestriction::Constrained) => {
+                                "network.constrained"
+                            }
+                            H::NetworkRestricted(dav::http::NetworkRestriction::Cellular) => {
+                                "network.cellular"
+                            }
                             H::Tls(_) => "tls",
                             H::Io(_) => "io",
                             H::Cancelled => "cancelled",
@@ -92,6 +101,18 @@ impl Failure {
         }
         failure
     }
+}
+
+pub(super) fn sync_detail(error: &sync::Error) -> String {
+    let detail = Failure::sync(error);
+    if let Some(status) = detail.http_status {
+        return format!("{} · HTTP {status}", detail.code);
+    }
+    detail
+        .transport
+        .or(detail.dav)
+        .or(detail.store)
+        .unwrap_or(detail.code)
 }
 
 #[derive(Clone, Serialize, Deserialize)]

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Settings and About (https://daybrite.dev/docs/reference/settings): the typed, persisted preferences
 //! the rest of the app reads, and the declaration of the groups Day's shared surface presents.
 //! The surface itself is Day's: the Settings window and the App menu's Settings…/About items on

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Bounded dashboard projections: scan article metadata, never fault article bodies.
 use crate::{Db, Feed, Scope, Value};
 use day_persistence::DbError;

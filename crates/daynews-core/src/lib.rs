@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Fleet Reader state. Native platforms use an asynchronous database actor; the web build
 //! retains its OPFS transport until transferable worker jobs are available there.
 #[cfg(not(target_arch = "wasm32"))]

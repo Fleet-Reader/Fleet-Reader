@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! A viewport-sized native dashboard. Chart data is a worker-owned metadata projection;
 //! only the visible countdown changes each second, never the database or the chart marks.
 use crate::res;

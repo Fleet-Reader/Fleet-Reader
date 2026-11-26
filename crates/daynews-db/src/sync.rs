@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Durable synchronization records. No credential material is stored in this database.
 //! Call mutations inside the same worker transaction as the user's edit.
 use crate::*;

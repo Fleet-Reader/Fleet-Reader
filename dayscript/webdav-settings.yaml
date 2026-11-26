@@ -6,6 +6,7 @@ flow:
   - toolbar: { item: settings, only_on: [ios-uikit, android-material] }
   - tap: { id: prefs_group:accounts, only_on: [ios-uikit, android-material] }
   - wait_for: { id: dav_endpoint }
+  - assert_visible: { id: dav_folder }
   - assert_visible: { id: dav_username }
   - assert_visible: { id: dav_password }
   - assert_missing: { id: dav_space_id }

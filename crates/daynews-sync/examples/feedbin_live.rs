@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Opt-in live trial test. Credentials are read from an owner-only external JSON file;
 //! never pass them in command arguments or write them into fixtures.
 use daynews_sync::{Changes, Credentials, Mutation, Operation, Provider, ReadChanges, ReadState};

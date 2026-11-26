@@ -13,8 +13,7 @@ meant they compiled nowhere else.
 ## Vendored from Miniflux
 
 The other three files come from [Miniflux](https://github.com/miniflux/v2)'s OPML parser tests
-(`internal/reader/opml/parser_test.go`), licensed Apache-2.0 — the license this app ships
-under.
+(`internal/reader/opml/parser_test.go`), licensed under [Apache-2.0](LICENSE-Apache-2.0.txt).
 
     Copyright The Miniflux Authors. All rights reserved.
     SPDX-License-Identifier: Apache-2.0

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Native account setup; translated presentation stays on the UI thread.
 use crate::res;
 use crate::theme;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Feed discovery from a fetched representation. Pure candidate extraction is separately testable.
 use crate::{CacheValidators, FeedError, FeedUpdate};
 use day_part_http::{Request, Response};

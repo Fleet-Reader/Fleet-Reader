@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Dedicated site profiles shared by the interactive browser and inert reader extraction.
 use crate::res;
 use crate::theme;

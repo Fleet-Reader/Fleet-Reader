@@ -46,4 +46,4 @@ timeline has the same shape in every language. The walkthrough searches for "moo
 language arrives, give that step a localized search term (`toolbar:` takes a Fluent `key:`) and
 make sure several feeds in every set contain it.
 
-The articles were written for Fleet Reader and are covered by the app's Apache-2.0 license.
+The articles were written for Fleet Reader and are covered by [GPL-2.0-or-later](../../../LICENSE.txt).

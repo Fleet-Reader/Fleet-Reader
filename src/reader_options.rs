@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Full-content loading options: the app defaults are the settings prefs (`READER_INLINE`,
 //! `READER_AUTO`); each feed's dashboard can override either, stored under the feed's stable id,
 //! and inherits whichever default it leaves alone. Shared by every window.

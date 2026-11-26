@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Local subscriptions with optional day-sync transport. Feedbin sessions are not loaded.
 use super::*;
 thread_local! {

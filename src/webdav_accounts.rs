@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! WebDAV account setup. Credentials stay in the native secure store.
 use crate::res;
 use day::prelude::*;
@@ -39,24 +39,31 @@ pub fn page() -> impl Piece {
         ))
         .grow(Dimension::Width),
         day_piece_webdav_settings::account_form(
-            current.endpoint,
-            current.username,
+            day_piece_webdav_settings::AccountFields {
+                endpoint: current.endpoint,
+                saved_folder: current.folder,
+                default_folder: "Fleet-Reader",
+                username: current.username,
+            },
             configured,
             busy,
             day_piece_webdav_settings::Labels {
                 endpoint: res::str::dav_endpoint(),
+                folder: res::str::dav_app_folder(),
+                invalid_address: res::str::dav_invalid_address(),
                 username: res::str::dav_username(),
                 password: res::str::dav_password(),
                 connect: res::str::dav_connect(),
                 update: res::str::dav_update_credentials(),
             },
-            move |url, username, password| {
+            move |url, folder, username, password| {
                 if configured() {
                     webdav::update_credentials(username, password, reqwest.get_untracked());
                 } else {
                     let space = space_id.get_untracked().trim().to_owned();
                     webdav::prepare(
                         url,
+                        folder,
                         username,
                         password,
                         reqwest.get_untracked(),
@@ -79,6 +86,14 @@ pub fn page() -> impl Piece {
         .font(Font::Footnote)
         .id(day::id!(dav_status))
         .grow(Dimension::Width),
+        day_piece_webdav_settings::failure_details(res::str::dav_more_info(), move || {
+            let s = status.get();
+            if !matches!(s.phase, Phase::Failed | Phase::Attention) {
+                return None;
+            }
+            s.detail
+                .map(|detail| res::str::dav_diagnostic(detail).format())
+        }),
         when(configured, move || {
             button(res::str::sync_now())
                 .bordered()

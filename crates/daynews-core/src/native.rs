@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! UI signals stay on the UI thread; SQLite, migrations, FTS, materialization, and undo
 //! live on one database worker. Committed, owned projections are the only bridge.
 use day_core::Ambient;

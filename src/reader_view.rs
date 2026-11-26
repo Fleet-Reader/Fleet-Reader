@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 //! Per-window Reader View state. RSS content stays intact; extracted content is a temporary
 //! overlay for the selected article. Selection changes and window disposal cancel extraction.
 

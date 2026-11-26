@@ -42,7 +42,7 @@ On an iPad or a computer, your subscriptions, article list, and reader sit side 
 
 Fleet Reader fetches feeds directly from the sites you follow and keeps your library on your device. You can read without an account. Experimental WebDAV sync shares your subscriptions, read status, and stars across devices through a server you choose.
 
-Fleet Reader is open source under the Apache 2.0 license: github.com/Fleet-Reader/Fleet-Reader
+Fleet Reader is open source under GPL-2.0-or-later: github.com/Fleet-Reader/Fleet-Reader
 """
 keywords = ["rss", "rss reader", "feed", "feed reader", "atom", "json feed", "opml", "blogs", "subscriptions", "webdav"]
 release-notes = "A new library now offers suggested feeds, a feed of your own, or an OPML import to get started. The New Feed form no longer keeps an old error after the address changes."

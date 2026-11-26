@@ -28,7 +28,7 @@ daynews-opml = { version = "0.*", path = "../daynews-opml" }
 day-reactive = "0.*"
 day-core = "0.*"
 day-model = "0.*"
-# From git with daynews-db (see its manifest) until a day-persistence release has day-sync's seam.
+# The release lock pins the published persistence and synchronization crates.
 day-persistence = "0.*"
 # The bundled demo feeds are written per language: `fetch_feed` reads the set for the locale the
 # app resolved (resource/assets/demo/README.md).

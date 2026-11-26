@@ -15,9 +15,7 @@ serde_json = "1"
 # The local article store rides day-persistence's lazy engine: models declared with
 # #[derive(Model)], relations with cascade rules, generated FTS5 shadows, and live queries
 # the UI binds to directly. SQLite itself comes bundled through the engine.
-# From git, the same source day-sync uses, until a release carries the transaction-participant
-# seam: a crates.io copy beside day-sync's git copy would be a second, incompatible crate, and
-# `day patch --main` cannot re-point a git URL at itself.
+# Published dependency versions are pinned by the application release lock.
 day-persistence = "0.*"
 day-model = "0.*"
 # "Today" means today where the reader is, so the cut-off is local midnight, not UTC midnight;
@@ -31,9 +29,9 @@ log = "0.4"
 
 # WebDAV sync runs beside the native database worker; the web build has neither.
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-# The unpublished WebDAV adapter uses the engine from its workspace. Use the same source for both.
-day-sync = { version = "0.*", git = "https://github.com/daybrite/day-sync.git", optional = true }
-day-sync-webdav = { version = "0.*", git = "https://github.com/daybrite/day-sync.git", optional = true, features = ["reqwest"] }
+# Both the engine and its adapter must be published before preparing a release lock.
+day-sync = { version = "0.*", optional = true }
+day-sync-webdav = { version = "0.*", optional = true, features = ["reqwest"] }
 
 [dev-dependencies]
 futures-util = "0.3"

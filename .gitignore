@@ -1,6 +1,5 @@
 /target
 /build
-Cargo.lock
 /.cargo/config.toml
 
 # Gradle local state. platform/android/ is source, but everything Gradle generates inside it is

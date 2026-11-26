@@ -60,7 +60,7 @@ daynews-db = { version = "0.*", path = "crates/daynews-db" }
 daynews-opml = { version = "0.*", path = "crates/daynews-opml" }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-day-piece-webdav-settings = { version = "0.*", git = "https://github.com/daybrite/day-webdav.git", optional = true }
+day-piece-webdav-settings = { version = "0.*", optional = true }
 
 [build-dependencies]
 day-build = "0.*"

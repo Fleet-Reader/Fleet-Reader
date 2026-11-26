@@ -46,7 +46,7 @@ jobs:
       # A tag and the nightly run build against the newest day release; a push builds against
       # day's main branch, as does a manual run that asks for it. The revision is resolved once
       # per run, so every leg compiles the same one.
-      day-deps: ${{ inputs.day-main && 'main' || 'auto' }}
+      day-deps: ${{ startsWith(github.ref, 'refs/tags/') && 'release' || inputs.day-main && 'main' || 'auto' }}
       scripts: dayscript/seed-demo.yaml dayscript/reader-swipes.yaml dayscript/walkthrough.yaml dayscript/http-interception.yaml
       launch-env: DAY_NEWS_HTTP_TEST=1 DAY_NEWS_SYNC_TEST=1 DAY_NEWS_SYNC_TEST_LATENCY_MS=1500
       preflight-checks: fmt test

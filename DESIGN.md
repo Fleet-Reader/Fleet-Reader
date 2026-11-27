@@ -277,6 +277,27 @@ without `file://` navigation, and resource-mode link handling dispatches reader 
 platforms. The document uses no external CSS or fonts. Feed HTML is sanitized at the parse
 boundary rather than trusting the renderer.
 
+### Article context menus
+
+The article webview installs link, image and image-download commands through
+`WebView::web_context_menu`. For a linked image the link command opens the enclosing
+anchor. The image command opens the displayed image. A menu selection carries the
+source document URL, so the reader can check the article ID and its owning window
+before opening anything.
+
+With in-app browsing selected, Fleet opens a new webview window on multi-window
+hosts or the originating reader's browser cover on single-window hosts. Both use
+the feed's browsing profile. External and private-browsing settings use the
+configured browser. The labels describe the destination available on each host.
+
+Image downloads use the originating renderer. On iOS, Fleet stages the file for the
+Files exporter. Other managed downloads use the standard Downloads destination.
+Renderers with a system save command keep their own save flow. The app supplies
+localized labels and download feedback through its generated resources.
+
+The [webview toolkit matrix](https://github.com/daybrite/day-piece-webview/blob/main/docs/webview.md#web-content-context-menus)
+describes each renderer's native actions and the browser's cross-origin restrictions.
+
 ### Load Full Content
 
 `ArticleExtractor` (`src/extraction.rs`) returns an owned `ExtractedArticle` from an article URL.

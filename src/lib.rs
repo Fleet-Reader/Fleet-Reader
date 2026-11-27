@@ -19,6 +19,7 @@ mod http_fixtures;
 mod load_diagnostics;
 mod menus;
 mod reader;
+mod reader_menu;
 mod reader_options;
 mod reader_pager;
 mod reader_scripts;

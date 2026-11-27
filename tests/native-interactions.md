@@ -174,6 +174,21 @@ then build and run it using `xcodebuild build-for-testing` / `test-without-build
 an explicit simulator destination and a derived-data directory outside the repository.
 Use `-only-testing:NavigationProbe/NavigationTests/testEmptySmartFeeds` for this case.
 
+For the article link context-menu regression, launch a seeded iPhone simulator library
+and select the first Field Notes article with the following steps.
+
+~~~sh
+day drive -t ios-uikit --steps-json '[
+  {"navigate":{"route":"feed:5756297993796914528"}},
+  {"wait_for":{"id":"timeline"}},
+  {"pause":{"secs":1}},
+  {"select":{"id":"timeline","index":0}},
+  {"wait_for":{"id":"reader_web"}}]'
+~~~
+
+Run the NavigationProbe case named `testArticleLinkContextMenu` against that running simulator.
+It long-presses the masthead, opens the link, dismisses the browser and verifies the original article.
+
 For `testPullToRefresh`, run `python3 tests/feed-refresh-server.py`, then launch with
 an isolated `DAY_DATA_DIR` and `--script dayscript/pull-refresh-seed.yaml`.
 On Android also use `adb -s SERIAL reverse tcp:28762 tcp:28762`, select that same device

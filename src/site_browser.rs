@@ -201,7 +201,7 @@ fn open_preview(browser: Browser, feed: u64) {
     }
 }
 impl Browser {
-    fn show(self, url: String, feed: Option<u64>) {
+    pub(crate) fn show(self, url: String, feed: Option<u64>) {
         self.feed.set(feed);
         self.open.set(Some(url));
     }

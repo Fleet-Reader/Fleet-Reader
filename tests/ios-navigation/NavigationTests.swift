@@ -163,6 +163,25 @@ final class NavigationTests: XCTestCase {
         add(attachment)
     }
 
+    func testArticleLinkContextMenu() {
+        // The fixture walkthrough leaves the first Field Notes article open.
+        continueAfterFailure = false
+        app.activate()
+        let title = "How monarch butterflies find their way to Mexico"
+        let publication = app.webViews.links["Field Notes"].firstMatch
+        visible(app.webViews.staticTexts[title].firstMatch)
+        visible(publication)
+        publication.press(forDuration: 1)
+        let open = app.buttons["Open Link"].firstMatch
+        visible(open)
+        photograph("Article link menu")
+        open.tap()
+        let done = app.buttons["site_browser_close"].firstMatch
+        visible(done)
+        done.tap()
+        visible(app.webViews.staticTexts[title].firstMatch)
+    }
+
     func testArticlePaging() {
         // XCTest may relaunch its target. Explicitly retain the isolated fixture store
         // and navigate natively; never let an offscreen timeline label pass as an article.

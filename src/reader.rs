@@ -331,7 +331,7 @@ fn reader_body(
             .article
             .with_untracked(|a| a.as_ref().map(|a| crate::site_browser::profile(a.feed_id)))
             .unwrap_or_default();
-        web_view_resources(provider, "reader.html")
+        crate::reader_menu::article_menu(web_view_resources(provider, "reader.html"), scene, view)
             .url_binding(page)
             .profile(profile)
             .js(js)
@@ -736,9 +736,14 @@ pub(crate) fn reader_document(chrome: bool) -> impl Piece {
                 let document_load = document_load.clone();
                 keyed(
                     move || {
-                        st.article.with(|a| {
-                            a.as_ref()
-                                .map(|a| crate::site_browser::profile(a.feed_id).storage_key())
+                        st.article.with(|article| {
+                            article.as_ref().map(|article| {
+                                (
+                                    crate::site_browser::profile(article.feed_id).storage_key(),
+                                    crate::settings::BROWSER.get(),
+                                    day::locale().get(),
+                                )
+                            })
                         })
                     },
                     move |_| {

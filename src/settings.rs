@@ -148,7 +148,8 @@ pub fn install() -> Prefs {
             .icon(res::vectors::manage_accounts)
             .custom(crate::accounts::page),
     );
-    let prefs = prefs.install();
+    // The App Fair group: about the project, the donation link, the other App Fair apps.
+    let prefs = prefs.provider(&day_piece_appfair::APP_FAIR).install();
     // These outlive any window, like the prefs' own persistence watches.
     day::reactive::Scope::root().enter(|| {
         // daynews-core publishes the grouping flag the timeline reads; it has no view of the

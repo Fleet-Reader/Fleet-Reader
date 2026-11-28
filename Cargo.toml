@@ -50,6 +50,8 @@ html5ever = "0.39"
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "ico", "webp"] }
 day-part-http = "0.*"
 day-piece-settings = "0.*"
+# The App Fair group every App Fair app carries in its settings.
+day-piece-appfair = "0.*"
 day = { package = "day-app", version = "0.*", features = ["model"] }
 day-piece-webview = "0.*"
 daynews-feed = { version = "0.*", path = "crates/daynews-feed" }
